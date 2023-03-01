@@ -1,0 +1,6 @@
+[fedora-38-updates]
+name=Fedora 38 $basearch Updates
+mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=updates-released-f38&arch=$basearch
+enabled=1
+gpgcheck=1
+metadata_expire=1d

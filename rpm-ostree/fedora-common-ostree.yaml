@@ -1,0 +1,110 @@
+ref: fedora/38/${basearch}/ostree-base
+
+automatic_version_prefix: "38"
+mutate-os-release: "38"
+
+include: fedora-common-ostree-pkgs.yaml
+
+# See https://github.com/coreos/bootupd
+# TODO: Disabled until we use use unified-core or native container flow
+# for the main build
+# arch-include:
+#   x86_64: bootupd.yaml
+#   aarch64: bootupd.yaml
+
+packages:
+  # Do not include "full" Git as it brings in Perl
+  - git-core
+  # Explicitely add Git docs
+  - git-core-doc
+  - lvm2
+  - rpm-ostree
+  # Required for compatibility with old bootloaders until we have bootupd
+  # See https://github.com/fedora-silverblue/issue-tracker/issues/120
+  - ostree-grub2
+  # Container management
+  - buildah
+  - podman
+  - skopeo
+  - toolbox
+  # Provides terminal tools like clear, reset, tput, and tset
+  - ncurses
+  # Flatpak support
+  - flatpak
+  - xdg-desktop-portal
+  # HFS filesystem tools for Apple hardware
+  # See https://github.com/projectatomic/rpm-ostree/issues/1380
+  - hfsplus-tools
+  # Contains default ostree remote config to be used on client's
+  # system for fetching ostree update
+  - fedora-repos-ostree
+  # the archive repo for more reliable package layering
+  # https://github.com/coreos/fedora-coreos-tracker/issues/400
+  - fedora-repos-archive
+
+selinux: true
+documentation: true
+boot-location: modules
+etc-group-members:
+  - wheel
+tmp-is-dir: true
+
+ignore-removed-users:
+  - root
+ignore-removed-groups:
+  - root
+check-passwd:
+  type: file
+  filename: passwd
+check-groups:
+  type: file
+  filename: group
+
+default_target: graphical.target
+
+packages-aarch64:
+  - grub2-efi
+  - efibootmgr
+  - shim
+packages-ppc64le:
+  - grub2
+packages-x86_64:
+  - grub2-efi-ia32
+  - grub2-efi-x64
+  - grub2-pc
+  - efibootmgr
+  - shim-ia32
+  - shim-x64
+
+# Make sure the following are not pulled in when Recommended by other packages
+exclude-packages:
+  - PackageKit
+  # We can not include openh264. See https://fedoraproject.org/wiki/OpenH264
+  - gstreamer1-plugin-openh264
+  - mozilla-openh264
+  - openh264
+
+postprocess:
+  - |
+    #!/usr/bin/env bash
+    set -xeuo pipefail
+
+    # Work around https://bugzilla.redhat.com/show_bug.cgi?id=1265295
+    # From https://github.com/coreos/fedora-coreos-config/blob/testing-devel/overlay.d/05core/usr/lib/systemd/journald.conf.d/10-coreos-persistent.conf
+    install -dm0755 /usr/lib/systemd/journald.conf.d/
+    echo -e "[Journal]\nStorage=persistent" > /usr/lib/systemd/journald.conf.d/10-persistent.conf
+
+    # See: https://src.fedoraproject.org/rpms/glibc/pull-request/4
+    # Basically that program handles deleting old shared library directories
+    # mid-transaction, which never applies to rpm-ostree. This is structured as a
+    # loop/glob to avoid hardcoding (or trying to match) the architecture.
+    for x in /usr/sbin/glibc_post_upgrade.*; do
+        if test -f ${x}; then
+            ln -srf /usr/bin/true ${x}
+        fi
+    done
+
+    # Remove loader directory causing issues in Anaconda in unified core mode
+    # Will be obsolete once we start using bootupd
+    rm -rf /usr/lib/ostree-boot/loader
+postprocess-script: "postprocess.sh"
