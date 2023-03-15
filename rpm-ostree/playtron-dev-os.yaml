@@ -1,0 +1,4 @@
+---
+include: fedora-silverblue.yaml
+packages:
+  - dracut-config-generic
