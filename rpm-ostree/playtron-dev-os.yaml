@@ -1,4 +1,7 @@
 ---
 include: fedora-silverblue.yaml
 packages:
+  # Provides 'growpart' for resizing the root file system.
+  - cloud-utils-growpart
+  # Provides a configuration file to allow building a generic initramfs that can boot on any system.
   - dracut-config-generic
