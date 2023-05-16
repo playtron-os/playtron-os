@@ -49,8 +49,9 @@ $ sudo systemctl restart libvirtd
 ```
 
 ```
-$ cd /tmp/
-$ sudo python -m http.server
+$ sudo su -
+$ cd /root/tmp/
+$ python -m http.server
 ```
 
 Playtron OS can be built using any Linux distribution that provides `virt-install`. By default, Playtron Dev OS will be built.
