@@ -7,5 +7,10 @@ packages:
   - cloud-utils-growpart
   # Provides a configuration file to allow building a generic initramfs that can boot on any system.
   - dracut-config-generic
+  # Packages from the ekultails-gaming repository:
+  - gamescope-session
+  - gamingos-scripts
+  ## Mesa is already pulled in as part of the Fedora Silverblue configuration.
+  #- mesa
 repos:
   - ekultails-gaming
