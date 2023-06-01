@@ -1,6 +1,6 @@
-[ekultails-gaming]
+[ekultails-gaming-x86_64]
 name=Copr repo for gaming owned by ekultails
-baseurl=https://download.copr.fedorainfracloud.org/results/ekultails/gaming/fedora-$releasever-$basearch/
+baseurl=https://download.copr.fedorainfracloud.org/results/ekultails/gaming/fedora-$releasever-x86_64/
 type=rpm-md
 skip_if_unavailable=True
 gpgcheck=1
