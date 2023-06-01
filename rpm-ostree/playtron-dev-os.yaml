@@ -3,8 +3,6 @@ include: fedora-silverblue.yaml
 # The release version needs to be manually set to allow RPM repositories to use the $releasever variable.
 releasever: "38"
 packages:
-  # Provides 'growpart' for resizing the root file system.
-  - cloud-utils-growpart
   # Provides 'crudini' for post-installation configuration.
   - crudini
   # Provides a configuration file to allow building a generic initramfs that can boot on any system.
