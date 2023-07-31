@@ -7,11 +7,11 @@ packages:
   - crudini
   # Provides a configuration file to allow building a generic initramfs that can boot on any system.
   - dracut-config-generic
-  # Packages from the ekultails-gaming repository:
+  # Packages from the playtron-gaming repository:
   - gamescope-session
-  - gamingos-scripts
+  - playtron-os-scripts
   ## Mesa is already pulled in as part of the Fedora Silverblue configuration.
   #- mesa
 repos:
-  - ekultails-gaming-x86_64
-  - ekultails-gaming-i386
+  - playtron-gaming-x86_64
+  - playtron-gaming-i386
