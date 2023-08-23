@@ -1,0 +1,9 @@
+[playtron-nvidia-x86_64]
+name=NVIDIA repository for Playtron OS
+baseurl=https://playtron-dev-global-os-public.s3.us-west-2.amazonaws.com/repos/playtron-nvidia/x86_64/
+type=rpm-md
+skip_if_unavailable=True
+gpgcheck=0
+repo_gpgcheck=0
+enabled=1
+enabled_metadata=1
