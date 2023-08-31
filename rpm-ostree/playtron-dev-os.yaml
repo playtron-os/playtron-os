@@ -7,6 +7,8 @@ packages:
   - crudini
   # Provides a configuration file to allow building a generic initramfs that can boot on any system.
   - dracut-config-generic
+  # Used for authenticating with Epic Games.
+  - legendary
   # Packages from the playtron-gaming repository:
   - gamescope-session
   - playtron-os-scripts
@@ -17,6 +19,9 @@ packages:
   ## These come from the "nvidia-driver" module stream.
   - nvidia-driver
   - nvidia-driver-cuda
+  # RPMFusion packages:
+  ## nonfree:
+  - steam
 modules:
   enable:
     - nvidia-driver:latest-dkms
