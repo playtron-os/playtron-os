@@ -24,3 +24,11 @@ repos:
   - playtron-gaming-x86_64
   - playtron-gaming-i386
   - playtron-nvidia-x86_64
+  - rpmfusion-free-updates
+  - rpmfusion-free
+  - rpmfusion-nonfree-tainted
+  - rpmfusion-nonfree-updates
+  - rpmfusion-nonfree
+  # These repositories below are installed but disabled by default:
+  - rpmfusion-free-updates-testing
+  - rpmfusion-nonfree-updates-testing
