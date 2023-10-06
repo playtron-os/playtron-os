@@ -19,8 +19,29 @@ packages:
   ## These come from the "nvidia-driver" module stream.
   - nvidia-driver
   - nvidia-driver-cuda
+  # winetricks helps manage Wine prefixes.
+  ## Do not install 'winetricks' itself because it installs 'wine' as a dependency.
+  #- winetricks
+  ## RPM dependencies for winetricks.
+  - cabextract
+  - gzip
+  - unzip
+  - wget
+  - which
+  ## Missing dependencies for winetricks.
+  ## https://github.com/Winetricks/winetricks/blob/20230212/src/winetricks#L27
+  - binutils
+  - p7zip-plugins
+  - polkit
+  - tor
+  - xdg-utils
+  - xz
+  - zenity
   # RPMFusion packages:
   ## nonfree:
+  ### winetricks dependency from RPMFusion.
+  - unrar
+  ### Other packages.
   - steam
 modules:
   enable:
