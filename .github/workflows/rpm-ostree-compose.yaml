@@ -17,4 +17,4 @@ jobs:
         id: compose_ostree
         run: |
           docker pull $DOCKER_IMAGE
-          docker run -u root --rm --workdir=/checkout/rpm-ostree --entrypoint=./rpm-ostree-compose.sh $GITHUB_WORKSPACE:/checkout --privileged=true $DOCKER_IMAGE
+          docker run -u root --rm --workdir=/checkout/rpm-ostree --entrypoint=./rpm-ostree-compose.sh -v $GITHUB_WORKSPACE:/checkout --privileged=true $DOCKER_IMAGE
