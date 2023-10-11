@@ -1,0 +1,20 @@
+name: Compose RPM ostree
+env:
+  DOCKER_IMAGE: fedora:38
+
+on:
+  push:
+    branches:
+      - main
+      - ost-34-rpm-ostree-compose-action
+
+jobs:
+  compose-ostree:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compose RPM ostree
+        id: compose_ostree
+        run: |
+          docker pull $DOCKER_IMAGE
+          docker run -u root --rm --workdir=/checkout/rpm-ostree --entrypoint=./rpm-ostree-compose.sh $GITHUB_WORKSPACE:/checkout --privileged=true $DOCKER_IMAGE
