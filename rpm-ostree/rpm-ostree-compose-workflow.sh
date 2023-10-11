@@ -1,4 +1,4 @@
 #! /bin/bash
 
-dnf install rpm-ostree
+dnf install -y rpm-ostree
 ./rpm-ostree-compose.sh
