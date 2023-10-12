@@ -14,21 +14,12 @@ packages:
   - playtron-os-scripts
   ## Mesa is already pulled in as part of the Fedora Silverblue configuration.
   #- mesa
-  # NVIDIA package for the Playtron OS kernel.
-  - kmod-nvidia-535.54.03-6.3.13-200.playtron.x86_64
-  ## These come from the "nvidia-driver" module stream.
-  - nvidia-driver
-  - nvidia-driver-cuda
   # RPMFusion packages:
   ## nonfree:
   - steam
-modules:
-  enable:
-    - nvidia-driver:latest-dkms
 repos:
   - playtron-gaming-x86_64
   - playtron-gaming-i386
-  - playtron-nvidia-x86_64
   - rpmfusion-free-updates
   - rpmfusion-free
   - rpmfusion-nonfree-tainted
