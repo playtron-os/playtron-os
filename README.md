@@ -49,8 +49,8 @@ $ sudo systemctl restart libvirtd
 ```
 
 ```
-$ sudo su -
-$ cd /root/tmp/
+$ sudo su
+$ cd /playtron
 $ python -m http.server
 ```
 
