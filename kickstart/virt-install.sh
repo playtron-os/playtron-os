@@ -3,12 +3,12 @@
 sudo virt-install \
   --connect qemu:///system \
   --virt-type kvm --graphics spice --video vga\
-  --name playtron-dev-os \
+  --name playtron-os \
   --os-variant fedora38 \
   --boot uefi \
   --vcpus 4 --ram 16384 \
-  --disk=/var/lib/libvirt/images/playtron-dev-os.img,bus=virtio,format=raw,size=8 \
+  --disk=/var/lib/libvirt/images/playtron-os.img,bus=virtio,format=raw,size=8 \
   --location=https://mirror.rackspace.com/fedora/releases/38/Everything/x86_64/os/ \
-  --initrd-inject ./playtron-dev-os_kickstart.cfg \
-  --extra-args="inst.ks=file:/playtron-dev-os_kickstart.cfg net.ifnames=0 biosdevname=0" \
+  --initrd-inject ./playtron-os_kickstart.cfg \
+  --extra-args="inst.ks=file:/playtron-os_kickstart.cfg net.ifnames=0 biosdevname=0" \
   --noreboot
