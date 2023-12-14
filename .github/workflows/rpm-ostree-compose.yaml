@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - main
-      - ost-34-rpm-ostree-compose-action
+      - merge-private
 
 jobs:
   compose-ostree:
