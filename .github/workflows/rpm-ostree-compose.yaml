@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: mkdir -p /playtron/repo
       - name: Compose RPM ostree
         id: compose_ostree
         run: |
@@ -28,4 +29,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'us-west-2'
           SOURCE_DIR: '/playtron/repo'
-          DEST_DIR: '/build-repos/rpm-ostree'
+          DEST_DIR: 'build-repos/rpm-ostree'
