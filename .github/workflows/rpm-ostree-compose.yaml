@@ -13,12 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: mkdir -p /playtron/repo
       - name: Compose RPM ostree
         id: compose_ostree
         run: |
           docker pull $DOCKER_IMAGE
-          docker run -u root --rm --workdir=/checkout/rpm-ostree --entrypoint=./rpm-ostree-compose.sh -v $GITHUB_WORKSPACE:/checkout -v /playtron/repo:/playtron/repo --privileged=true $DOCKER_IMAGE
+          docker run -u root --rm --workdir=/checkout/rpm-ostree --entrypoint=./rpm-ostree-compose.sh -v $GITHUB_WORKSPACE:/checkout -v $(pwd)/repo:/playtron/repo --privileged=true $DOCKER_IMAGE
       - name: Upload RPM ostree to AWS
         uses: jakejarvis/s3-sync-action@7ed8b112447abb09f1da74f3466e4194fc7a6311
         with:
@@ -28,5 +27,5 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'us-west-2'
-          SOURCE_DIR: '/playtron/repo'
+          SOURCE_DIR: 'repo'
           DEST_DIR: 'build-repos/rpm-ostree'
