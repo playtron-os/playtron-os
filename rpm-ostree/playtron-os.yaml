@@ -1,8 +1,15 @@
 ---
-include: fedora-silverblue.yaml
+include: fedora-common-ostree.yaml
+ref: fedora/38/${basearch}/silverblue
+rojig:
+  name: fedora-silverblue
+  summary: "Fedora Silverblue base image"
+  license: MIT
 # The release version needs to be manually set to allow RPM repositories to use the $releasever variable.
 releasever: "38"
 packages:
+  - fedora-release-silverblue
+  - NetworkManager-tui
   # Provides 'crudini' for post-installation configuration.
   - crudini
   # Provides a configuration file to allow building a generic initramfs that can boot on any system.
@@ -10,8 +17,10 @@ packages:
   # Used for authenticating with Epic Games.
   - legendary
   # Packages from the playtron-gaming repository:
-  - gamescope-session
+  - gamescope-plus
+  - gamescope-session-playtron
   - playtron-os-scripts
+  - udev-media-automount
   ## Mesa is already pulled in as part of the Fedora Silverblue configuration.
   #- mesa
   # winetricks helps manage Wine prefixes.
@@ -38,9 +47,28 @@ packages:
   - unrar
   ### Other packages.
   - steam
+  # Playtron Labs.
+  - playserve
+  - playview
+  - playtron-labs
+  - zstd
+  - lightdm
+  - lightdm-autologin-greeter
+  - xwininfo
+  # for playview
+  - webkit2gtk4.1
+  # for Steam
+  - lsb_release
+  # for dev/debug mode session
+  - weston
+exclude-packages:
+  - gamescope
 repos:
+  - fedora-38
+  - fedora-38-updates
   - playtron-gaming-x86_64
   - playtron-gaming-i386
+  - playtron-app-x86_64
   - rpmfusion-free-updates
   - rpmfusion-free
   - rpmfusion-nonfree-tainted
