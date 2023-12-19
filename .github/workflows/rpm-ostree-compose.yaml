@@ -28,4 +28,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'us-west-2'
           SOURCE_DIR: 'repo'
-          DEST_DIR: 'build-repos/rpm-ostree'
+          DEST_DIR: 'repos/rpm-ostree'
