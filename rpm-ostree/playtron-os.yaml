@@ -66,6 +66,7 @@ exclude-packages:
 repos:
   - fedora-38
   - fedora-38-updates
+  - fedora-cisco-openh264
   - playtron-gaming-x86_64
   - playtron-gaming-i386
   - playtron-app-x86_64

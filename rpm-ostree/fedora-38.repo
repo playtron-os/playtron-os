@@ -4,4 +4,4 @@ mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=fedora-38&arch=$basea
 enabled=1
 gpgcheck=1
 metadata_expire=1d
-exclude=kernel*
+exclude=kernel* ffmpeg-free mesa-va-drivers mesa-vdpau-drivers mesa-va-drivers.i686 mesa-vdpau-drivers.i686 libswscale-free

@@ -3,7 +3,10 @@ ref: fedora/38/${basearch}/ostree-base
 automatic_version_prefix: "38"
 mutate-os-release: "38"
 
-include: fedora-common-ostree-pkgs.yaml
+include:
+  # Install packages from RPM Fusion first before Fedora to avoid package conflicts.
+  - playtron-multimedia.yaml
+  - fedora-common-ostree-pkgs.yaml
 
 # See https://github.com/coreos/bootupd
 # TODO: Disabled until we use use unified-core or native container flow
@@ -75,14 +78,6 @@ packages-x86_64:
   - efibootmgr
   - shim-ia32
   - shim-x64
-
-# Make sure the following are not pulled in when Recommended by other packages
-exclude-packages:
-  - PackageKit
-  # We can not include openh264. See https://fedoraproject.org/wiki/OpenH264
-  - gstreamer1-plugin-openh264
-  - mozilla-openh264
-  - openh264
 
 postprocess:
   - |
