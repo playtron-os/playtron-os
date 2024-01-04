@@ -17,7 +17,6 @@ packages:
   # Used for authenticating with Epic Games.
   - legendary
   # Packages from the playtron-gaming repository:
-  - gamescope-plus
   - gamescope-session-playtron
   - playtron-os-scripts
   - udev-media-automount
@@ -61,8 +60,6 @@ packages:
   - lsb_release
   # for dev/debug mode session
   - weston
-exclude-packages:
-  - gamescope
 repos:
   - fedora-38
   - fedora-38-updates
