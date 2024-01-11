@@ -46,9 +46,11 @@ packages:
   - unrar
   ### Other packages.
   - steam
-  # Playtron Labs.
+  # Playtron
   - playserve
   - playview
+  - playinput
+  - autotest
   - playtron-labs
   - zstd
   - lightdm
