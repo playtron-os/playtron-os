@@ -1,12 +1,12 @@
 ---
 include: fedora-common-ostree.yaml
-ref: fedora/38/${basearch}/silverblue
+ref: fedora/39/${basearch}/silverblue
 rojig:
   name: fedora-silverblue
   summary: "Fedora Silverblue base image"
   license: MIT
 # The release version needs to be manually set to allow RPM repositories to use the $releasever variable.
-releasever: "38"
+releasever: "39"
 recommends: false
 packages:
   - fedora-release-silverblue
@@ -70,8 +70,8 @@ packages:
   # for dev/debug mode session
   - weston
 repos:
-  - fedora-38
-  - fedora-38-updates
+  - fedora-39
+  - fedora-39-updates
   - fedora-cisco-openh264
   - playtron-gaming-x86_64
   - playtron-gaming-i386

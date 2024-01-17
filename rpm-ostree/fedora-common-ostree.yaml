@@ -1,12 +1,13 @@
-ref: fedora/38/${basearch}/ostree-base
+ref: fedora/39/${basearch}/ostree-base
 
-automatic_version_prefix: "38"
-mutate-os-release: "38"
+automatic_version_prefix: "39"
+mutate-os-release: "39"
 
-include:
-  # Install packages from RPM Fusion first before Fedora to avoid package conflicts.
-  - playtron-multimedia.yaml
-  - fedora-common-ostree-pkgs.yaml
+# Default to `bash` in our container, the same as other containers we ship.
+container-cmd:
+  - /usr/bin/bash
+
+include: fedora-common-ostree-pkgs.yaml
 
 # See https://github.com/coreos/bootupd
 # TODO: Disabled until we use use unified-core or native container flow
@@ -79,6 +80,22 @@ packages-x86_64:
   - shim-ia32
   - shim-x64
 
+# Make sure the following are not pulled in when Recommended by other packages
+exclude-packages:
+  - PackageKit
+  # We can not include openh264. See https://fedoraproject.org/wiki/OpenH264
+  - gstreamer1-plugin-openh264
+  - mozilla-openh264
+  - openh264
+  # Always exclude dnf when pulled in as a dependency
+  - dnf
+  - dnf-plugins-core
+  - dnf5
+  - dnf5-plugins
+  # https://github.com/fedora-silverblue/issue-tracker/issues/517
+  - grubby
+  - sdubby
+
 postprocess:
   - |
     #!/usr/bin/env bash
@@ -102,4 +119,14 @@ postprocess:
     # Remove loader directory causing issues in Anaconda in unified core mode
     # Will be obsolete once we start using bootupd
     rm -rf /usr/lib/ostree-boot/loader
+
+    # Undo RPM scripts enabling units; we want the presets to be canonical
+    # https://github.com/projectatomic/rpm-ostree/issues/1803
+    rm -rf /etc/systemd/system/*
+    systemctl preset-all
+    rm -rf /etc/systemd/user/*
+    systemctl --user --global preset-all
+
+    # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2218006
+    systemctl enable nfs-client.target
 postprocess-script: "postprocess.sh"
