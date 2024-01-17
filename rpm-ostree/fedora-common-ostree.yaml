@@ -7,7 +7,10 @@ mutate-os-release: "39"
 container-cmd:
   - /usr/bin/bash
 
-include: fedora-common-ostree-pkgs.yaml
+include:
+  # Install packages from RPM Fusion first before Fedora to avoid package conflicts.
+  - playtron-multimedia.yaml
+  - fedora-common-ostree-pkgs.yaml
 
 # See https://github.com/coreos/bootupd
 # TODO: Disabled until we use use unified-core or native container flow
@@ -83,10 +86,6 @@ packages-x86_64:
 # Make sure the following are not pulled in when Recommended by other packages
 exclude-packages:
   - PackageKit
-  # We can not include openh264. See https://fedoraproject.org/wiki/OpenH264
-  - gstreamer1-plugin-openh264
-  - mozilla-openh264
-  - openh264
   # Always exclude dnf when pulled in as a dependency
   - dnf
   - dnf-plugins-core

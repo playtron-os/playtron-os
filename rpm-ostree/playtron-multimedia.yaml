@@ -19,6 +19,7 @@ packages:
   # "libavcodec", "libavfilter", "libavformat", "libavutil", "libpostproc", "libswresample", and "libswscale" are provided by "ffmpeg-libs" from RPMFusion.
   # https://github.com/coreos/rpm-ostree/issues/744
   # https://rpmfusion.org/Howto/Multimedia
+  - abattis-cantarell-vf-fonts
   - alsa-utils
   - gstreamer1-plugin-libav
   - gstreamer1-plugin-openh264
@@ -45,12 +46,13 @@ packages:
   - cjson
   - codec2
   - colord-libs
-  - crypto-policies-scripts
+  - crypto-policies
   - cups-libs
   - dbus
   - dbus-broker
   - dbus-common
   - dbus-libs
+  - default-fonts-core-sans
   - duktape
   #- fdk-aac-free
   - fdk-aac
@@ -89,9 +91,9 @@ packages:
   - kmod-libs
   - ladspa
   - lame-libs
-  - langpacks-core-font-en
   - lcms2
   - leptonica
+  - libdovi
   - libX11
   - libX11-common
   - libXcomposite
@@ -218,6 +220,7 @@ packages:
   - polkit-pkla-compat
   - pulseaudio-libs
   - rav1e-libs
+  - rsvg-pixbuf-loader
   - rtkit
   - rubberband
   - samba-client-libs
