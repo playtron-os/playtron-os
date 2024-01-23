@@ -16,6 +16,8 @@ packages:
   - dracut-config-generic
   # Used for authenticating with Epic Games.
   - legendary
+  # Distrobox is an alternative to Toolbox that is more feature-rich and orientated at running both CLI and GUI applications from within a container.
+  - distrobox
   # Packages from the playtron-gaming repository:
   - gamescope-session-playtron
   - playtron-os-scripts
