@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 WORKDIR="/playtron"
 mkdir -p ${WORKDIR}/cache ${WORKDIR}/repo
 ostree --repo=${WORKDIR}/repo init --mode=archive-z2
