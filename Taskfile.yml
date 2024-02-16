@@ -9,6 +9,13 @@ tasks:
     dir: rpm-ostree
     cmds:
       - sudo ./rpm-ostree-compose.sh
+  ostree-rpms:
+    desc: Build a local rpm-ostree repository with local RPMs.
+    dir: rpm-ostree
+    cmds:
+      - grep "  - local" playtron-os.yaml || sed -i s'/repos:/repos:\n  - local'/g playtron-os.yaml
+      - echo -e "[local]\nname=local\nbaseurl=file:///tmp/repo\nenabled=1\nrepo_gpgcheck=0\ngpgcheck=0" > local.repo
+      - sudo ./rpm-ostree-compose.sh
   image-local:
     desc: Build the OS image using a local rpm-ostree repository.
     dir: kickstart 
