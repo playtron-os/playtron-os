@@ -1,0 +1,37 @@
+# Playtron OS Taskfile
+# https://taskfile.dev
+
+version: "3"
+
+tasks:
+  ostree:
+    desc: Build a local rpm-ostree repository.
+    dir: rpm-ostree
+    cmds:
+      - sudo ./rpm-ostree-compose.sh
+  image-local:
+    desc: Build the OS image using a local rpm-ostree repository.
+    dir: kickstart 
+    cmds:
+      # This will error out if SELinux is already in permissive mode.
+      - sudo setenforce 0 || true
+      - sudo systemctl stop firewalld
+      - sudo systemctl restart libvirtd
+      - sudo python -m http.server --dir /var/playtron &
+      - sed -i s'/https:\/\/playtron-dev-global-os-private.s3.us-west-2.amazonaws.com\/repos\/rpm-ostree/http:\/\/192.168.122.1:8000\/repo/'g playtron-os_kickstart.cfg
+      - sudo ./virt-install.sh
+      # Rename the image and delete the virtual machine to allow future builds to work.
+      - sudo mv /var/lib/libvirt/images/playtron-os.img "/var/lib/libvirt/images/playtron-os.img_$(date -Iseconds)"
+      - sudo virsh undefine --nvram playtron-os
+  image-remote:
+    desc: Build the OS image using a remote rpm-ostree repository.
+    dir: kickstart 
+    cmds:
+      - sudo ./virt-install.sh
+      - sudo mv /var/lib/libvirt/images/playtron-os.img "/var/lib/libvirt/images/playtron-os.img_$(date -Iseconds)"
+      - sudo virsh undefine --nvram playtron-os
+  all:
+    desc: Build a local rpm-ostree repository and the OS image using it.
+    cmds:
+      - task: ostree
+      - task: image-local
