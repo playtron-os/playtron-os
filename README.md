@@ -28,6 +28,33 @@ These are the minimum hardware requirements we recommend for ideal gaming experi
 
 ## Build
 
+Install the required build dependencies.
+
+Fedora Atomic Desktop:
+
+```
+$ sudo rpm-ostree install \
+    qemu-kvm \
+    virt-install \
+    virt-manager
+```
+
+Fedora Workstation:
+
+```
+$ sudo dnf install \
+    qemu-kvm \
+    rpm-ostree \
+    virt-install \
+    virt-manager
+```
+
+Enable and start the `libvirtd` service.
+
+```
+$ sudo systemctl enable --now libvirtd
+```
+
 First build the rpm-ostree OCI image.
 
 ```
