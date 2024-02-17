@@ -28,32 +28,60 @@ These are the minimum hardware requirements we recommend for ideal gaming experi
 
 ## Build
 
-First build the rpm-ostree OCI image.
+Install the required build dependencies.
+
+Fedora Atomic Desktop:
 
 ```
-$ git clone https://github.com/playtron-os/playtron-os.git
-$ cd playtron-os/rpm-ostree/
-$ sudo ./rpm-ostree-compose.sh
-$ cd ..
+$ sudo rpm-ostree install \
+    go-task \
+    qemu-kvm \
+    virt-install \
+    virt-manager
 ```
 
-In a different terminal session, temporarily turn off conflicting services and then start a HTTP server.
+Fedora Workstation:
 
 ```
-$ sudo setenforce 0
-$ sudo systemctl stop firewalld
-$ sudo systemctl restart libvirtd
+$ sudo dnf install \
+    go-task \
+    qemu-kvm \
+    rpm-ostree \
+    virt-install \
+    virt-manager
+```
+
+Enable and start the `libvirtd` service.
+
+```
+$ sudo systemctl enable --now libvirtd
+```
+
+First build the rpm-ostree repository. Optionally build it with local RPMs for testing.
+
+```
+$ go-task ostree
 ```
 
 ```
-$ sudo su
-$ cd /playtron
-$ python -m http.server
+$ mkdir /tmp/repo/
+$ cp $RPM /tmp/repo/
+$ createrepo /tmp/repo/
+$ go-task ostree-rpms
 ```
 
-Playtron OS can be built using any Linux distribution that provides `virt-install`.
+Then build the operating system image. Either use the remote rpm-ostree repository or a local one built from the previous task. Use Virtual Machine Manager (`virt-manager`) to check the installation progress of the `playtron-os` virtual machine.
 
 ```
-$ cd <PLAYTRON_OS_GIT_DIRECTORY>/kickstart/
-$ sudo ./virt-install.sh
+$ go-task image-remote
+```
+
+```
+$ go-task image-local
+```
+
+Alternatively, both the `ostree` and `image-local` tasks can be ran at the same time to do a full end-to-end build.
+
+```
+$ go-task all
 ```
