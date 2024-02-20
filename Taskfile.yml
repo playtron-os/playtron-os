@@ -9,6 +9,7 @@ tasks:
     dir: rpm-ostree
     cmds:
       - sudo ./rpm-ostree-compose.sh
+
   ostree-rpms:
     desc: Build a local rpm-ostree repository with local RPMs.
     dir: rpm-ostree
@@ -16,9 +17,10 @@ tasks:
       - grep "  - local" playtron-os.yaml || sed -i s'/repos:/repos:\n  - local'/g playtron-os.yaml
       - echo -e "[local]\nname=local\nbaseurl=file:///tmp/repo\nenabled=1\nrepo_gpgcheck=0\ngpgcheck=0" > local.repo
       - sudo ./rpm-ostree-compose.sh
+
   image-local:
     desc: Build the OS image using a local rpm-ostree repository.
-    dir: kickstart 
+    dir: kickstart
     cmds:
       # This will error out if SELinux is already in permissive mode.
       - sudo setenforce 0 || true
@@ -30,15 +32,27 @@ tasks:
       # Rename the image and delete the virtual machine to allow future builds to work.
       - sudo mv /var/lib/libvirt/images/playtron-os.img "/var/lib/libvirt/images/playtron-os.img_$(date -Iseconds)"
       - sudo virsh undefine --nvram playtron-os
+
   image-remote:
     desc: Build the OS image using a remote rpm-ostree repository.
-    dir: kickstart 
+    dir: kickstart
     cmds:
       - sudo ./virt-install.sh
       - sudo mv /var/lib/libvirt/images/playtron-os.img "/var/lib/libvirt/images/playtron-os.img_$(date -Iseconds)"
       - sudo virsh undefine --nvram playtron-os
+
   all:
     desc: Build a local rpm-ostree repository and the OS image using it.
     cmds:
       - task: ostree
       - task: image-local
+
+  repo:update:
+    desc: "Update the package repository"
+    cmds:
+      - rm -rf /tmp/repo
+      - mkdir -p /tmp/repo
+      - aws s3 cp s3://playtron-dev-global-os-public/repos/playtron-app/x86_64/ /tmp/repo/ --recursive
+      - read -p "Copy new packages into /tmp/repo and press ENTER to continue"
+      - createrepo /tmp/repo
+      - aws s3 sync /tmp/repo/ s3://playtron-dev-global-os-public/repos/playtron-app/x86_64/
