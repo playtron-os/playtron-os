@@ -59,6 +59,8 @@ packages:
   - lightdm
   - lightdm-autologin-greeter
   - xwininfo
+  # Input Management
+  - inputplumber
   # for playview
   - webkit2gtk4.1
   # for Steam
