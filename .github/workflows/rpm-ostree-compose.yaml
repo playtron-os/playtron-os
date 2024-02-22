@@ -16,7 +16,7 @@ jobs:
         id: compose_ostree
         run: |
           docker pull $DOCKER_IMAGE
-          docker run -u root --rm --workdir=/checkout/rpm-ostree --entrypoint=./rpm-ostree-compose.sh -v $GITHUB_WORKSPACE:/checkout -v $(pwd)/repo:/playtron/repo --privileged=true $DOCKER_IMAGE
+          docker run -u root --rm --workdir=/checkout/rpm-ostree --entrypoint=./rpm-ostree-compose.sh -v $GITHUB_WORKSPACE:/checkout -v $(pwd)/repo:/var/playtron/repo --privileged=true $DOCKER_IMAGE
       - name: Upload RPM ostree to AWS
         uses: jakejarvis/s3-sync-action@7ed8b112447abb09f1da74f3466e4194fc7a6311
         with:
