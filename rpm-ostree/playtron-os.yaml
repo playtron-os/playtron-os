@@ -11,6 +11,7 @@ recommends: false
 packages:
   - fedora-release-silverblue
   - NetworkManager-tui
+  - vim
   # Provides 'crudini' for post-installation configuration.
   - crudini
   # Provides a configuration file to allow building a generic initramfs that can boot on any system.
