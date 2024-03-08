@@ -61,6 +61,7 @@ packages:
   - xwininfo
   # Input Management
   - inputplumber
+  - evtest
   # for playview
   - webkit2gtk4.1
   # for Steam
