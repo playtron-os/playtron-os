@@ -14,6 +14,10 @@ tasks:
     desc: Build a local rpm-ostree repository with local RPMs.
     dir: rpm-ostree
     cmds:
+      - mkdir -p /tmp/repo || true
+      - echo "Checking if any RPMs exist in the /tmp/repo/ directory..."
+      - ls /tmp/repo | grep rpm || exit 1
+      - createrepo /tmp/repo
       - grep "  - local" playtron-os.yaml || sed -i s'/repos:/repos:\n  - local'/g playtron-os.yaml
       - echo -e "[local]\nname=local\nbaseurl=file:///tmp/repo\nenabled=1\nrepo_gpgcheck=0\ngpgcheck=0" > local.repo
       - sudo ./rpm-ostree-compose.sh
