@@ -11,6 +11,8 @@ packages:
   - mesa-vdpau-drivers-freeworld.i686
   ## Intel.
   - intel-media-driver
+  - intel-gmmlib
+  - libva-intel-media-driver
   ## NVIDIA proprietary driver.
   ## Disabled for now since the driver is not used.
   #- nvidia-vaapi-driver
@@ -21,6 +23,7 @@ packages:
   # https://rpmfusion.org/Howto/Multimedia
   - abattis-cantarell-vf-fonts
   - alsa-utils
+  - avahi-glib
   - gstreamer1-plugin-libav
   - gstreamer1-plugin-openh264
   - gstreamer1-plugins-bad-free
@@ -166,6 +169,7 @@ packages:
   #- libswscale-free
   - libtalloc
   - libtdb
+  - libei
   - libtevent
   - libthai
   - libtheora
@@ -238,6 +242,7 @@ packages:
   - srt-libs
   - svt-av1-libs
   - systemd
+  - systemd-libs
   - systemd-pam
   - taglib
   - tesseract
@@ -250,6 +255,7 @@ packages:
   - vo-amrwbenc
   - wavpack
   - webrtc-audio-processing
+  - webrtc-audio-processing0.3
   - wireplumber-libs
   - xkeyboard-config
   - xml-common
