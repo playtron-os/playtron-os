@@ -1,39 +1,37 @@
-ref: fedora/39/${basearch}/ostree-base
-
-automatic_version_prefix: "39"
-mutate-os-release: "39"
+releasever: 40
+automatic-version-prefix: "${releasever}.<date:%Y%m%d>"
+mutate-os-release: "${releasever}"
 
 # Default to `bash` in our container, the same as other containers we ship.
 container-cmd:
   - /usr/bin/bash
 
 include:
-  # Install packages from RPM Fusion first before Fedora to avoid package conflicts.
-  - playtron-multimedia.yaml
   - fedora-common-ostree-pkgs.yaml
-
-# See https://github.com/coreos/bootupd
-# TODO: Disabled until we use use unified-core or native container flow
-# for the main build
-# arch-include:
-#   x86_64: bootupd.yaml
-#   aarch64: bootupd.yaml
+  - bootupd.yaml
 
 packages:
+  # Ensure that we have a kernel. Kernel packages are not in any comps group
+  - kernel
+  - kernel-modules
+  - kernel-modules-extra
   # Do not include "full" Git as it brings in Perl
   - git-core
   # Explicitely add Git docs
   - git-core-doc
   - lvm2
-  - rpm-ostree
   # Required for compatibility with old bootloaders until we have bootupd
   # See https://github.com/fedora-silverblue/issue-tracker/issues/120
   - ostree-grub2
+  # Required until we've completed the move to systemd-sysusers
+  # See: https://github.com/fedora-silverblue/issue-tracker/issues/362
+  - nss-altfiles
   # Container management
   - buildah
   - podman
   - skopeo
-  - toolbox
+  # See: https://github.com/fedora-silverblue/issue-tracker/issues/503
+  - systemd-container
   # Provides terminal tools like clear, reset, tput, and tset
   - ncurses
   # Flatpak support
@@ -48,6 +46,9 @@ packages:
   # the archive repo for more reliable package layering
   # https://github.com/coreos/fedora-coreos-tracker/issues/400
   - fedora-repos-archive
+  # Always include at least full English language support by default
+  # https://gitlab.com/fedora/ostree/sig/-/issues/14
+  - langpacks-en
 
 selinux: true
 documentation: true
@@ -86,6 +87,10 @@ packages-x86_64:
 # Make sure the following are not pulled in when Recommended by other packages
 exclude-packages:
   - PackageKit
+  # We can not include openh264. See https://fedoraproject.org/wiki/OpenH264
+  - gstreamer1-plugin-openh264
+  - mozilla-openh264
+  - openh264
   # Always exclude dnf when pulled in as a dependency
   - dnf
   - dnf-plugins-core
@@ -126,6 +131,8 @@ postprocess:
     rm -rf /etc/systemd/user/*
     systemctl --user --global preset-all
 
-    # Workaround for https://bugzilla.redhat.com/show_bug.cgi?id=2218006
-    systemctl enable nfs-client.target
+    # Fix triggerin for samba-client in cups package (not supported by rpm-ostree yet)
+    # https://github.com/fedora-silverblue/issue-tracker/issues/532
+    ln -snf /usr/libexec/samba/cups_backend_smb /usr/lib/cups/backend/smb
+
 postprocess-script: "postprocess.sh"

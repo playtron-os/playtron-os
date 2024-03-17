@@ -1,0 +1,8 @@
+[fedora-40-updates]
+name=Fedora 40 $basearch Updates
+baseurl=https://mirror.rackspace.com/fedora/updates/40/Everything/x86_64/
+# The Fedora 40 updates repository does not exist yet.
+enabled=0
+gpgcheck=1
+metadata_expire=1d
+exclude=kernel* ffmpeg-free mesa-va-drivers mesa-vdpau-drivers mesa-va-drivers.i686 mesa-vdpau-drivers.i686 libswscale-free

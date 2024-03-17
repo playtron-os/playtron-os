@@ -95,8 +95,6 @@ packages:
   - iwlwifi-dvm-firmware
   - iwlwifi-mvm-firmware
   - kbd
-  - kernel
-  - kernel-modules-extra
   - less
   - libertas-firmware
   - libglvnd-gles
@@ -116,12 +114,13 @@ packages:
   - ntfs-3g
   - ntfsprogs
   - nvidia-gpu-firmware
+  - nxpwireless-firmware
   - opensc
   - openssh-clients
   - openssh-server
+  - ostree-grub2
   - pam_afs_session
   - paps
-  - passwd
   - passwdqc
   - pciutils
   - pinfo
@@ -146,6 +145,7 @@ packages:
   - realtek-firmware
   - rootfiles
   - rpm
+  - rpm-ostree
   - rsync
   - samba-client
   - selinux-policy-targeted
@@ -154,7 +154,6 @@ packages:
   - sos
   - spice-vdagent
   - spice-webdavd
-  - sssd
   - sssd-common
   - sssd-kcm
   - sudo
@@ -165,6 +164,7 @@ packages:
   - systemd-udev
   - tar
   - time
+  - tiwilink-firmware
   - toolbox
   - tree
   - unzip
@@ -173,7 +173,7 @@ packages:
   - usbutils
   - util-linux
   - vim-minimal
-  - wget
+  - wget2-wget
   - which
   - whois
   - wireplumber
@@ -184,7 +184,10 @@ packages:
 packages-x86_64:
   - alsa-sof-firmware
   - amd-ucode-firmware
+  - cirrus-audio-firmware
   - hyperv-daemons
+  - intel-audio-firmware
+  - libva-intel-media-driver
   - mcelog
   - microcode_ctl
   - open-vm-tools-desktop
