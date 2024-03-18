@@ -10,7 +10,7 @@ include:
   # Install packages from RPM Fusion first before Fedora to avoid package conflicts.
   - playtron-multimedia.yaml
   - fedora-common-ostree-pkgs.yaml
-  - bootupd.yaml
+  #- bootupd.yaml
 
 packages:
   # Ensure that we have a kernel. Kernel packages are not in any comps group
