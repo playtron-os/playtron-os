@@ -2,6 +2,7 @@
 name=Fedora 40 $basearch Updates
 baseurl=https://mirror.rackspace.com/fedora/updates/40/Everything/x86_64/
 # The Fedora 40 updates repository does not exist yet.
+#TODOF40 - When Fedora 40 stable is released, enable this repository.
 enabled=0
 gpgcheck=1
 metadata_expire=1d

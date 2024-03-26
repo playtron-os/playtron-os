@@ -1,5 +1,6 @@
 #!/bin/sh
 
+#TODOF40 - When Fedora 40 stable is released, replace "development" with "releases" in the path.
 sudo virt-install \
   --connect qemu:///system \
   --virt-type kvm --graphics spice --video vga\

@@ -1,5 +1,6 @@
 [fedora-40]
 name=Fedora 40 $basearch
+#TODOF40 - When Fedora 40 stable is released, replace "development" with "releases" in the path.
 baseurl=https://mirror.rackspace.com/fedora/development/40/Everything/x86_64/os/
 enabled=1
 gpgcheck=1
