@@ -1,9 +1,9 @@
 ---
 include: fedora-common-ostree.yaml
-ref: fedora/40/${basearch}/silverblue
+ref: playtronos/0/${basearch}/base
 rojig:
-  name: fedora-silverblue
-  summary: "Fedora Silverblue base image"
+  name: playtronos
+  summary: "PlaytronOS base image"
   license: MIT
 # The release version needs to be manually set to allow RPM repositories to use the $releasever variable.
 releasever: "40"
