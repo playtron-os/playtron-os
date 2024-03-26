@@ -22,6 +22,8 @@ packages:
   - distrobox
   # Packages from the playtron-gaming repository:
   - gamescope-session-playtron
+  ## As of Fedora 40, 'gdisk' is now an optional dependency of 'growpart' (which is a required dependency of 'playtron-os-files').
+  - gdisk
   - playtron-os-files
   - udev-media-automount
   ## Mesa is already pulled in as part of the Fedora Silverblue configuration.
