@@ -5,23 +5,23 @@ packages:
   - NetworkManager-config-connectivity-fedora
   - NetworkManager-wifi
   - NetworkManager-wwan
-  - abattis-cantarell-vf-fonts
   - acl
-  - adwaita-qt5
   - alsa-ucm
   - alsa-utils
   - amd-gpu-firmware
-  - atmel-firmware
+  - atheros-firmware
   - attr
   - audit
   - b43-fwcutter
   - b43-openfwwf
   - basesystem
   - bash
+  - bash-color-prompt
   - bash-completion
   - bc
   - bind-utils
   - bluez-cups
+  - brcmfmac-firmware
   - btrfs-progs
   - bzip2
   - chrony
@@ -32,10 +32,22 @@ packages:
   - cpio
   - cryptsetup
   - cups
+  - cups-browsed
   - cups-filters
   - curl
   - cyrus-sasl-plain
   - default-editor
+  - default-fonts-cjk-mono
+  - default-fonts-cjk-sans
+  - default-fonts-cjk-serif
+  - default-fonts-core-emoji
+  - default-fonts-core-math
+  - default-fonts-core-mono
+  - default-fonts-core-sans
+  - default-fonts-core-serif
+  - default-fonts-other-mono
+  - default-fonts-other-sans
+  - default-fonts-other-serif
   - dhcp-client
   - dnsmasq
   - e2fsprogs
@@ -44,7 +56,6 @@ packages:
   - fedora-bookmarks
   - fedora-chromium-config
   - fedora-flathub-remote
-  - fedora-repos-modular
   - fedora-workstation-backgrounds
   - fedora-workstation-repositories
   - file
@@ -57,26 +68,8 @@ packages:
   - gamemode
   - glibc
   - glibc-all-langpacks
-  - glx-utils
   - gnupg2
-  - google-noto-emoji-color-fonts
-  - google-noto-naskh-arabic-vf-fonts
-  - google-noto-sans-arabic-vf-fonts
-  - google-noto-sans-armenian-vf-fonts
-  - google-noto-sans-canadian-aboriginal-vf-fonts
-  - google-noto-sans-cherokee-vf-fonts
-  - google-noto-sans-cjk-ttc-fonts
-  - google-noto-sans-ethiopic-vf-fonts
-  - google-noto-sans-georgian-vf-fonts
-  - google-noto-sans-gurmukhi-vf-fonts
-  - google-noto-sans-hebrew-vf-fonts
-  - google-noto-sans-lao-vf-fonts
-  - google-noto-sans-math-fonts
-  - google-noto-sans-mono-vf-fonts
-  - google-noto-sans-sinhala-vf-fonts
-  - google-noto-sans-thaana-vf-fonts
-  - google-noto-sans-vf-fonts
-  - google-noto-serif-vf-fonts
+  - gstreamer1-plugin-libav
   - gstreamer1-plugins-bad-free
   - gstreamer1-plugins-good
   - gstreamer1-plugins-ugly-free
@@ -98,53 +91,22 @@ packages:
   - iptables-nft
   - iptstate
   - iputils
-  - iwl100-firmware
-  - iwl1000-firmware
-  - iwl105-firmware
-  - iwl135-firmware
-  - iwl2000-firmware
-  - iwl2030-firmware
-  - iwl3160-firmware
-  - iwl3945-firmware
-  - iwl4965-firmware
-  - iwl5000-firmware
-  - iwl5150-firmware
-  - iwl6000-firmware
-  - iwl6000g2a-firmware
-  - iwl6000g2b-firmware
-  - iwl6050-firmware
-  - iwl7260-firmware
-  - iwlax2xx-firmware
-  - jomolhari-fonts
+  - iwlegacy-firmware
+  - iwlwifi-dvm-firmware
+  - iwlwifi-mvm-firmware
   - kbd
-  - kernel
-  - kernel-modules-extra
-  - khmer-os-system-fonts
   - less
-  - liberation-mono-fonts
-  - liberation-sans-fonts
-  - liberation-serif-fonts
-  - libertas-usb8388-firmware
+  - libertas-firmware
   - libglvnd-gles
   - linux-firmware
   - logrotate
-  - lohit-assamese-fonts
-  - lohit-bengali-fonts
-  - lohit-devanagari-fonts
-  - lohit-gujarati-fonts
-  - lohit-kannada-fonts
-  - lohit-marathi-fonts
-  - lohit-odia-fonts
-  - lohit-tamil-fonts
-  - lohit-telugu-fonts
   - lrzsz
   - lsof
   - man-db
   - man-pages
   - mdadm
-  - mesa-dri-drivers
-  - mesa-vulkan-drivers
   - mpage
+  - mt7xxx-firmware
   - mtr
   - nfs-utils
   - nss-altfiles
@@ -152,13 +114,13 @@ packages:
   - ntfs-3g
   - ntfsprogs
   - nvidia-gpu-firmware
+  - nxpwireless-firmware
   - opensc
   - openssh-clients
   - openssh-server
-  - paktype-naskh-basic-fonts
+  - ostree-grub2
   - pam_afs_session
   - paps
-  - passwd
   - passwdqc
   - pciutils
   - pinfo
@@ -174,31 +136,26 @@ packages:
   - procps-ng
   - psmisc
   - qemu-guest-agent
-  - qgnomeplatform-qt5
   - qt5-qtbase
   - qt5-qtbase-gui
   - qt5-qtdeclarative
   - qt5-qtxmlpatterns
   - quota
   - realmd
-  - rit-meera-new-fonts
+  - realtek-firmware
   - rootfiles
   - rpm
+  - rpm-ostree
   - rsync
   - samba-client
   - selinux-policy-targeted
   - setup
   - shadow-utils
-  - sil-mingzat-fonts
-  - sil-nuosu-fonts
-  - sil-padauk-fonts
   - sos
   - spice-vdagent
   - spice-webdavd
-  - sssd
   - sssd-common
   - sssd-kcm
-  - stix-fonts
   - sudo
   - system-config-printer-udev
   - systemd
@@ -206,8 +163,8 @@ packages:
   - systemd-resolved
   - systemd-udev
   - tar
-  - thai-scalable-waree-fonts
   - time
+  - tiwilink-firmware
   - toolbox
   - tree
   - unzip
@@ -215,44 +172,31 @@ packages:
   - usb_modeswitch
   - usbutils
   - util-linux
-  - vazirmatn-vf-fonts
   - vim-minimal
-  - wget
+  - wget2-wget
   - which
   - whois
   - wireplumber
   - words
   - wpa_supplicant
-  - xorg-x11-drv-amdgpu
-  - xorg-x11-drv-ati
-  - xorg-x11-drv-evdev
-  - xorg-x11-drv-fbdev
-  - xorg-x11-drv-libinput
-  - xorg-x11-drv-nouveau
-  - xorg-x11-drv-qxl
-  - xorg-x11-drv-wacom
-  - xorg-x11-server-Xorg
-  - xorg-x11-xauth
-  - xorg-x11-xinit
-  - zd1211-firmware
   - zip
   - zram-generator-defaults
 packages-x86_64:
   - alsa-sof-firmware
+  - amd-ucode-firmware
+  - cirrus-audio-firmware
   - hyperv-daemons
+  - intel-audio-firmware
+  - libva-intel-media-driver
   - mcelog
   - microcode_ctl
   - open-vm-tools-desktop
   - thermald
   - virtualbox-guest-additions
-  - xorg-x11-drv-intel
-  - xorg-x11-drv-openchrome
-  - xorg-x11-drv-vesa
-  - xorg-x11-drv-vmware
 packages-aarch64:
   - hyperv-daemons
   - open-vm-tools-desktop
-  - xorg-x11-drv-armsoc
+  - qcom-firmware
 packages-ppc64le:
   - lsvpd
   - powerpc-utils

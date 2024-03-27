@@ -1,12 +1,12 @@
 ---
 include: fedora-common-ostree.yaml
-ref: fedora/38/${basearch}/silverblue
+ref: playtronos/0/${basearch}/base
 rojig:
-  name: fedora-silverblue
-  summary: "Fedora Silverblue base image"
+  name: playtronos
+  summary: "PlaytronOS base image"
   license: MIT
 # The release version needs to be manually set to allow RPM repositories to use the $releasever variable.
-releasever: "38"
+releasever: "40"
 recommends: false
 packages:
   - fedora-release-silverblue
@@ -22,6 +22,8 @@ packages:
   - distrobox
   # Packages from the playtron-gaming repository:
   - gamescope-session-playtron
+  ## As of Fedora 40, 'gdisk' is now an optional dependency of 'growpart' (which is a required dependency of 'playtron-os-files').
+  - gdisk
   - playtron-os-files
   - udev-media-automount
   ## Mesa is already pulled in as part of the Fedora Silverblue configuration.
@@ -54,7 +56,7 @@ packages:
   - playserve
   - playview
   - playinput
-  - autotest
+  #- autotest
   - playtron-labs
   - zstd
   - lightdm
@@ -69,9 +71,29 @@ packages:
   - lsb_release
   # for dev/debug mode session
   - weston
+  # Xorg packages for Fedora.
+  ## These are no longer included in fedora-common-ostree-pkgs.yaml as of Fedora 39.
+  - xorg-x11-drv-amdgpu
+  - xorg-x11-drv-ati
+  - xorg-x11-drv-evdev
+  - xorg-x11-drv-fbdev
+  - xorg-x11-drv-libinput
+  - xorg-x11-drv-nouveau
+  - xorg-x11-drv-qxl
+  - xorg-x11-drv-wacom
+  - xorg-x11-server-Xorg
+  - xorg-x11-xauth
+  - xorg-x11-xinit
+packages-x86_64:
+  - xorg-x11-drv-intel
+  - xorg-x11-drv-openchrome
+  - xorg-x11-drv-vesa
+  - xorg-x11-drv-vmware
+packages-aarch64:
+  - xorg-x11-drv-armsoc
 repos:
-  - fedora-38
-  - fedora-38-updates
+  - fedora-40
+  - fedora-40-updates
   - fedora-cisco-openh264
   - playtron-gaming-x86_64
   - playtron-gaming-i386

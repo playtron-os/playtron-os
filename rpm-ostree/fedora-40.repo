@@ -1,0 +1,8 @@
+[fedora-40]
+name=Fedora 40 $basearch
+#TODOF40 - When Fedora 40 stable is released, replace "development" with "releases" in the path.
+baseurl=https://mirror.rackspace.com/fedora/development/40/Everything/x86_64/os/
+enabled=1
+gpgcheck=1
+metadata_expire=1d
+exclude=kernel* ffmpeg-free mesa-va-drivers mesa-vdpau-drivers mesa-va-drivers.i686 mesa-vdpau-drivers.i686 libswscale-free
