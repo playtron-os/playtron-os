@@ -1,6 +1,6 @@
 name: Compose RPM ostree
 env:
-  DOCKER_IMAGE: quay.io/fedora-ostree-desktops/silverblue:38
+  DOCKER_IMAGE: quay.io/fedora-ostree-desktops/silverblue:40
 
 on:
   push:
