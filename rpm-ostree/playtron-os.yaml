@@ -56,9 +56,8 @@ packages:
   # Playtron
   - playserve
   - playview
-  - playinput
   #- autotest
-  - playtron-labs
+  #- playtron-labs
   - zstd
   - lightdm
   - lightdm-autologin-greeter
