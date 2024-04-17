@@ -56,7 +56,6 @@ packages:
   # Playtron
   - playserve
   - playview
-  - playinput
   #- autotest
   #- playtron-labs
   - zstd
