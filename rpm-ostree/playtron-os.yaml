@@ -54,6 +54,7 @@ packages:
   ### Other packages.
   - steam
   # Playtron
+  - glib-networking
   - playserve
   - playview
   #- autotest
