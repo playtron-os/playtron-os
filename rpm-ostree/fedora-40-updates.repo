@@ -6,4 +6,4 @@ baseurl=https://mirror.rackspace.com/fedora/updates/40/Everything/x86_64/
 enabled=0
 gpgcheck=1
 metadata_expire=1d
-exclude=kernel* ffmpeg-free mesa-va-drivers mesa-vdpau-drivers mesa-va-drivers.i686 mesa-vdpau-drivers.i686 libswscale-free
+exclude=kernel* ffmpeg-free mesa-va-drivers mesa-vdpau-drivers mesa-va-drivers.i686 mesa-vdpau-drivers.i686 libswscale-free mangohud wireplumber*
