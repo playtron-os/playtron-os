@@ -27,6 +27,7 @@ packages:
   - gdisk
   - playtron-os-files
   - udev-media-automount
+  - valve-firmware
   ## Mesa is already pulled in as part of the Fedora Silverblue configuration.
   #- mesa
   # winetricks helps manage Wine prefixes.
