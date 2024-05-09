@@ -72,7 +72,7 @@ packages:
   # for Steam
   - lsb_release
   # for dev/debug mode session
-  - weston
+  - weston-session
   # Xorg packages for Fedora.
   ## These are no longer included in fedora-common-ostree-pkgs.yaml as of Fedora 39.
   - xorg-x11-drv-amdgpu
