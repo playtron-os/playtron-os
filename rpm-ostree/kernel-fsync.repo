@@ -1,8 +1,6 @@
 [kernel-fsync-x86_64]
 name=Copr repo for gaming owned by playtron
-#TODOF40 - When Fedora 40 stable is released and this Fedora Copr is updated,
-# use "fedora-$releasever-x86_64" instead.
-baseurl=https://download.copr.fedorainfracloud.org/results/sentry/kernel-fsync/fedora-39-x86_64/
+baseurl=https://download.copr.fedorainfracloud.org/results/sentry/kernel-fsync/fedora-40-x86_64/
 type=rpm-md
 skip_if_unavailable=True
 gpgcheck=1
