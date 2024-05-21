@@ -1,0 +1,692 @@
+FROM quay.io/fedora/fedora-bootc:40
+# Docker/Podman will automatically populate this with the host architecture.
+# "linux/amd64" for x86. "linux/arm64" for Arm.
+ARG TARGETPLATFORM
+
+# Enable "dnf" and "rpm" commands.
+RUN rpm-ostree cliwrap install-to-root / && ostree container commit
+
+# Copy over repository files.
+## kernel-fsync.
+COPY kernel-fsync.repo /etc/yum.repos.d/
+## RPM Fusion.
+COPY rpmfusion-free.repo rpmfusion-free-updates.repo rpmfusion-free-updates-testing.repo rpmfusion-nonfree.repo rpmfusion-nonfree-tainted.repo rpmfusion-nonfree-updates.repo rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/
+## Playtron.
+COPY playtron-app-x86_64.repo playtron-gaming-i386.repo playtron-gaming-x86_64.repo playtron-nvidia-x86_64.repo /etc/yum.repos.d/
+
+# Install the same core packages that rpm-ostree starts with.
+# https://github.com/coreos/rpm-ostree/commit/a593335ce342402e72758191f2d431d90cc36e70
+RUN rpm-ostree install filesystem glibc nss-altfiles && ostree container commit
+
+# Install "crudini" to manage configuration files.
+RUN rpm-ostree install crudini && ostree container commit
+
+# Exclude conflicting packages.
+RUN crudini --ini-options=nospace --set /etc/yum.repos.d/fedora.repo fedora exclude 'kernel* ffmpeg-free mesa-va-drivers mesa-vdpau-drivers mesa-va-drivers.i686 mesa-vdpau-drivers.i686 libswscale-free mangohud wireplumber*' \
+  && crudini --ini-options=nospace --set /etc/yum.repos.d/fedora-updates.repo updates exclude 'kernel* ffmpeg-free mesa-va-drivers mesa-vdpau-drivers mesa-va-drivers.i686 mesa-vdpau-drivers.i686 libswscale-free mangohud wireplumber*' \
+  && crudini --ini-options=nospace --set /etc/yum.repos.d/fedora-updates-archive.repo updates-archive exclude 'kernel* ffmpeg-free mesa-va-drivers mesa-vdpau-drivers mesa-va-drivers.i686 mesa-vdpau-drivers.i686 libswscale-free mangohud wireplumber*' \
+  && ostree container commit
+
+# Install packages from the fedora-updates repository to avoid "cannot install both" errors.
+# This list changes all the time.
+# https://github.com/coreos/rpm-ostree/issues/2127
+RUN rpm-ostree override replace \
+  --experimental \
+  --from repo=updates \
+  gcc || true && \
+  rpm-ostree override replace \
+  --experimental \
+  --from repo=updates \
+  libgcc \
+  || true && \
+  rpm-ostree override replace \
+  --experimental \
+  --from repo=updates \
+  libgomp \
+  || true && \
+  rpm-ostree override replace \
+  --experimental \
+  --from repo=updates \
+  libstdc++ \
+  || true && \
+  ostree container commit
+
+# Install Mesa from Playtron.
+RUN rpm-ostree override replace --experimental \
+  --from repo=playtron-gaming-x86_64 \
+  mesa-dri-drivers \
+  mesa-filesystem \
+  mesa-libd3d \
+  mesa-libEGL \
+  mesa-libgbm \
+  mesa-libGL \
+  mesa-libglapi \
+  mesa-libOpenCL \
+  mesa-libOSMesa \
+  mesa-libxatracker \
+  mesa-va-drivers \
+  mesa-vdpau-drivers \
+  mesa-vulkan-drivers \
+  && ostree container commit
+
+# On x86, also install 32-bit Mesa.
+# Our Arm builds are only 64-bit.
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+  rpm-ostree install \
+#  --from repo=playtron-gaming-i386 \
+  mesa-dri-drivers.i686 \
+  mesa-filesystem.i686 \
+  mesa-libd3d.i686 \
+  mesa-libEGL.i686 \
+  mesa-libgbm.i686 \
+  mesa-libGL.i686 \
+  mesa-libglapi.i686 \
+  mesa-libOpenCL.i686 \
+  mesa-libOSMesa.i686 \
+  mesa-libxatracker.i686 \
+  mesa-va-drivers.i686 \
+  mesa-vdpau-drivers.i686 \
+  mesa-vulkan-drivers.i686; fi \
+  && ostree container commit
+
+# Complete audio and visual packages.
+# Install this before workstation-ostree-config/fedora-common-ostree-pkgs.yaml packages to avoid conflicts.
+# Skip "rootfiles" which fails to install.
+RUN rpm-ostree install \
+  abattis-cantarell-vf-fonts \
+  alsa-utils \
+  avahi-glib \
+  gstreamer1-plugin-libav \
+  gstreamer1-plugin-openh264 \
+  gstreamer1-plugins-bad-free \
+  gstreamer1-plugins-good \
+  gstreamer1-plugins-ugly \
+  pipewire-alsa \
+  pipewire-gstreamer \
+  pipewire-pulseaudio \
+  pipewire-utils \
+  wireplumber \
+  # Multimedia packages.
+  # Most come from the "Multimedia" group but rpm-ostree does not support installing group packages yet.
+  #  # https://github.com/coreos/rpm-ostree/issues/744
+  #  # https://rpmfusion.org/Howto/Multimedia
+  # Packages from Fedora and replaced by RPM Fusion equivalents:
+  #   - fdk-aac-free
+  #   - ffmpeg-free
+  #   - libavcodec-free
+  #   - libavfilter-free
+  #   - libavformat-free
+  #   - libavutil-free
+  #   - libpostproc-free
+  #   - libswresample-free
+  #   - libswscale-free
+  adwaita-cursor-theme \
+  adwaita-icon-theme \
+  alsa-lib \
+  alsa-ucm \
+  at-spi2-atk \
+  at-spi2-core \
+  atk \
+  avahi-libs \
+  bluez-libs \
+  cairo \
+  cairo-gobject \
+  cdparanoia-libs \
+  cjson \
+  codec2 \
+  colord-libs \
+  crypto-policies \
+  cups-libs \
+  dbus \
+  dbus-broker \
+  dbus-common \
+  dbus-libs \
+  default-fonts-core-sans \
+  duktape \
+  fdk-aac \
+  fftw-libs-double \
+  flac-libs \
+  flite \
+  fontconfig \
+  fonts-filesystem \
+  freetype \
+  fribidi \
+  game-music-emu \
+  gdk-pixbuf2 \
+  gdk-pixbuf2-modules \
+  giflib \
+  glibc-gconv-extra \
+  google-noto-fonts-common \
+  google-noto-sans-vf-fonts \
+  graphene \
+  graphite2 \
+  gsm \
+  gssdp \
+  gstreamer1 \
+  gstreamer1-plugins-base \
+  gtk-update-icon-cache \
+  gtk3 \
+  gupnp \
+  gupnp-igd \
+  harfbuzz \
+  hicolor-icon-theme \
+  highway \
+  ilbc \
+  libva-intel-media-driver \
+  intel-media-driver \
+  intel-gmmlib \
+  iso-codes \
+  jansson \
+  jbigkit-libs \
+  json-glib \
+  kmod-libs \
+  ladspa \
+  lame-libs \
+  lcms2 \
+  leptonica \
+  libdovi \
+  libX11 \
+  libX11-common \
+  libXcomposite \
+  libXcursor \
+  libXdamage \
+  libXext \
+  libXfixes \
+  libXft \
+  libXi \
+  libXinerama \
+  libXrandr \
+  libXrender \
+  libXtst \
+  libXv \
+  libXxf86vm \
+  liba52 \
+  libaom \
+  libass \
+  libasyncns \
+  libbluray \
+  libbs2b \
+  libcdio \
+  libchromaprint \
+  libcloudproviders \
+  libdatrie \
+  libdav1d \
+  libdvdnav \
+  libdvdread \
+  libepoxy \
+  libglvnd \
+  libglvnd-egl \
+  libglvnd-glx \
+  libgudev \
+  libgusb \
+  libicu \
+  libjpeg-turbo \
+  libjxl \
+  liblc3 \
+  libldac \
+  libldb \
+  liblerc \
+  libmodplug \
+  libmpeg2 \
+  libmysofa \
+  libnice \
+  libogg \
+  libopenmpt \
+  libplacebo \
+  libpng \
+  librabbitmq \
+  librist \
+  librsvg2 \
+  libsamplerate \
+  libsbc \
+  libseccomp \
+  libshaderc \
+  libshout \
+  libsmbclient \
+  libsndfile \
+  libsodium \
+  libsoup3 \
+  libsrtp \
+  libstemmer \
+  libtalloc \
+  libtdb \
+  libei \
+  libtevent \
+  libthai \
+  libtheora \
+  libtiff \
+  libtracker-sparql \
+  libudfread \
+  libunwind \
+  libusb1 \
+  libv4l \
+  libva \
+  libvdpau \
+  libvisual \
+  libvmaf \
+  libvorbis \
+  libvpx \
+  libwayland-cursor \
+  libwayland-egl \
+  libwayland-server \
+  libwbclient \
+  libwebp \
+  libxkbcommon \
+  lilv-libs \
+  lmdb-libs \
+  lpcnetfreedv \
+  lv2 \
+  mbedtls \
+# Disabled for now. We want to eventually enable this in the Playtron build of Mesa.
+#  mesa-va-drivers-freeworld \
+#  mesa-vdpau-drivers-freeworld \
+#  mesa-va-drivers-freeworld.i686 \
+#  mesa-vdpau-drivers-freeworld.i686 \
+  mpg123-libs \
+  nspr \
+  nss \
+  nss-softokn \
+  nss-softokn-freebl \
+  nss-sysinit \
+  nss-util \
+  ocl-icd \
+  oneVPL \
+  opencore-amr \
+  openh264 \
+  openjpeg2 \
+  openpgm \
+  opus \
+  orc \
+  pango \
+  pcre \
+  pipewire \
+  pipewire-libs \
+  pixman \
+  polkit \
+  polkit-libs \
+  polkit-pkla-compat \
+  pulseaudio-libs \
+  rav1e-libs \
+  rsvg-pixbuf-loader \
+  rtkit \
+  rubberband \
+  samba-client-libs \
+  samba-common \
+  samba-common-libs \
+  serd \
+  shared-mime-info \
+  snappy \
+  sord \
+  soundtouch \
+  soxr \
+  speex \
+  spirv-tools-libs \
+  sratom \
+  srt-libs \
+  svt-av1-libs \
+  systemd \
+  systemd-libs \
+  systemd-pam \
+  taglib \
+  tesseract \
+  tesseract-langpack-eng \
+  tesseract-tessdata-doc \
+  twolame-libs \
+  vamp-plugin-sdk \
+  vapoursynth-libs \
+  vid.stab \
+  vo-amrwbenc \
+  wavpack \
+  webrtc-audio-processing \
+  webrtc-audio-processing0.3 \
+  wireplumber-libs \
+  xkeyboard-config \
+  xml-common \
+  xprop \
+  xvidcore \
+  zeromq \
+  zimg \
+  zvbi \
+  --uninstall PackageKit-gstreamer-plugin \
+  && ostree container commit
+
+# Packages from: workstation-ostree-config/fedora-common-ostree-pkgs.yaml
+RUN rpm-ostree install \
+  NetworkManager \
+  NetworkManager-bluetooth \
+  NetworkManager-config-connectivity-fedora \
+  NetworkManager-wifi \
+  NetworkManager-wwan \
+  acl \
+  alsa-ucm \
+  alsa-utils \
+  amd-gpu-firmware \
+  atheros-firmware \
+  attr \
+  audit \
+  b43-fwcutter \
+  b43-openfwwf \
+  basesystem \
+  bash \
+  bash-color-prompt \
+  bash-completion \
+  bc \
+  bind-utils \
+  bluez-cups \
+  brcmfmac-firmware \
+  btrfs-progs \
+  bzip2 \
+  chrony \
+  cifs-utils \
+  colord \
+  compsize \
+  coreutils \
+  cpio \
+  cryptsetup \
+  curl \
+  cyrus-sasl-plain \
+  default-editor \
+  default-fonts-cjk-mono \
+  default-fonts-cjk-sans \
+  default-fonts-cjk-serif \
+  default-fonts-core-emoji \
+  default-fonts-core-math \
+  default-fonts-core-mono \
+  default-fonts-core-sans \
+  default-fonts-core-serif \
+  default-fonts-other-mono \
+  default-fonts-other-sans \
+  default-fonts-other-serif \
+  dhcp-client \
+  dnsmasq \
+  e2fsprogs \
+  ethtool \
+  exfatprogs \
+  fedora-flathub-remote \
+  fedora-workstation-repositories \
+  file \
+  filesystem \
+  firewalld \
+  fpaste \
+  fwupd \
+  glibc \
+  glibc-all-langpacks \
+  gnupg2 \
+  gstreamer1-plugin-libav \
+  gstreamer1-plugins-bad-free \
+  gstreamer1-plugins-good \
+  gstreamer1-plugins-ugly-free \
+  hostname \
+  intel-gpu-firmware \
+  iproute \
+  iptables-nft \
+  iptstate \
+  iputils \
+  iwlegacy-firmware \
+  iwlwifi-dvm-firmware \
+  iwlwifi-mvm-firmware \
+  kbd \
+  less \
+  libertas-firmware \
+  libglvnd-gles \
+  linux-firmware \
+  logrotate \
+  lrzsz \
+  lsof \
+  man-db \
+  man-pages \
+  mdadm \
+  mpage \
+  mt7xxx-firmware \
+  mtr \
+  nfs-utils \
+  nss-altfiles \
+  nss-mdns \
+  ntfs-3g \
+  ntfsprogs \
+  nvidia-gpu-firmware \
+  nxpwireless-firmware \
+  opensc \
+  openssh-clients \
+  openssh-server \
+  ostree-grub2 \
+  pam_afs_session \
+  paps \
+  passwdqc \
+  pciutils \
+  pinfo \
+  pipewire-alsa \
+  pipewire-gstreamer \
+  pipewire-pulseaudio \
+  pipewire-utils \
+  plocate \
+  plymouth \
+  plymouth-system-theme \
+  policycoreutils \
+  policycoreutils-python-utils \
+  procps-ng \
+  psmisc \
+  qt5-qtbase \
+  qt5-qtbase-gui \
+  qt5-qtdeclarative \
+  qt5-qtxmlpatterns \
+  quota \
+  realmd \
+  realtek-firmware \
+  rpm \
+  rpm-ostree \
+  rsync \
+  selinux-policy-targeted \
+  setup \
+  shadow-utils \
+  sos \
+  sssd-common \
+  sssd-kcm \
+  sudo \
+  systemd \
+  systemd-oomd-defaults \
+  systemd-resolved \
+  systemd-udev \
+  tar \
+  time \
+  tiwilink-firmware \
+  toolbox \
+  tree \
+  unzip \
+  uresourced \
+  usb_modeswitch \
+  usbutils \
+  util-linux \
+  vim-minimal \
+  wget2-wget \
+  which \
+  whois \
+  wireplumber \
+  words \
+  wpa_supplicant \
+  zip \
+  zram-generator-defaults \
+  && ostree container commit
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+  rpm-ostree install \
+    alsa-sof-firmware \
+    amd-ucode-firmware \
+    cirrus-audio-firmware \
+    hyperv-daemons \
+    intel-audio-firmware \
+    libva-intel-media-driver \
+    mcelog \
+    microcode_ctl \
+    open-vm-tools-desktop \
+    thermald \
+    virtualbox-guest-additions; fi \
+    && ostree container commit
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+  rpm-ostree install \
+    hyperv-daemons \
+    open-vm-tools-desktop \
+    qcom-firmware; fi \
+    && ostree container commit
+
+# Packages from: workstation-ostree-config/fedora-common-ostree.yaml
+RUN rpm-ostree install \
+  git-core \
+  git-core-doc \
+  lvm2 \
+  ostree-grub2 \
+  nss-altfiles \
+  buildah \
+  podman \
+  skopeo \
+  systemd-container \
+  ncurses \
+  flatpak \
+  xdg-desktop-portal \
+  hfsplus-tools \
+  fedora-repos-ostree \
+  fedora-repos-archive \
+  langpacks-en \
+  && ostree container commit
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+  rpm-ostree install \
+    grub2-efi-ia32 \
+    grub2-efi-x64 \
+    grub2-pc \
+    efibootmgr \
+    shim-ia32 \
+    shim-x64; fi \
+    && ostree container commit
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+  rpm-ostree install \
+    grub2-efi \
+    efibootmgr \
+    shim; fi \
+    && ostree container commit
+RUN rpm-ostree install \
+  dnf5 \
+  dnf5-plugins \
+  && ostree container commit
+# Only required when using the quay.io/fedora/fedora-bootc image.
+# Not required on the quay.io/fedora/fedora-coreos image.
+RUN rpm-ostree uninstall \
+  dnf \
+  && ostree container commit
+
+# kernel-fsync.
+RUN rpm-ostree override replace --experimental \
+  --from repo=kernel-fsync-x86_64 \
+  kernel \
+  kernel-core \
+  kernel-modules \
+  kernel-modules-core \
+  kernel-modules-extra \
+  kernel-uki-virt \
+  kernel-headers \
+  kernel-devel \
+  kernel \
+  kernel-modules \
+  kernel-modules-extra \
+  && ostree container commit
+
+# Other general packages.
+RUN rpm-ostree install \
+  distrobox \
+  fedora-release-silverblue \
+  lsb_release \
+  NetworkManager-tui \
+  vim \
+  && ostree container commit
+
+# Required for image build.
+RUN rpm-ostree install \
+  crudini \
+  dracut-config-generic \
+  && ostree container commit
+
+# Install "winetricks" dependencies.
+# Do not install "winetricks" itself because it installs "wine" as a dependency.
+# A lot of dependencies are missing from the official RPM anyways.
+# https://github.com/Winetricks/winetricks/blob/20230212/src/winetricks#L27
+# "unrar" comes from RPMFusion.
+RUN rpm-ostree install \
+  binutils \
+  cabextract \
+  gzip \
+  p7zip-plugins \
+  polkit \
+  tor \
+  unrar \
+  unzip \
+  wget \
+  which \
+  xdg-utils \
+  xz \
+  zenity \
+  && ostree container commit
+
+# Required for Playserve and friends.
+RUN rpm-ostree install \
+  evtest \
+  glib-networking \
+  inputplumber \
+  legendary \
+  lightdm \
+  lightdm-autologin-greeter \
+  steam \
+  webkit2gtk4.1 \
+  xorg-x11-server-Xvfb \
+  xwininfo \
+  zstd \
+  && ostree container commit
+
+# Playserve and friends.
+RUN rpm-ostree install \
+  playserve \
+  playview \
+  && ostree container commit
+
+# Packages from the playtron/gaming Fedora Copr.
+RUN rpm-ostree install \
+  gamescope-session-playtron \
+  mangohud \
+  gdisk \
+  playtron-os-files \
+  udev-media-automount \
+  valve-firmware \
+  && ostree container commit
+
+# Developer desktop mode.
+RUN rpm-ostree install \
+  weston-session \
+  && ostree container commit
+
+# Install Xorg.
+RUN rpm-ostree install \
+  xorg-x11-drv-amdgpu \
+  xorg-x11-drv-ati \
+  xorg-x11-drv-evdev \
+  xorg-x11-drv-fbdev \
+  xorg-x11-drv-libinput \
+  xorg-x11-drv-nouveau \
+  xorg-x11-drv-qxl \
+  xorg-x11-drv-wacom \
+  xorg-x11-server-Xorg \
+  xorg-x11-xauth \
+  xorg-x11-xinit \
+  && ostree container commit
+
+# Enable password authenticaiton. It is disabled by default in Fedora CoreOS.
+RUN echo "PasswordAuthentication yes" > /etc/ssh/sshd_config.d/20-enable-passwords.conf && ostree container commit
+
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+  rpm-ostree install \
+    xorg-x11-drv-intel \
+    xorg-x11-drv-openchrome \
+    xorg-x11-drv-vesa \
+    xorg-x11-drv-vmware; fi \
+    && ostree container commit
+
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+  rpm-ostree install \
+    xorg-x11-drv-armsoc; fi \
+    && ostree container commit
