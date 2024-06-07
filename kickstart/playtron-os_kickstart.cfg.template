@@ -1,5 +1,16 @@
 # Anaconda Kickstart file for Playtron OS.
 
+%pre
+mkdir -p /run/ostree
+echo '{
+    "auths": {
+        "${REGISTRY}": {
+            "auth": "${REGISTRY_TOKEN}"
+        }
+    }
+}' > /run/ostree/auth.json
+%end
+
 # Create the required partitions.
 ignoredisk --only-use=vda
 zerombr
@@ -8,7 +19,7 @@ bootloader --location=mbr --boot-drive=vda --append="mem_sleep_default=deep"
 autopart --type btrfs
 
 # Setup the file system.
-ostreesetup --osname playtron-os --remote playtron-os --url "https://playtron-dev-global-os-private.s3.us-west-2.amazonaws.com/repos/rpm-ostree" --ref="playtronos/0/x86_64/base" --nogpg
+ostreecontainer --url ${REGISTRY}/${PROJECT}/playtronos:${TAG} --no-signature-verification
 
 # Reboot and start the installer.
 reboot
