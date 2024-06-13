@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora-bootc:40
+FROM quay.io/fedora/fedora-coreos:testing
 # Docker/Podman will automatically populate this with the host architecture.
 # "linux/amd64" for x86. "linux/arm64" for Arm.
 ARG TARGETPLATFORM
@@ -37,6 +37,10 @@ RUN rpm-ostree override replace \
   rpm-ostree override replace \
   --experimental \
   --from repo=updates \
+  libcap \
+  rpm-ostree override replace \
+  --experimental \
+  --from repo=updates \
   libgcc \
   || true && \
   rpm-ostree override replace \
@@ -49,7 +53,23 @@ RUN rpm-ostree override replace \
   --from repo=updates \
   libstdc++ \
   || true && \
+  rpm-ostree override replace \
+  --experimental \
+  --from repo=updates \
+  pam pam-libs systemd-pam \
+  || true && \
+  rpm-ostree override replace \
+  --experimental \
+  --from repo=updates \
+  systemd-libs \
+  || true && \
   ostree container commit
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+  rpm-ostree install \
+  pam.i686 pam-libs.i686 systemd-pam.i686 \
+  libcap.i686 \
+  libgcc.i686; fi \
+  && ostree container commit
 
 # Install Mesa from Playtron.
 RUN rpm-ostree override replace --experimental \
@@ -568,9 +588,9 @@ RUN rpm-ostree install \
   && ostree container commit
 # Only required when using the quay.io/fedora/fedora-bootc image.
 # Not required on the quay.io/fedora/fedora-coreos image.
-RUN rpm-ostree uninstall \
-  dnf \
-  && ostree container commit
+#RUN rpm-ostree uninstall \
+#  dnf \
+#  && ostree container commit
 
 # kernel-fsync.
 RUN rpm-ostree override replace --experimental \
