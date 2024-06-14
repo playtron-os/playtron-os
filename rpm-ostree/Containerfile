@@ -693,6 +693,15 @@ MinConnectionInterval=7\n\
 MaxConnectionInterval=9\n\
 ConnectionLatency=0" > /etc/bluetooth/main.conf && ostree container commit
 
+# Add firmware and configuration files needed for Steam Deck OLED audio support.
+RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/steamdeck-dsp-0.49-1-any.pkg.tar.zst -O /tmp/steamdeck-dsp.tar.zst \
+  # There are tar extraction errors about file system attributes that can be safely ignored.
+  && tar -xvf /tmp/steamdeck-dsp.tar.zst -C / || true \
+  # Verify that the extraction actually worked.
+  && ls /usr/lib/firmware/amd/sof/sof-vangogh-code.bin \
+  && rm -f /tmp/steamdeck-dsp.tar.zst \
+  && ostree container commit
+
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   rpm-ostree install \
     xorg-x11-drv-intel \
