@@ -16,7 +16,7 @@ ignoredisk --only-use=vda
 zerombr
 clearpart --all --initlabel --drives=vda
 bootloader --location=mbr --boot-drive=vda --append="mem_sleep_default=deep"
-autopart --type btrfs
+autopart --type ext4
 
 # Setup the file system.
 ostreecontainer --url ${REGISTRY}/${PROJECT}/playtronos:${TAG} --no-signature-verification
