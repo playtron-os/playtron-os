@@ -7,10 +7,10 @@
 - CPU
     - x86
         - AMD Ryzen or Intel 6th Gen Kaby Lake
-- GPU
+- GPU (single GPU only)
     - AMD Navi
-    - Intel Xe
-    - NVIDIA Turing
+    - Intel Xe (support coming soon)
+    - NVIDIA Turing (support coming soon)
 
 ## Build
 
