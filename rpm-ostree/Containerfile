@@ -7,6 +7,9 @@ ARG TARGETPLATFORM
 RUN rpm-ostree cliwrap install-to-root / && ostree container commit
 
 # Copy over repository files.
+## Fedora.
+## As of 2024-06-14, this repository was removed from the quay.io/fedora/fedora-bootc:40 image.
+COPY fedora-updates-archive.repo /etc/yum.repos.d/
 ## kernel-fsync.
 COPY kernel-fsync.repo /etc/yum.repos.d/
 ## RPM Fusion.
