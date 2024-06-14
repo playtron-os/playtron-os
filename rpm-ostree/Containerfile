@@ -678,21 +678,6 @@ RUN rpm-ostree install \
 # Enable password authenticaiton. It is disabled by default in Fedora CoreOS.
 RUN echo "PasswordAuthentication yes" > /etc/ssh/sshd_config.d/20-enable-passwords.conf && ostree container commit
 
-# Fix Bluetooth connections with Xbox One controllers.
-RUN echo -e "[General]\n\
-AlwaysPairable=true\n\
-Privacy=device\n\
-ControllerMode=dual\n\
-JustWorksRepairing=always\n\
-\n\
-[Policy]\n\
-AutoEnable=true\n\
-\n\
-[LE]\n\
-MinConnectionInterval=7\n\
-MaxConnectionInterval=9\n\
-ConnectionLatency=0" > /etc/bluetooth/main.conf && ostree container commit
-
 # Add firmware and configuration files needed for Steam Deck OLED audio support.
 RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/steamdeck-dsp-0.49-1-any.pkg.tar.zst -O /tmp/steamdeck-dsp.tar.zst \
   # There are tar extraction errors about file system attributes that can be safely ignored.
@@ -714,3 +699,8 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   rpm-ostree install \
     xorg-x11-drv-armsoc; fi \
     && ostree container commit
+
+# Copy/override files
+COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/main.conf
+
+RUN ostree container commit
