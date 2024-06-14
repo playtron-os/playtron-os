@@ -701,6 +701,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
     && ostree container commit
 
 # Copy/override files
-COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/main.conf
+COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
+COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 
 RUN ostree container commit
