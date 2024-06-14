@@ -678,6 +678,21 @@ RUN rpm-ostree install \
 # Enable password authenticaiton. It is disabled by default in Fedora CoreOS.
 RUN echo "PasswordAuthentication yes" > /etc/ssh/sshd_config.d/20-enable-passwords.conf && ostree container commit
 
+# Fix Bluetooth connections with Xbox One controllers.
+RUN echo -e "[General]\n\
+AlwaysPairable=true\n\
+Privacy=device\n\
+ControllerMode=dual\n\
+JustWorksRepairing=always\n\
+\n\
+[Policy]\n\
+AutoEnable=true\n\
+\n\
+[LE]\n\
+MinConnectionInterval=7\n\
+MaxConnectionInterval=9\n\
+ConnectionLatency=0" > /etc/bluetooth/main.conf && ostree container commit
+
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   rpm-ostree install \
     xorg-x11-drv-intel \
