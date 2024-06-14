@@ -584,11 +584,15 @@ RUN rpm-ostree override replace --experimental \
   kernel-modules-core \
   kernel-modules-extra \
   kernel-uki-virt \
-  kernel-headers \
   kernel-devel \
   kernel \
   kernel-modules \
   kernel-modules-extra \
+  && ostree container commit
+## If kernel-fsync and the kernel from Fedora are the exact same version, overriding "kernel-headers" will fail.
+RUN rpm-ostree override replace --experimental \
+  --from repo=kernel-fsync-x86_64 \
+  kernel-headers || true \
   && ostree container commit
 
 # Other general packages.
