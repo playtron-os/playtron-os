@@ -43,31 +43,14 @@ Enable and start the `libvirtd` service.
 $ sudo systemctl enable --now libvirtd
 ```
 
-First build the rpm-ostree repository. Optionally build it with local RPMs for testing.
+First build the OCI container.
 
 ```
-$ go-task ostree
-```
-
-```
-$ mkdir /tmp/repo/
-$ cp $RPM /tmp/repo/
-$ createrepo /tmp/repo/
-$ go-task ostree-rpms
+$ go-task container-image
 ```
 
 Then build the operating system image. Either use the remote rpm-ostree repository or a local one built from the previous task. Use Virtual Machine Manager (`virt-manager`) to check the installation progress of the `playtron-os` virtual machine.
 
 ```
-$ go-task image-remote
-```
-
-```
-$ go-task image-local
-```
-
-Alternatively, both the `ostree` and `image-local` tasks can be ran at the same time to do a full end-to-end build.
-
-```
-$ go-task all
+$ go-task disk-image
 ```

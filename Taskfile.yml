@@ -4,13 +4,7 @@
 version: "3"
 
 tasks:
-  ostree:
-    desc: Build a local rpm-ostree repository.
-    dir: rpm-ostree
-    cmds:
-      - sudo ./rpm-ostree-compose.sh
-
-  ostree-rpms:
+  rpm-repo:
     desc: Build a local rpm-ostree repository with local RPMs.
     dir: rpm-ostree
     cmds:
@@ -20,7 +14,12 @@ tasks:
       - createrepo /tmp/repo
       - grep "  - local" playtron-os.yaml || sed -i s'/repos:/repos:\n  - local'/g playtron-os.yaml
       - echo -e "[local]\nname=local\nbaseurl=file:///tmp/repo\nenabled=1\nrepo_gpgcheck=0\ngpgcheck=0" > local.repo
-      - sudo ./rpm-ostree-compose.sh
+
+  container-image:
+    desc: Build the OCI container image.
+    dir: rpm-ostree
+    cmds:
+      - podman build . --tag playtronos:latest --pull --no-cache
 
   disk-image:
     desc: Build the OS image from a container hosted in a registry.
@@ -44,12 +43,6 @@ tasks:
       - ./virt-install.sh
       - mv /var/lib/libvirt/images/playtron-os.img "/var/lib/libvirt/images/playtron-os.img_$(date -Iseconds)"
       - virsh undefine --nvram playtron-os
-
-  all:
-    desc: Build a local rpm-ostree repository and the OS image using it.
-    cmds:
-      - task: ostree
-      - task: image-local
 
   repo:update:
     desc: "Update the package repository"
