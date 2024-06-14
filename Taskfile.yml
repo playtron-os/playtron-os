@@ -4,13 +4,7 @@
 version: "3"
 
 tasks:
-  ostree:
-    desc: Build a local rpm-ostree repository.
-    dir: rpm-ostree
-    cmds:
-      - sudo ./rpm-ostree-compose.sh
-
-  ostree-rpms:
+  rpm-repo:
     desc: Build a local rpm-ostree repository with local RPMs.
     dir: rpm-ostree
     cmds:
@@ -20,36 +14,35 @@ tasks:
       - createrepo /tmp/repo
       - grep "  - local" playtron-os.yaml || sed -i s'/repos:/repos:\n  - local'/g playtron-os.yaml
       - echo -e "[local]\nname=local\nbaseurl=file:///tmp/repo\nenabled=1\nrepo_gpgcheck=0\ngpgcheck=0" > local.repo
-      - sudo ./rpm-ostree-compose.sh
 
-  image-local:
-    desc: Build the OS image using a local rpm-ostree repository.
+  container-image:
+    desc: Build the OCI container image.
+    dir: rpm-ostree
+    cmds:
+      - podman build . --tag playtronos:latest --pull --no-cache
+
+  disk-image:
+    desc: Build the OS image from a container hosted in a registry.
     dir: kickstart
+    env:
+      REGISTRY:
+      REGISTRY_TOKEN:
+      PROJECT:
+      TAG: latest
+    preconditions:
+      - sh: test "$EUID" == 0
+        msg: "This task must be run as root"
+      - sh: test -n "$REGISTRY"
+        msg: "A value for REGISTRY must be provided"
+      - sh: test -n "$REGISTRY_TOKEN"
+        msg: "A value for REGISTRY_TOKEN must be provided"
+      - sh: test -n "$PROJECT"
+        msg: "A value for PROJECT must be provided"
     cmds:
-      # This will error out if SELinux is already in permissive mode.
-      - sudo setenforce 0 || true
-      - sudo systemctl stop firewalld
-      - sudo systemctl restart libvirtd
-      - sudo python -m http.server --dir /var/playtron &
-      - sed -i s'/https:\/\/playtron-dev-global-os-private.s3.us-west-2.amazonaws.com\/repos\/rpm-ostree/http:\/\/192.168.122.1:8000\/repo/'g playtron-os_kickstart.cfg
-      - sudo ./virt-install.sh
-      # Rename the image and delete the virtual machine to allow future builds to work.
-      - sudo mv /var/lib/libvirt/images/playtron-os.img "/var/lib/libvirt/images/playtron-os.img_$(date -Iseconds)"
-      - sudo virsh undefine --nvram playtron-os
-
-  image-remote:
-    desc: Build the OS image using a remote rpm-ostree repository.
-    dir: kickstart
-    cmds:
-      - sudo ./virt-install.sh
-      - sudo mv /var/lib/libvirt/images/playtron-os.img "/var/lib/libvirt/images/playtron-os.img_$(date -Iseconds)"
-      - sudo virsh undefine --nvram playtron-os
-
-  all:
-    desc: Build a local rpm-ostree repository and the OS image using it.
-    cmds:
-      - task: ostree
-      - task: image-local
+      - cat playtron-os_kickstart.cfg.template | envsubst '${REGISTRY} ${REGISTRY_TOKEN} ${PROJECT} ${TAG}' > playtron-os_kickstart.cfg
+      - ./virt-install.sh
+      - mv /var/lib/libvirt/images/playtron-os.img "/var/lib/libvirt/images/playtron-os.img_$(date -Iseconds)"
+      - virsh undefine --nvram playtron-os
 
   repo:update:
     desc: "Update the package repository"
