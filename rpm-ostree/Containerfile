@@ -17,6 +17,17 @@ COPY rpmfusion-free.repo rpmfusion-free-updates.repo rpmfusion-free-updates-test
 ## Playtron.
 COPY playtron-app-x86_64.repo playtron-gaming-i386.repo playtron-gaming-x86_64.repo playtron-nvidia-x86_64.repo /etc/yum.repos.d/
 
+# Install a newer rpm-ostree which supports disabling the installation of recommended packages.
+# This should no longer be needed when the official v2024.7 release comes out.
+RUN rpm-ostree override replace \
+  --experimental \
+  --from repo=playtron-app-x86_64 \
+  rpm-ostree rpm-ostree-libs || true && \
+  ostree container commit
+
+COPY rpm-ostreed.conf /etc/rpm-ostreed.conf
+RUN ostree container commit
+
 # Install the same core packages that rpm-ostree starts with.
 # https://github.com/coreos/rpm-ostree/commit/a593335ce342402e72758191f2d431d90cc36e70
 RUN rpm-ostree install filesystem glibc nss-altfiles && ostree container commit
@@ -573,6 +584,11 @@ RUN rpm-ostree install \
 # Not required on the quay.io/fedora/fedora-coreos image.
 RUN rpm-ostree uninstall \
   dnf \
+  && ostree container commit
+
+# Turn off recommended package installations for DNF5.
+RUN crudini --ini-options=nospace --set /etc/dnf/dnf.conf main install_weak_deps false \
+  && crudini --ini-options=nospace --set /etc/dnf/libdnf5.conf.d/main.conf main install_weak_deps false \
   && ostree container commit
 
 # kernel-fsync.
