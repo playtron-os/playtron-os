@@ -52,6 +52,11 @@ RUN rpm-ostree override replace \
   --from repo=updates \
   libstdc++ \
   || true && \
+  rpm-ostree override replace \
+  --experimental \
+  --from repo=updates \
+  glib2 \
+  || true && \
   ostree container commit
 
 # Install Mesa from Playtron.
