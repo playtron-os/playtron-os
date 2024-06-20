@@ -712,6 +712,9 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
     xorg-x11-drv-armsoc; fi \
     && ostree container commit
 
+# Fix lightdm greeter appearing
+RUN rm -f /usr/share/lightdm/lightdm.conf.d/60-lightdm-gtk-greeter.conf
+
 # Copy/override files
 COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
