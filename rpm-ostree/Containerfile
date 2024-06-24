@@ -3,9 +3,6 @@ FROM quay.io/fedora/fedora-bootc:40
 # "linux/amd64" for x86. "linux/arm64" for Arm.
 ARG TARGETPLATFORM
 
-# Enable "dnf" and "rpm" commands.
-RUN rpm-ostree cliwrap install-to-root / && ostree container commit
-
 # Copy over repository files.
 ## Fedora.
 ## As of 2024-06-14, this repository was removed from the quay.io/fedora/fedora-bootc:40 image.
@@ -17,18 +14,33 @@ COPY rpmfusion-free.repo rpmfusion-free-updates.repo rpmfusion-free-updates-test
 ## Playtron.
 COPY playtron-app-x86_64.repo playtron-gaming-i386.repo playtron-gaming-x86_64.repo playtron-nvidia-x86_64.repo /etc/yum.repos.d/
 
+# Install DNF 5 first.
+RUN rpm-ostree install \
+  dnf5 \
+  dnf5-plugins \
+  && ostree container commit
+# Remove DNF 4. Only required when using the quay.io/fedora/fedora-bootc image.
+# Not required on the quay.io/fedora/fedora-coreos image.
+RUN rpm-ostree uninstall \
+  dnf \
+  && ostree container commit
+ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false"
+# Dockerfile does not support exporting arrays (needed for "&&" to work).
+# https://github.com/docker/compose/issues/4249
+RUN echo 'CMD_INSTALL_CLEAN=("&&", "dnf5", "clean", "all", "&&", "ostree", "container", "commit")' >> /etc/environment ${CMD_INSTALL_CLEAN[*]}
+
 # Install the same core packages that rpm-ostree starts with.
 # https://github.com/coreos/rpm-ostree/commit/a593335ce342402e72758191f2d431d90cc36e70
-RUN rpm-ostree install filesystem glibc nss-altfiles && ostree container commit
+RUN ${CMD_INSTALL} filesystem glibc nss-altfiles ${CMD_INSTALL_CLEAN[*]}
 
 # Install "crudini" to manage configuration files.
-RUN rpm-ostree install crudini && ostree container commit
+RUN ${CMD_INSTALL} crudini ${CMD_INSTALL_CLEAN}
 
 # Exclude conflicting packages.
 RUN crudini --ini-options=nospace --set /etc/yum.repos.d/fedora.repo fedora exclude 'kernel* ffmpeg-free libswscale-free mangohud mesa* wireplumber*' \
   && crudini --ini-options=nospace --set /etc/yum.repos.d/fedora-updates.repo updates exclude 'kernel* ffmpeg-free libswscale-free mangohud mesa* wireplumber*' \
   && crudini --ini-options=nospace --set /etc/yum.repos.d/fedora-updates-archive.repo updates-archive exclude 'kernel* ffmpeg-free libswscale-free mangohud mesa* wireplumber*' \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 
 # Install packages from the fedora-updates repository to avoid "cannot install both" errors.
 # This list changes all the time.
@@ -75,12 +87,12 @@ RUN rpm-ostree override replace --experimental \
   mesa-va-drivers \
   mesa-vdpau-drivers \
   mesa-vulkan-drivers \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 
 # On x86, also install 32-bit Mesa.
 # Our Arm builds are only 64-bit.
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-  rpm-ostree install \
+  ${CMD_INSTALL} \
   mesa-dri-drivers.i686 \
   mesa-filesystem.i686 \
   mesa-libd3d.i686 \
@@ -93,13 +105,13 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   mesa-libxatracker.i686 \
   mesa-va-drivers.i686 \
   mesa-vdpau-drivers.i686 \
-  mesa-vulkan-drivers.i686; fi \
-  && ostree container commit
+  mesa-vulkan-drivers.i686; fi; \
+  true ${CMD_INSTALL_CLEAN[*]}
 
 # Complete audio and visual packages.
 # Install this before workstation-ostree-config/fedora-common-ostree-pkgs.yaml packages to avoid conflicts.
 # Skip "rootfiles" which fails to install.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   abattis-cantarell-vf-fonts \
   alsa-utils \
   avahi-glib \
@@ -355,11 +367,15 @@ RUN rpm-ostree install \
   zeromq \
   zimg \
   zvbi \
-  --uninstall PackageKit-gstreamer-plugin \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
+
+# This gets installed as an unwanted dependency from the previous command.
+RUN dnf5 remove \
+  PackageKit-gstreamer-plugin \
+  ${CMD_INSTALL_CLEAN[*]}
 
 # Packages from: workstation-ostree-config/fedora-common-ostree-pkgs.yaml
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   NetworkManager \
   NetworkManager-bluetooth \
   NetworkManager-config-connectivity-fedora \
@@ -514,9 +530,9 @@ RUN rpm-ostree install \
   wpa_supplicant \
   zip \
   zram-generator-defaults \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-  rpm-ostree install \
+  ${CMD_INSTALL} \
     alsa-sof-firmware \
     amd-ucode-firmware \
     cirrus-audio-firmware \
@@ -527,17 +543,17 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
     microcode_ctl \
     open-vm-tools-desktop \
     thermald \
-    virtualbox-guest-additions; fi \
-    && ostree container commit
+    virtualbox-guest-additions; fi; \
+    true ${CMD_INSTALL_CLEAN[*]}
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-  rpm-ostree install \
+  ${CMD_INSTALL} \
     hyperv-daemons \
     open-vm-tools-desktop \
-    qcom-firmware; fi \
-    && ostree container commit
+    qcom-firmware; fi; \
+    true ${CMD_INSTALL_CLEAN[*]}
 
 # Packages from: workstation-ostree-config/fedora-common-ostree.yaml
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   git-core \
   git-core-doc \
   lvm2 \
@@ -554,31 +570,22 @@ RUN rpm-ostree install \
   fedora-repos-ostree \
   fedora-repos-archive \
   langpacks-en \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-  rpm-ostree install \
+  ${CMD_INSTALL} \
     grub2-efi-ia32 \
     grub2-efi-x64 \
     grub2-pc \
     efibootmgr \
     shim-ia32 \
-    shim-x64; fi \
-    && ostree container commit
+    shim-x64; fi; \
+    true ${CMD_INSTALL_CLEAN[*]}
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-  rpm-ostree install \
+  ${CMD_INSTALL} \
     grub2-efi \
     efibootmgr \
-    shim; fi \
-    && ostree container commit
-RUN rpm-ostree install \
-  dnf5 \
-  dnf5-plugins \
-  && ostree container commit
-# Only required when using the quay.io/fedora/fedora-bootc image.
-# Not required on the quay.io/fedora/fedora-coreos image.
-RUN rpm-ostree uninstall \
-  dnf \
-  && ostree container commit
+    shim; fi; \
+    true ${CMD_INSTALL_CLEAN[*]}
 
 # kernel-fsync.
 RUN rpm-ostree override replace --experimental \
@@ -593,34 +600,34 @@ RUN rpm-ostree override replace --experimental \
   kernel \
   kernel-modules \
   kernel-modules-extra \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 ## If kernel-fsync and the kernel from Fedora are the exact same version, overriding "kernel-headers" will fail.
 RUN rpm-ostree override replace --experimental \
   --from repo=kernel-fsync-x86_64 \
   kernel-headers || true \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 
 # Other general packages.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   distrobox \
   fedora-release-silverblue \
   lsb_release \
   NetworkManager-tui \
   vim \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 
 # Required for image build.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   crudini \
   dracut-config-generic \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 
 # Install "winetricks" dependencies.
 # Do not install "winetricks" itself because it installs "wine" as a dependency.
 # A lot of dependencies are missing from the official RPM anyways.
 # https://github.com/Winetricks/winetricks/blob/20230212/src/winetricks#L27
 # "unrar" comes from RPMFusion.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   binutils \
   cabextract \
   gzip \
@@ -634,10 +641,10 @@ RUN rpm-ostree install \
   xdg-utils \
   xz \
   zenity \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 
 # Required for Playserve and friends.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   evtest \
   glib-networking \
   inputplumber \
@@ -649,31 +656,31 @@ RUN rpm-ostree install \
   xorg-x11-server-Xvfb \
   xwininfo \
   zstd \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 
 # Playserve and friends.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   playserve \
   playview \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 
 # Packages from the playtron/gaming Fedora Copr.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   gamescope-session-playtron \
   mangohud \
   gdisk \
   playtron-os-files \
   udev-media-automount \
   valve-firmware \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 
 # Developer desktop mode.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   weston-session \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 
 # Install Xorg.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   xorg-x11-drv-amdgpu \
   xorg-x11-drv-ati \
   xorg-x11-drv-evdev \
@@ -685,10 +692,10 @@ RUN rpm-ostree install \
   xorg-x11-server-Xorg \
   xorg-x11-xauth \
   xorg-x11-xinit \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 
 # Enable password authenticaiton. It is disabled by default in Fedora CoreOS.
-RUN echo "PasswordAuthentication yes" > /etc/ssh/sshd_config.d/20-enable-passwords.conf && ostree container commit
+RUN echo "PasswordAuthentication yes" > /etc/ssh/sshd_config.d/20-enable-passwords.conf ${CMD_INSTALL_CLEAN[*]}
 
 # Add firmware and configuration files needed for Steam Deck OLED audio support.
 RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/steamdeck-dsp-0.49-1-any.pkg.tar.zst -O /tmp/steamdeck-dsp.tar.zst \
@@ -697,20 +704,20 @@ RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/
   # Verify that the extraction actually worked.
   && ls /usr/lib/firmware/amd/sof/sof-vangogh-code.bin \
   && rm -f /tmp/steamdeck-dsp.tar.zst \
-  && ostree container commit
+  ${CMD_INSTALL_CLEAN[*]}
 
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-  rpm-ostree install \
+  ${CMD_INSTALL} \
     xorg-x11-drv-intel \
     xorg-x11-drv-openchrome \
     xorg-x11-drv-vesa \
-    xorg-x11-drv-vmware; fi \
-    && ostree container commit
+    xorg-x11-drv-vmware; fi; \
+    true ${CMD_INSTALL_CLEAN[*]}
 
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-  rpm-ostree install \
-    xorg-x11-drv-armsoc; fi \
-    && ostree container commit
+  ${CMD_INSTALL} \
+    xorg-x11-drv-armsoc; fi; \
+    true ${CMD_INSTALL_CLEAN[*]}
 
 # Fix lightdm greeter appearing
 RUN rm -f /usr/share/lightdm/lightdm.conf.d/60-lightdm-gtk-greeter.conf
@@ -719,4 +726,5 @@ RUN rm -f /usr/share/lightdm/lightdm.conf.d/60-lightdm-gtk-greeter.conf
 COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 
-RUN ostree container commit
+# Final clean up.
+RUN sed -i s'/CMD_INSTALL_CLEAN=.*//'g /etc/environment ${CMD_INSTALL_CLEAN[*]}
