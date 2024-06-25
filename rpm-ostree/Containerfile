@@ -25,22 +25,19 @@ RUN rpm-ostree uninstall \
   dnf \
   && ostree container commit
 ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false"
-# Dockerfile does not support exporting arrays (needed for "&&" to work).
-# https://github.com/docker/compose/issues/4249
-RUN echo 'CMD_INSTALL_CLEAN=("&&", "dnf5", "clean", "all", "&&", "ostree", "container", "commit")' >> /etc/environment ${CMD_INSTALL_CLEAN[*]}
 
 # Install the same core packages that rpm-ostree starts with.
 # https://github.com/coreos/rpm-ostree/commit/a593335ce342402e72758191f2d431d90cc36e70
-RUN ${CMD_INSTALL} filesystem glibc nss-altfiles ${CMD_INSTALL_CLEAN[*]}
+RUN ${CMD_INSTALL} filesystem glibc nss-altfiles && ostree container commit
 
 # Install "crudini" to manage configuration files.
-RUN ${CMD_INSTALL} crudini ${CMD_INSTALL_CLEAN}
+RUN ${CMD_INSTALL} crudini && ostree container commit
 
 # Exclude conflicting packages.
 RUN crudini --ini-options=nospace --set /etc/yum.repos.d/fedora.repo fedora exclude 'kernel* ffmpeg-free libswscale-free mangohud mesa* wireplumber*' \
   && crudini --ini-options=nospace --set /etc/yum.repos.d/fedora-updates.repo updates exclude 'kernel* ffmpeg-free libswscale-free mangohud mesa* wireplumber*' \
   && crudini --ini-options=nospace --set /etc/yum.repos.d/fedora-updates-archive.repo updates-archive exclude 'kernel* ffmpeg-free libswscale-free mangohud mesa* wireplumber*' \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 
 # Install packages from the fedora-updates repository to avoid "cannot install both" errors.
 # This list changes all the time.
@@ -87,7 +84,7 @@ RUN rpm-ostree override replace --experimental \
   mesa-va-drivers \
   mesa-vdpau-drivers \
   mesa-vulkan-drivers \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 
 # On x86, also install 32-bit Mesa.
 # Our Arm builds are only 64-bit.
@@ -105,8 +102,8 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   mesa-libxatracker.i686 \
   mesa-va-drivers.i686 \
   mesa-vdpau-drivers.i686 \
-  mesa-vulkan-drivers.i686; fi; \
-  true ${CMD_INSTALL_CLEAN[*]}
+  mesa-vulkan-drivers.i686; fi \
+  && ostree container commit
 
 # Complete audio and visual packages.
 # Install this before workstation-ostree-config/fedora-common-ostree-pkgs.yaml packages to avoid conflicts.
@@ -367,12 +364,12 @@ RUN ${CMD_INSTALL} \
   zeromq \
   zimg \
   zvbi \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 
 # This gets installed as an unwanted dependency from the previous command.
 RUN dnf5 remove \
   PackageKit-gstreamer-plugin \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 
 # Packages from: workstation-ostree-config/fedora-common-ostree-pkgs.yaml
 RUN ${CMD_INSTALL} \
@@ -530,7 +527,7 @@ RUN ${CMD_INSTALL} \
   wpa_supplicant \
   zip \
   zram-generator-defaults \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   ${CMD_INSTALL} \
     alsa-sof-firmware \
@@ -543,14 +540,14 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
     microcode_ctl \
     open-vm-tools-desktop \
     thermald \
-    virtualbox-guest-additions; fi; \
-    true ${CMD_INSTALL_CLEAN[*]}
+    virtualbox-guest-additions; fi \
+  && ostree container commit
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   ${CMD_INSTALL} \
     hyperv-daemons \
     open-vm-tools-desktop \
-    qcom-firmware; fi; \
-    true ${CMD_INSTALL_CLEAN[*]}
+    qcom-firmware; fi \
+    && ostree container commit
 
 # Packages from: workstation-ostree-config/fedora-common-ostree.yaml
 RUN ${CMD_INSTALL} \
@@ -570,7 +567,7 @@ RUN ${CMD_INSTALL} \
   fedora-repos-ostree \
   fedora-repos-archive \
   langpacks-en \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   ${CMD_INSTALL} \
     grub2-efi-ia32 \
@@ -578,14 +575,14 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
     grub2-pc \
     efibootmgr \
     shim-ia32 \
-    shim-x64; fi; \
-    true ${CMD_INSTALL_CLEAN[*]}
+    shim-x64; fi \
+  && ostree container commit
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   ${CMD_INSTALL} \
     grub2-efi \
     efibootmgr \
-    shim; fi; \
-    true ${CMD_INSTALL_CLEAN[*]}
+    shim; fi \
+  && ostree container commit
 
 # kernel-fsync.
 RUN rpm-ostree override replace --experimental \
@@ -600,12 +597,12 @@ RUN rpm-ostree override replace --experimental \
   kernel \
   kernel-modules \
   kernel-modules-extra \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 ## If kernel-fsync and the kernel from Fedora are the exact same version, overriding "kernel-headers" will fail.
 RUN rpm-ostree override replace --experimental \
   --from repo=kernel-fsync-x86_64 \
   kernel-headers || true \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 
 # Other general packages.
 RUN ${CMD_INSTALL} \
@@ -614,13 +611,13 @@ RUN ${CMD_INSTALL} \
   lsb_release \
   NetworkManager-tui \
   vim \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 
 # Required for image build.
 RUN ${CMD_INSTALL} \
   crudini \
   dracut-config-generic \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 
 # Install "winetricks" dependencies.
 # Do not install "winetricks" itself because it installs "wine" as a dependency.
@@ -641,7 +638,7 @@ RUN ${CMD_INSTALL} \
   xdg-utils \
   xz \
   zenity \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 
 # Required for Playserve and friends.
 RUN ${CMD_INSTALL} \
@@ -656,13 +653,13 @@ RUN ${CMD_INSTALL} \
   xorg-x11-server-Xvfb \
   xwininfo \
   zstd \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 
 # Playserve and friends.
 RUN ${CMD_INSTALL} \
   playserve \
   playview \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 
 # Packages from the playtron/gaming Fedora Copr.
 RUN ${CMD_INSTALL} \
@@ -672,12 +669,12 @@ RUN ${CMD_INSTALL} \
   playtron-os-files \
   udev-media-automount \
   valve-firmware \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 
 # Developer desktop mode.
 RUN ${CMD_INSTALL} \
   weston-session \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 
 # Install Xorg.
 RUN ${CMD_INSTALL} \
@@ -692,10 +689,10 @@ RUN ${CMD_INSTALL} \
   xorg-x11-server-Xorg \
   xorg-x11-xauth \
   xorg-x11-xinit \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 
 # Enable password authenticaiton. It is disabled by default in Fedora CoreOS.
-RUN echo "PasswordAuthentication yes" > /etc/ssh/sshd_config.d/20-enable-passwords.conf ${CMD_INSTALL_CLEAN[*]}
+RUN echo "PasswordAuthentication yes" > /etc/ssh/sshd_config.d/20-enable-passwords.conf && ostree container commit
 
 # Add firmware and configuration files needed for Steam Deck OLED audio support.
 RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/steamdeck-dsp-0.49-1-any.pkg.tar.zst -O /tmp/steamdeck-dsp.tar.zst \
@@ -704,24 +701,21 @@ RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/
   # Verify that the extraction actually worked.
   && ls /usr/lib/firmware/amd/sof/sof-vangogh-code.bin \
   && rm -f /tmp/steamdeck-dsp.tar.zst \
-  ${CMD_INSTALL_CLEAN[*]}
+  && ostree container commit
 
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   ${CMD_INSTALL} \
     xorg-x11-drv-intel \
     xorg-x11-drv-openchrome \
     xorg-x11-drv-vesa \
-    xorg-x11-drv-vmware; fi; \
-    true ${CMD_INSTALL_CLEAN[*]}
+    xorg-x11-drv-vmware; fi \
+    && ostree container commit
 
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   ${CMD_INSTALL} \
-    xorg-x11-drv-armsoc; fi; \
-    true ${CMD_INSTALL_CLEAN[*]}
+    xorg-x11-drv-armsoc; fi \
+    && ostree container commit
 
 # Copy/override files
 COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
-
-# Final clean up.
-RUN sed -i s'/CMD_INSTALL_CLEAN=.*//'g /etc/environment ${CMD_INSTALL_CLEAN[*]}
