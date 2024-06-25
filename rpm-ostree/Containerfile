@@ -24,7 +24,7 @@ RUN rpm-ostree install \
 RUN rpm-ostree uninstall \
   dnf \
   && ostree container commit
-ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false"
+ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
 
 # Install the same core packages that rpm-ostree starts with.
 # https://github.com/coreos/rpm-ostree/commit/a593335ce342402e72758191f2d431d90cc36e70
