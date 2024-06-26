@@ -3,12 +3,17 @@ env:
   REGISTRY: ${{ secrets.REGISTRY }}
   REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
   PROJECT: ${{ secrets.PROJECT }}
-  TAG: ${{ github.ref_name }}
+  TAG: ${{ github.event.inputs.tag || github.ref_name }}
 
 on:
   push:
     tags:
       - '*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag'
+        required: true
 
 jobs:
   container-image:
@@ -26,12 +31,12 @@ jobs:
             build-mount-path: '/var/lib/docker'
       - uses: actions/checkout@v4
       - name: Install podman
-        run: apt install podman
+        run: apt --yes install podman
       - name: Install go-task
         run: |
           curl -O https://github.com/go-task/task/releases/download/v3.37.2/task_linux_amd64.deb
-          apt install task_linux_amd64.deb
-          rm task_linux_amd64.deb
+          apt --yes install task_linux_amd64.deb
+          rm --force task_linux_amd64.deb
       - name: Build container image
         run: task container-image:build
       - name: Authenticate to container registry
