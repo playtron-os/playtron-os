@@ -37,7 +37,7 @@ jobs:
       - name: Install go-task
         run: |
           curl -O https://github.com/go-task/task/releases/download/v3.37.2/task_linux_amd64.deb
-          sudo apt --yes install task_linux_amd64.deb
+          sudo dpkg --install task_linux_amd64.deb
           rm --force task_linux_amd64.deb
       - name: Build container image
         run: task container-image:build
