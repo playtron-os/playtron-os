@@ -29,6 +29,8 @@ jobs:
             remove-codeql: 'true'
             remove-docker-images: 'true'
             build-mount-path: '/home/runner/.local'
+      - name: Check disks
+        run: df -h
       - uses: actions/checkout@v4
       - name: apt update
         run: sudo apt update
