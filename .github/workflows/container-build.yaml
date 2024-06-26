@@ -28,7 +28,7 @@ jobs:
             remove-haskell: 'true'
             remove-codeql: 'true'
             remove-docker-images: 'true'
-            build-mount-path: '/var/lib/containers'
+            build-mount-path: '~/.local/share/containers'
       - uses: actions/checkout@v4
       - name: apt update
         run: sudo apt update
