@@ -31,6 +31,10 @@ jobs:
             build-mount-path: '/home/runner/.local'
       - name: Check disks
         run: df -h
+      - name: Test container download
+        run: podman pull docker.io/library/python
+      - name: Check disks 2
+        run: df -h
       - uses: actions/checkout@v4
       - name: apt update
         run: sudo apt update
