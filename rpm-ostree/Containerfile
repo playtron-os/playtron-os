@@ -3,9 +3,6 @@ FROM quay.io/fedora/fedora-bootc:40
 # "linux/amd64" for x86. "linux/arm64" for Arm.
 ARG TARGETPLATFORM
 
-# Enable "dnf" and "rpm" commands.
-RUN rpm-ostree cliwrap install-to-root / && ostree container commit
-
 # Copy over repository files.
 ## Fedora.
 ## As of 2024-06-14, this repository was removed from the quay.io/fedora/fedora-bootc:40 image.
@@ -17,12 +14,24 @@ COPY rpmfusion-free.repo rpmfusion-free-updates.repo rpmfusion-free-updates-test
 ## Playtron.
 COPY playtron-app-x86_64.repo playtron-gaming-i386.repo playtron-gaming-x86_64.repo playtron-nvidia-x86_64.repo /etc/yum.repos.d/
 
+# Install DNF 5 first.
+RUN rpm-ostree install \
+  dnf5 \
+  dnf5-plugins \
+  && ostree container commit
+# Remove DNF 4. Only required when using the quay.io/fedora/fedora-bootc image.
+# Not required on the quay.io/fedora/fedora-coreos image.
+RUN rpm-ostree uninstall \
+  dnf \
+  && ostree container commit
+ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
+
 # Install the same core packages that rpm-ostree starts with.
 # https://github.com/coreos/rpm-ostree/commit/a593335ce342402e72758191f2d431d90cc36e70
-RUN rpm-ostree install filesystem glibc nss-altfiles && ostree container commit
+RUN ${CMD_INSTALL} filesystem glibc nss-altfiles && ostree container commit
 
 # Install "crudini" to manage configuration files.
-RUN rpm-ostree install crudini && ostree container commit
+RUN ${CMD_INSTALL} crudini && ostree container commit
 
 # Exclude conflicting packages.
 RUN crudini --ini-options=nospace --set /etc/yum.repos.d/fedora.repo fedora exclude 'kernel* ffmpeg-free libswscale-free mangohud mesa* wireplumber*' \
@@ -80,7 +89,7 @@ RUN rpm-ostree override replace --experimental \
 # On x86, also install 32-bit Mesa.
 # Our Arm builds are only 64-bit.
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-  rpm-ostree install \
+  ${CMD_INSTALL} \
   mesa-dri-drivers.i686 \
   mesa-filesystem.i686 \
   mesa-libd3d.i686 \
@@ -99,7 +108,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
 # Complete audio and visual packages.
 # Install this before workstation-ostree-config/fedora-common-ostree-pkgs.yaml packages to avoid conflicts.
 # Skip "rootfiles" which fails to install.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   abattis-cantarell-vf-fonts \
   alsa-utils \
   avahi-glib \
@@ -355,11 +364,15 @@ RUN rpm-ostree install \
   zeromq \
   zimg \
   zvbi \
-  --uninstall PackageKit-gstreamer-plugin \
+  && ostree container commit
+
+# This gets installed as an unwanted dependency from the previous command.
+RUN dnf5 remove \
+  PackageKit-gstreamer-plugin \
   && ostree container commit
 
 # Packages from: workstation-ostree-config/fedora-common-ostree-pkgs.yaml
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   NetworkManager \
   NetworkManager-bluetooth \
   NetworkManager-config-connectivity-fedora \
@@ -516,7 +529,7 @@ RUN rpm-ostree install \
   zram-generator-defaults \
   && ostree container commit
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-  rpm-ostree install \
+  ${CMD_INSTALL} \
     alsa-sof-firmware \
     amd-ucode-firmware \
     cirrus-audio-firmware \
@@ -528,16 +541,16 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
     open-vm-tools-desktop \
     thermald \
     virtualbox-guest-additions; fi \
-    && ostree container commit
+  && ostree container commit
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-  rpm-ostree install \
+  ${CMD_INSTALL} \
     hyperv-daemons \
     open-vm-tools-desktop \
     qcom-firmware; fi \
     && ostree container commit
 
 # Packages from: workstation-ostree-config/fedora-common-ostree.yaml
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   git-core \
   git-core-doc \
   lvm2 \
@@ -556,28 +569,19 @@ RUN rpm-ostree install \
   langpacks-en \
   && ostree container commit
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-  rpm-ostree install \
+  ${CMD_INSTALL} \
     grub2-efi-ia32 \
     grub2-efi-x64 \
     grub2-pc \
     efibootmgr \
     shim-ia32 \
     shim-x64; fi \
-    && ostree container commit
+  && ostree container commit
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-  rpm-ostree install \
+  ${CMD_INSTALL} \
     grub2-efi \
     efibootmgr \
     shim; fi \
-    && ostree container commit
-RUN rpm-ostree install \
-  dnf5 \
-  dnf5-plugins \
-  && ostree container commit
-# Only required when using the quay.io/fedora/fedora-bootc image.
-# Not required on the quay.io/fedora/fedora-coreos image.
-RUN rpm-ostree uninstall \
-  dnf \
   && ostree container commit
 
 # kernel-fsync.
@@ -601,7 +605,7 @@ RUN rpm-ostree override replace --experimental \
   && ostree container commit
 
 # Other general packages.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   distrobox \
   fedora-release-silverblue \
   lsb_release \
@@ -610,7 +614,7 @@ RUN rpm-ostree install \
   && ostree container commit
 
 # Required for image build.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   crudini \
   dracut-config-generic \
   && ostree container commit
@@ -620,7 +624,7 @@ RUN rpm-ostree install \
 # A lot of dependencies are missing from the official RPM anyways.
 # https://github.com/Winetricks/winetricks/blob/20230212/src/winetricks#L27
 # "unrar" comes from RPMFusion.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   binutils \
   cabextract \
   gzip \
@@ -637,7 +641,7 @@ RUN rpm-ostree install \
   && ostree container commit
 
 # Required for Playserve and friends.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   evtest \
   glib-networking \
   inputplumber \
@@ -652,13 +656,13 @@ RUN rpm-ostree install \
   && ostree container commit
 
 # Playserve and friends.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   playserve \
   playview \
   && ostree container commit
 
 # Packages from the playtron/gaming Fedora Copr.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   gamescope-session-playtron \
   mangohud \
   gdisk \
@@ -668,12 +672,12 @@ RUN rpm-ostree install \
   && ostree container commit
 
 # Developer desktop mode.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   weston-session \
   && ostree container commit
 
 # Install Xorg.
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   xorg-x11-drv-amdgpu \
   xorg-x11-drv-ati \
   xorg-x11-drv-evdev \
@@ -700,7 +704,7 @@ RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/
   && ostree container commit
 
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-  rpm-ostree install \
+  ${CMD_INSTALL} \
     xorg-x11-drv-intel \
     xorg-x11-drv-openchrome \
     xorg-x11-drv-vesa \
@@ -708,15 +712,10 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
     && ostree container commit
 
 RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-  rpm-ostree install \
+  ${CMD_INSTALL} \
     xorg-x11-drv-armsoc; fi \
     && ostree container commit
-
-# Fix lightdm greeter appearing
-RUN rm -f /usr/share/lightdm/lightdm.conf.d/60-lightdm-gtk-greeter.conf
 
 # Copy/override files
 COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
-
-RUN ostree container commit
