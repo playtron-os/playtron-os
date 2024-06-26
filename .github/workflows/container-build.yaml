@@ -28,7 +28,7 @@ jobs:
             remove-haskell: 'true'
             remove-codeql: 'true'
             remove-docker-images: 'true'
-            build-mount-path: '/home/runner/.local'
+            build-mount-path: '/home/runner'
       - name: Check disks
         run: df -h
       - name: Test container download
