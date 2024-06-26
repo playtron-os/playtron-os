@@ -717,6 +717,6 @@ RUN rm -f /usr/share/lightdm/lightdm.conf.d/60-lightdm-gtk-greeter.conf
 
 # Copy/override files
 COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
-COPY rootfs/usr/lib/os-release-playtron /usr/lib/
+COPY rootfs/usr/lib/os-release /usr/lib/
 
 RUN ostree container commit

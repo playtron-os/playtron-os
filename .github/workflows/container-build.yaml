@@ -1,0 +1,40 @@
+name: Build container image
+env:
+  REGISTRY: ${{ secrets.REGISTRY }}
+  REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+  PROJECT: ${{ secrets.PROJECT }}
+  TAG: ${{ github.ref_name }}
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  container-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+            swap-size-mb: 2048
+            remove-dotnet: 'true'
+            remove-android: 'true'
+            remove-haskell: 'true'
+            remove-codeql: 'true'
+            remove-docker-images: 'true'
+            build-mount-path: '/var/lib/docker'
+      - uses: actions/checkout@v4
+      - name: Install podman
+        run: apt install podman
+      - name: Install go-task
+        run: |
+          curl -O https://github.com/go-task/task/releases/download/v3.37.2/task_linux_amd64.deb
+          apt install task_linux_amd64.deb
+          rm task_linux_amd64.deb
+      - name: Build container image
+        run: task container-image:build
+      - name: Authenticate to container registry
+        run: task container-image:auth
+      - name: Upload container image
+        run: task container-image:push

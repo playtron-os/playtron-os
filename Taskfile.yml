@@ -3,6 +3,9 @@
 
 version: "3"
 
+env:
+  IMAGE: playtronos
+
 tasks:
   rpm-repo:
     desc: Build a local rpm-ostree repository with local RPMs.
@@ -15,19 +18,62 @@ tasks:
       - grep "  - local" playtron-os.yaml || sed -i s'/repos:/repos:\n  - local'/g playtron-os.yaml
       - echo -e "[local]\nname=local\nbaseurl=file:///tmp/repo\nenabled=1\nrepo_gpgcheck=0\ngpgcheck=0" > local.repo
 
-  container-image:
+
+  container-image:auth:
+    desc: Authenticate with the container registry.
+    preconditions:
+      - sh: test -n "$REGISTRY"
+        msg: "A value for REGISTRY must be provided"
+      - sh: test -n "$REGISTRY_TOKEN"
+        msg: "A value for REGISTRY_TOKEN must be provided"
+    cmds:
+      - mkdir -p ${XDG_RUNTIME_DIR}/containers
+      - echo "{ \"auths\":{ \"${REGISTRY}\":{ \"auth\":\"${REGISTRY_TOKEN}\" } } }" > "${XDG_RUNTIME_DIR}/containers/auth.json"
+
+  container-image:build:
     desc: Build the OCI container image.
     dir: rpm-ostree
+    preconditions:
+      - sh: test -n "$TAG"
+        msg: "A value for TAG must be provided"
     cmds:
-      - podman build . --tag playtronos:latest --pull --no-cache
+      - mkdir -p rootfs/usr/lib
+      - cat os-release.template | envsubst '${TAG}' > rootfs/usr/lib/os-release
+      - podman build . --pull --no-cache --tag ${IMAGE}:${TAG}
+
+  container-image:push:
+    desc: Push the OCI container image to the container registry.
+    preconditions:
+      - sh: grep "${REGISTRY}" "${XDG_RUNTIME_DIR}/containers/auth.json"
+        msg: "Please use `container-image:auth` to authenticate with the registry"
+      - sh: test -n "$TAG"
+        msg: "A value for TAG must be provided"
+      - sh: test -n "$REGISTRY"
+        msg: "A value for REGISTRY must be provided"
+      - sh: test -n "$PROJECT"
+        msg: "A value for PROJECT must be provided"
+    cmds:
+      - podman push ${IMAGE}:${TAG} ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
+
+  container-image:release:
+    desc: Release the OCI container image by tagging it as `latest` in the container registry.
+    preconditions:
+      - sh: grep "${REGISTRY}" "${XDG_RUNTIME_DIR}/containers/auth.json"
+        msg: "Please use `container-image:auth` to authenticate with the registry"
+      - sh: test -n "$TAG"
+        msg: "A value for TAG must be provided"
+      - sh: test -n "$REGISTRY"
+        msg: "A value for REGISTRY must be provided"
+      - sh: test -n "$PROJECT"
+        msg: "A value for PROJECT must be provided"
+    cmds:
+      - podman tag ${IMAGE}:${TAG} ${IMAGE}:latest
+      - podman push ${IMAGE}:latest ${REGISTRY}/${PROJECT}/${IMAGE}:latest
 
   disk-image:
     desc: Build the OS image from a container hosted in a registry.
     dir: kickstart
     env:
-      REGISTRY:
-      REGISTRY_TOKEN:
-      PROJECT:
       TAG: latest
     preconditions:
       - sh: test "$EUID" == 0
