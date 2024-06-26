@@ -30,6 +30,8 @@ jobs:
             remove-docker-images: 'true'
             build-mount-path: '/var/lib/docker'
       - uses: actions/checkout@v4
+      - name: apt update
+        run: sudo apt update
       - name: Install podman
         run: sudo apt --yes install podman
       - name: Install go-task
