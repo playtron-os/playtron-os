@@ -4,6 +4,7 @@ env:
   REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
   PROJECT: ${{ secrets.PROJECT }}
   TAG: ${{ github.event.inputs.tag || github.ref_name }}
+  TMPDIR: /home/runner/.local/tmp
 
 on:
   push:
@@ -30,6 +31,8 @@ jobs:
             remove-codeql: 'true'
             remove-docker-images: 'true'
             build-mount-path: '/home/runner/.local'
+      - name: Create tmp directory
+        run: mkdir -p $TMPDIR
       - name: Check disks
         run: df -h
       - name: Test container download
