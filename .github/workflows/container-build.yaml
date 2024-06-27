@@ -52,7 +52,7 @@ jobs:
       - name: Authenticate to container registry
         run: task container-image:auth
       - name: Check XDG_RUNTIME_DIR
-        run: echo "XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR}"
+        run: echo "XDG_RUNTIME_DIR:${XDG_RUNTIME_DIR}"
       - name: Check auth file
         run: cat ${XDG_RUNTIME_DIR}/containers/auth.json
       - name: Build container image
