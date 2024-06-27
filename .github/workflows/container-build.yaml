@@ -33,13 +33,6 @@ jobs:
             build-mount-path: '/home/runner/.local'
       - name: Create tmp directory
         run: mkdir -p $TMPDIR
-      - name: Check disks
-        run: df -h
-      - name: Test container download
-        run: podman pull docker.io/library/python
-      - name: Check disks 2
-        run: df -h
-      - uses: actions/checkout@v4
       - name: apt update
         run: sudo apt update
       - name: Install podman
@@ -49,13 +42,10 @@ jobs:
           curl -L -O https://github.com/go-task/task/releases/download/v3.37.2/task_linux_amd64.deb
           sudo dpkg --install task_linux_amd64.deb
           rm --force task_linux_amd64.deb
-      - name: Authenticate to container registry
-        run: task container-image:auth
-      - name: Check XDG_RUNTIME_DIR
-        run: echo "XDG_RUNTIME_DIR:${XDG_RUNTIME_DIR}"
-      - name: Check auth file
-        run: cat ${XDG_RUNTIME_DIR}/containers/auth.json
+      - uses: actions/checkout@v4
       - name: Build container image
         run: task container-image:build
+      - name: Authenticate to container registry
+        run: task container-image:auth
       - name: Upload container image
         run: task container-image:push
