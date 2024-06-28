@@ -95,7 +95,7 @@ tasks:
     cmds:
       - rm -rf /tmp/repo
       - mkdir -p /tmp/repo
-      - aws s3 cp s3://playtron-dev-global-os-public/repos/playtron-app/x86_64/ /tmp/repo/ --recursive
+      - aws s3 cp s3://playtron-dev2-global-os-public/repos/playtron-app/x86_64/ /tmp/repo/ --recursive
       - read -p "Copy new packages into /tmp/repo and press ENTER to continue"
       - createrepo /tmp/repo
-      - aws s3 sync /tmp/repo/ s3://playtron-dev-global-os-public/repos/playtron-app/x86_64/
+      - aws s3 sync /tmp/repo/ s3://playtron-dev2-global-os-public/repos/playtron-app/x86_64/
