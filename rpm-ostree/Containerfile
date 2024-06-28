@@ -718,5 +718,5 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
 
 # Copy/override files
 COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
-COPY rootfs/usr/lib/os-release /usr/lib/
+COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 COPY rootfs/usr/share/plymouth/themes/spinner/watermark.png /usr/share/plymouth/themes/spinner/
