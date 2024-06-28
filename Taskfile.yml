@@ -38,7 +38,7 @@ tasks:
         msg: "A value for TAG must be provided"
     cmds:
       - mkdir -p rootfs/usr/lib
-      - cat os-release.template | envsubst '${TAG}' > rootfs/usr/lib/os-release
+      - cat os-release.template | envsubst '${TAG}' > rootfs/usr/lib/os-release-playtron
       - podman build . --pull --no-cache --tag ${IMAGE}:${TAG}
 
   container-image:push:
