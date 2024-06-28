@@ -12,7 +12,7 @@ COPY kernel-fsync.repo /etc/yum.repos.d/
 ## RPM Fusion.
 COPY rpmfusion-free.repo rpmfusion-free-updates.repo rpmfusion-free-updates-testing.repo rpmfusion-nonfree.repo rpmfusion-nonfree-tainted.repo rpmfusion-nonfree-updates.repo rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/
 ## Playtron.
-COPY playtron-app-x86_64.repo playtron-gaming-i386.repo playtron-gaming-x86_64.repo playtron-nvidia-x86_64.repo /etc/yum.repos.d/
+COPY playtron-app-x86_64.repo playtron-gaming-i386.repo playtron-gaming-x86_64.repo /etc/yum.repos.d/
 
 # Install DNF 5 first.
 RUN rpm-ostree install \
