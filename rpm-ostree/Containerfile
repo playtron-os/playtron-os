@@ -21,8 +21,7 @@ RUN rpm-ostree install \
   && ostree container commit
 # Remove DNF 4. Only required when using the quay.io/fedora/fedora-bootc image.
 # Not required on the quay.io/fedora/fedora-coreos image.
-RUN rpm-ostree uninstall \
-  dnf \
+RUN dnf5 remove -y dnf \
   && ostree container commit
 ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
 
@@ -39,38 +38,8 @@ RUN crudini --ini-options=nospace --set /etc/yum.repos.d/fedora.repo fedora excl
   && crudini --ini-options=nospace --set /etc/yum.repos.d/fedora-updates-archive.repo updates-archive exclude 'kernel* ffmpeg-free libswscale-free mangohud mesa* wireplumber*' \
   && ostree container commit
 
-# Install packages from the fedora-updates repository to avoid "cannot install both" errors.
-# This list changes all the time.
-# https://github.com/coreos/rpm-ostree/issues/2127
-RUN rpm-ostree override replace \
-  --experimental \
-  --from repo=updates \
-  gcc || true && \
-  rpm-ostree override replace \
-  --experimental \
-  --from repo=updates \
-  libgcc \
-  || true && \
-  rpm-ostree override replace \
-  --experimental \
-  --from repo=updates \
-  libgomp \
-  || true && \
-  rpm-ostree override replace \
-  --experimental \
-  --from repo=updates \
-  libstdc++ \
-  || true && \
-  rpm-ostree override replace \
-  --experimental \
-  --from repo=updates \
-  glib2 \
-  || true && \
-  ostree container commit
-
 # Install Mesa from Playtron.
-RUN rpm-ostree override replace --experimental \
-  --from repo=playtron-gaming-x86_64 \
+RUN ${CMD_INSTALL} \
   mesa-dri-drivers \
   mesa-filesystem \
   mesa-libd3d \
@@ -585,23 +554,21 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
   && ostree container commit
 
 # kernel-fsync.
-RUN rpm-ostree override replace --experimental \
-  --from repo=kernel-fsync-x86_64 \
+RUN dnf5 upgrade -y \
+  --disable-repo '*' \
+  --enable-repo kernel-fsync-x86_64 \
+  --allowerasing \
   kernel \
   kernel-core \
   kernel-modules \
   kernel-modules-core \
-  kernel-modules-extra \
-  kernel-uki-virt \
-  kernel-devel \
   kernel \
   kernel-modules \
+  && ${CMD_INSTALL} \
+  kernel-devel \
+  kernel-headers \
   kernel-modules-extra \
-  && ostree container commit
-## If kernel-fsync and the kernel from Fedora are the exact same version, overriding "kernel-headers" will fail.
-RUN rpm-ostree override replace --experimental \
-  --from repo=kernel-fsync-x86_64 \
-  kernel-headers || true \
+  kernel-uki-virt \
   && ostree container commit
 
 # Other general packages.
@@ -720,3 +687,5 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
 COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 COPY rootfs/usr/share/plymouth/themes/spinner/watermark.png /usr/share/plymouth/themes/spinner/
+
+RUN rpm -qa | sort
