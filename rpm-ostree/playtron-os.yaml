@@ -28,6 +28,8 @@ packages:
   - playtron-os-files
   - udev-media-automount
   - valve-firmware
+  # not being installed automatically
+  - mesa-vulkan-drivers
   ## Mesa is already pulled in as part of the Fedora Silverblue configuration.
   #- mesa
   # winetricks helps manage Wine prefixes.
@@ -53,7 +55,6 @@ packages:
   ### winetricks dependency from RPMFusion.
   - unrar
   ### Other packages.
-  - steam
   # Playtron
   - glib-networking
   - playserve
