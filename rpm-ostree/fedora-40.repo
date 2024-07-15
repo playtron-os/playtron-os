@@ -1,0 +1,7 @@
+[fedora-40]
+name=Fedora 40 $basearch
+baseurl=https://mirror.rackspace.com/fedora/releases/40/Everything/x86_64/os/
+enabled=1
+gpgcheck=1
+metadata_expire=1d
+exclude=kernel* ffmpeg-free libswscale-free mangohud mesa* wireplumber*

@@ -30,6 +30,28 @@ tasks:
       - mkdir -p ${XDG_RUNTIME_DIR}/containers
       - echo "{ \"auths\":{ \"${REGISTRY}\":{ \"auth\":\"${REGISTRY_TOKEN}\" } } }" > "${XDG_RUNTIME_DIR}/containers/auth.json"
 
+  container-image:build-base:
+    desc: Build the base OCI container image.
+    dir: rpm-ostree
+    preconditions:
+      - sh: test "$EUID" == 0
+        msg: "This task must be run as root"
+      - sh: test -n "$TAG"
+        msg: "A value for TAG must be provided"
+    cmds:
+      - rpm-ostree compose image --initialize-mode=always --format=ociarchive playtron-os.yaml playtron-os-base.ociarchive
+
+  container-image:load-base:
+    desc: Load the base OCI container image.
+    dir: rpm-ostree
+    preconditions:
+      - sh: test -f playtron-os-base.ociarchive
+        msg: "No base image archive found. Please use `container-image:build-base` to build a base image first."
+    cmds:
+      - cat playtron-os-base.ociarchive | podman load 2>&1 | grep "Loaded image" | cut -d':' -f3 > imported-base-sha256
+      - rm -f playtron-os-base.ociarchive
+      - podman tag $(cat imported-base-sha256) playtron-os-base:local
+
   container-image:build:
     desc: Build the OCI container image.
     dir: rpm-ostree
@@ -39,7 +61,7 @@ tasks:
     cmds:
       - mkdir -p rootfs/usr/lib
       - cat os-release.template | envsubst '${TAG}' > rootfs/usr/lib/os-release-playtron
-      - podman build . --pull --no-cache --tag ${IMAGE}:${TAG}
+      - podman build . --no-cache --tag ${IMAGE}:${TAG}
 
   container-image:push:
     desc: Push the OCI container image to the container registry.
