@@ -1,15 +1,17 @@
 # Anaconda Kickstart file for Playtron OS.
 
 %pre
-# Add registry token to the system doing the build to enable downloads of private containers
-mkdir -p /run/ostree
-echo '{
-    "auths": {
-        "${REGISTRY}": {
-            "auth": "${REGISTRY_TOKEN}"
-        }
-    }
-}' > /run/ostree/auth.json
+if [ -n "${REGISTRY_TOKEN}" ]; then
+	# Add registry token to the system doing the build to enable downloads of private containers
+	mkdir -p /run/ostree
+	echo '{
+	    "auths": {
+	        "${REGISTRY}": {
+	            "auth": "${REGISTRY_TOKEN}"
+	        }
+	    }
+	}' > /run/ostree/auth.json
+fi
 %end
 
 # Create the required partitions.
@@ -20,7 +22,7 @@ bootloader --location=mbr --boot-drive=vda --append="mem_sleep_default=deep"
 autopart --type btrfs
 
 # Setup the file system.
-ostreecontainer --url ${REGISTRY}/${PROJECT}/playtronos:${TAG} --no-signature-verification
+ostreecontainer --url ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} --no-signature-verification
 
 # Reboot and start the installer.
 reboot
@@ -56,15 +58,16 @@ set -x
 set -e
 
 # Add registry token to the image to enable updates for private builds
-# TODO: Once we have public releases, remove or make this conditional
-mkdir -p /etc/ostree
-echo '{
-    "auths": {
-        "${REGISTRY}": {
-            "auth": "${REGISTRY_TOKEN}"
-        }
-    }
-}' > /etc/ostree/auth.json
+if [ -n "${REGISTRY_TOKEN}" ]; then
+	mkdir -p /etc/ostree
+	echo '{
+	    "auths": {
+	        "${REGISTRY}": {
+	            "auth": "${REGISTRY_TOKEN}"
+	        }
+	    }
+	}' > /etc/ostree/auth.json
+fi
 
 # Create the "playtron" user manually.
 # https://bugzilla.redhat.com/show_bug.cgi?id=1838859

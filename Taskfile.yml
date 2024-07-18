@@ -66,48 +66,53 @@ tasks:
   container-image:push:
     desc: Push the OCI container image to the container registry.
     preconditions:
+      - sh: test -n "$REGISTRY"
+        msg: "A value for REGISTRY must be provided"
       - sh: grep "${REGISTRY}" "${XDG_RUNTIME_DIR}/containers/auth.json"
         msg: "Please use `container-image:auth` to authenticate with the registry"
       - sh: test -n "$TAG"
         msg: "A value for TAG must be provided"
-      - sh: test -n "$REGISTRY"
-        msg: "A value for REGISTRY must be provided"
       - sh: test -n "$PROJECT"
         msg: "A value for PROJECT must be provided"
     cmds:
       - podman push ${IMAGE}:${TAG} ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
+      - podman push ${IMAGE}:${TAG} ${REGISTRY}/${PROJECT}/${IMAGE}:testing
 
   container-image:release:
     desc: Release the OCI container image by tagging it as `latest` in the container registry.
     preconditions:
+      - sh: test -n "$REGISTRY"
+        msg: "A value for REGISTRY must be provided"
       - sh: grep "${REGISTRY}" "${XDG_RUNTIME_DIR}/containers/auth.json"
         msg: "Please use `container-image:auth` to authenticate with the registry"
       - sh: test -n "$TAG"
         msg: "A value for TAG must be provided"
-      - sh: test -n "$REGISTRY"
-        msg: "A value for REGISTRY must be provided"
       - sh: test -n "$PROJECT"
         msg: "A value for PROJECT must be provided"
     cmds:
-      - podman tag ${IMAGE}:${TAG} ${IMAGE}:latest
-      - podman push ${IMAGE}:latest ${REGISTRY}/${PROJECT}/${IMAGE}:latest
+      - podman pull ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
+      - podman push ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} ${REGISTRY}/${PROJECT}/${IMAGE}:latest
 
   disk-image:
     desc: Build the OS image from a container hosted in a registry.
     dir: kickstart
     env:
       TAG: latest
+      PROJECT: playtron-os
+      REGISTRY: ghcr.io
+      IMAGE: playtron-os
+      REGISTRY_TOKEN:
     preconditions:
       - sh: test "$EUID" == 0
         msg: "This task must be run as root"
       - sh: test -n "$REGISTRY"
         msg: "A value for REGISTRY must be provided"
-      - sh: test -n "$REGISTRY_TOKEN"
-        msg: "A value for REGISTRY_TOKEN must be provided"
       - sh: test -n "$PROJECT"
         msg: "A value for PROJECT must be provided"
+      - sh: test -n "$IMAGE"
+        msg: "A value for IMAGE must be provided"
     cmds:
-      - cat playtron-os_kickstart.cfg.template | envsubst '${REGISTRY} ${REGISTRY_TOKEN} ${PROJECT} ${TAG}' > playtron-os_kickstart.cfg
+      - cat playtron-os_kickstart.cfg.template | envsubst '${REGISTRY} ${REGISTRY_TOKEN} ${PROJECT} ${IMAGE} ${TAG}' > playtron-os_kickstart.cfg
       - ./virt-install.sh
       - mv /var/lib/libvirt/images/playtron-os.img "/var/lib/libvirt/images/playtron-os.img_$(date -Iseconds)"
       - virsh undefine --nvram playtron-os
@@ -121,3 +126,49 @@ tasks:
       - read -p "Copy new packages into /tmp/repo and press ENTER to continue"
       - createrepo /tmp/repo
       - aws s3 sync /tmp/repo/ s3://playtron-dev2-global-os-public/repos/playtron-app/x86_64/
+
+  public:auth:
+    desc: Authenticate with the GitHub container registry.
+    preconditions:
+      - sh: test -n "$GITHUB_USER"
+        msg: "A value for GITHUB_USER must be provided"
+      - sh: test -n "$GITHUB_TOKEN"
+        msg: "A value for GITHUB_TOKEN must be provided"
+    cmds:
+      - echo $GITHUB_TOKEN | podman login ghcr.io -u $GITHUB_USER --password-stdin
+
+  public:push:
+    desc: Publish the container to the public registry with the tag 'testing'.
+    preconditions:
+      - sh: test -n "$REGISTRY"
+        msg: "A value for REGISTRY must be provided"
+      - sh: grep "${REGISTRY}" "${XDG_RUNTIME_DIR}/containers/auth.json"
+        msg: "Please use `container-image:auth` to authenticate with the registry"
+      - sh: grep "ghcr.io" "${XDG_RUNTIME_DIR}/containers/auth.json"
+        msg: "Please use `public:auth` to authenticate with the GitHub registry"
+      - sh: test -n "$PROJECT"
+        msg: "A value for PROJECT must be provided"
+      - sh: test -n "$TAG"
+        msg: "A value for TAG must be provided"
+    cmds:
+      - podman pull ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
+      - podman push ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} ghcr.io/playtron-os/${PUBLIC_IMAGE}:${TAG}
+      - podman push ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} ghcr.io/playtron-os/${PUBLIC_IMAGE}:testing
+
+  public:release:
+    desc: Publish the container to the public registry with the tag 'latest'.
+    preconditions:
+      - sh: test -n "$REGISTRY"
+        msg: "A value for REGISTRY must be provided"
+      - sh: grep "${REGISTRY}" "${XDG_RUNTIME_DIR}/containers/auth.json"
+        msg: "Please use `container-image:auth` to authenticate with the registry"
+      - sh: grep "ghcr.io" "${XDG_RUNTIME_DIR}/containers/auth.json"
+        msg: "Please use `public:auth` to authenticate with the GitHub registry"
+      - sh: test -n "$PROJECT"
+        msg: "A value for PROJECT must be provided"
+      - sh: test -n "$TAG"
+        msg: "A value for TAG must be provided"
+    cmds:
+      - podman pull ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
+      - podman push ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} ghcr.io/playtron-os/${PUBLIC_IMAGE}:${TAG}
+      - podman push ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} ghcr.io/playtron-os/${PUBLIC_IMAGE}:latest
