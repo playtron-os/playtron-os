@@ -172,3 +172,20 @@ tasks:
       - podman pull ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
       - podman push ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} ghcr.io/playtron-os/${PUBLIC_IMAGE}:${TAG}
       - podman push ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} ghcr.io/playtron-os/${PUBLIC_IMAGE}:latest
+
+  package-list:
+    desc: Publish the container to the public registry with the tag 'latest'.
+    preconditions:
+      - sh: test -n "$REGISTRY"
+        msg: "A value for REGISTRY must be provided"
+      - sh: grep "${REGISTRY}" "${XDG_RUNTIME_DIR}/containers/auth.json"
+        msg: "Please use `container-image:auth` to authenticate with the registry"
+      - sh: grep "${REGISTRY}" "${XDG_RUNTIME_DIR}/containers/auth.json"
+        msg: "Please use `container-image:auth` to authenticate with the registry"
+      - sh: test -n "$PROJECT"
+        msg: "A value for PROJECT must be provided"
+      - sh: test -n "$TAG"
+        msg: "A value for TAG must be provided"
+    cmds:
+      - podman pull ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
+      - podman run -it ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} rpm -qa | sort -u > playtron-os-${TAG}.pkg-list.txt
