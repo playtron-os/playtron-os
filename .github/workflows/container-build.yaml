@@ -44,7 +44,7 @@ jobs:
           rm --force task_linux_amd64.deb
       - uses: actions/checkout@v4
       - name: Build base container image
-        run: sudo task container-image:build-base
+        run: sudo --preserve-env task container-image:build-base
       - name: Load base container image
         run: task container-image:load-base
       - name: Build container image

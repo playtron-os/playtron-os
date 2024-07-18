@@ -4,9 +4,9 @@ FROM playtron-os-base:local
 ARG TARGETPLATFORM
 
 # Copy over repository files.
+RUN rm -f /etc/yum.repos.d/*
 ## Fedora.
-## As of 2024-06-14, this repository was removed from the quay.io/fedora/fedora-bootc:40 image.
-COPY fedora-updates-archive.repo /etc/yum.repos.d/
+COPY fedora-40.repo fedora-40-updates.repo fedora-updates-archive.repo /etc/yum.repos.d/
 ## kernel-fsync.
 COPY kernel-fsync.repo /etc/yum.repos.d/
 ## RPM Fusion.
@@ -14,18 +14,11 @@ COPY rpmfusion-free.repo rpmfusion-free-updates.repo rpmfusion-free-updates-test
 ## Playtron.
 COPY playtron-app-x86_64.repo playtron-gaming-i386.repo playtron-gaming-x86_64.repo /etc/yum.repos.d/
 
-# Install DNF 5 first.
-RUN rpm-ostree install \
-  dnf5 \
-  dnf5-plugins \
-  && ostree container commit
-
-ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
 
 # On x86, also install 32-bit Mesa.
 # Our Arm builds are only 64-bit.
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-  ${CMD_INSTALL} \
+  rpm-ostree install \
   mesa-dri-drivers.i686 \
   mesa-filesystem.i686 \
   mesa-libd3d.i686 \
@@ -41,7 +34,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   mesa-vulkan-drivers.i686; fi \
   && ostree container commit
 
-RUN ${CMD_INSTALL} \
+RUN rpm-ostree install \
   steam.i686 \
   && ostree container commit
 
