@@ -93,6 +93,18 @@ tasks:
       - podman pull ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
       - podman push ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} ${REGISTRY}/${PROJECT}/${IMAGE}:latest
 
+  container-image:inspect:
+    desc: Inspect the OCI container image by opening a shell inside the container.
+    preconditions:
+      - sh: test -n "$TAG"
+        msg: "A value for TAG must be provided"
+      - sh: test -n "$REGISTRY"
+        msg: "A value for REGISTRY must be provided"
+      - sh: test -n "$PROJECT"
+        msg: "A value for PROJECT must be provided"
+    cmds:
+      - podman run -it ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} bash
+
   disk-image:
     desc: Build the OS image from a container hosted in a registry.
     dir: kickstart
