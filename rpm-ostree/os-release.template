@@ -2,4 +2,3 @@ NAME="PlaytronOS"
 ID="playtronos"
 ID_LIKE="fedora"
 VERSION_ID=$TAG
-DEFAULT_HOSTNAME="playtronos"
