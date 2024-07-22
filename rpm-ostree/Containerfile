@@ -52,3 +52,8 @@ RUN wget https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/
 COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 COPY rootfs/usr/share/plymouth/themes/spinner/watermark.png /usr/share/plymouth/themes/spinner/
+
+# Finalize initramfs
+RUN KERNEL=$(echo /lib/modules/*/initramfs.img | cut -d'/' -f4) \
+  && dracut --reproducible -v --add 'ostree' -f --no-hostonly --kver ${KERNEL} /lib/modules/${KERNEL}/initramfs.img \
+  && ostree container commit
