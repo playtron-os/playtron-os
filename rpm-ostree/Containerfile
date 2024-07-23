@@ -38,6 +38,19 @@ RUN rpm-ostree install \
   steam.i686 \
   && ostree container commit
 
+# Create the "playtron" user manually.
+# https://bugzilla.redhat.com/show_bug.cgi?id=1838859
+# Put the user in the "wheel" group for elevated privileges and "input" for Autotest to work.
+RUN grep -E '^input:' /usr/lib/group | tee -a /etc/group && \
+  useradd -G wheel,input playtron && \
+  echo "playtron:playtron" | chpasswd && \
+  chown -R -v 1000:1000 /var/home/playtron
+
+# Hide the GRUB boot menu.
+RUN crudini --ini-options=nospace --set /etc/default/grub "" GRUB_TIMEOUT 0 && \
+  crudini --ini-options=nospace --set /etc/default/grub "" GRUB_TIMEOUT_STYLE hidden && \
+  ostree container commit
+
 # Copy/override files
 COPY rootfs/etc/hostname /etc/
 COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
