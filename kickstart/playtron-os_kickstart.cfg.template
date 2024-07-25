@@ -31,25 +31,6 @@ reboot
 text
 url --url="https://mirror.rackspace.com/fedora/releases/40/Everything/x86_64/os/"
 
-# U.S.A. keyboard and langauge settings.
-keyboard --vckeymap=us --xlayouts='us'
-lang en_US.UTF-8
-
-# Enable SELinux (permissive mode).
-selinux --permissive
-
-# Default to UTC timezone.
-timezone UTC --utc
-
-# Disable the "root" user.
-rootpw --lock
-
-# Enable the desktop environment.
-xconfig --startxonboot
-
-# Disable the Fedora first-time user experience as Playtron has its own.
-firstboot --disable
-
 # Run post-installation shell commands.
 %post --logfile=/root/kickstart-post.log --erroronfail
 
@@ -67,6 +48,4 @@ if [ -n "${REGISTRY_TOKEN}" ]; then
 	    }
 	}' > /etc/ostree/auth.json
 fi
-
-grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 %end
