@@ -5,8 +5,8 @@ packages:
   # Hardware acceleration support.
   ## AMD.
   ## These conflict with the Mesa packages from Fedora that do not have the "-freeworld" suffix.
-  - mesa-va-drivers-freeworld
-  - mesa-vdpau-drivers-freeworld
+  #- mesa-va-drivers-freeworld
+  #- mesa-vdpau-drivers-freeworld
   ## Intel.
   - intel-media-driver
   - intel-gmmlib
