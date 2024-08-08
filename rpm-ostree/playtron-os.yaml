@@ -59,8 +59,7 @@ packages:
   - glib-networking
   - playserve
   - playview
-  #- autotest
-  #- playtron-labs
+  - udisks2
   - zstd
   - lightdm
   - lightdm-autologin-greeter
