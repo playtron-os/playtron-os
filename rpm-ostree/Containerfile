@@ -14,7 +14,6 @@ COPY rpmfusion-free.repo rpmfusion-free-updates.repo rpmfusion-free-updates-test
 ## Playtron.
 COPY playtron-app-x86_64.repo playtron-gaming-i386.repo playtron-gaming-x86_64.repo /etc/yum.repos.d/
 
-
 # On x86, also install 32-bit Mesa.
 # Our Arm builds are only 64-bit.
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
@@ -43,6 +42,10 @@ COPY rootfs/etc/hostname /etc/
 COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 COPY rootfs/usr/share/plymouth/themes/spinner/watermark.png /usr/share/plymouth/themes/spinner/
+
+# Set SELinux to permissive mode.
+RUN sed -i s'/SELINUX=.*/SELINUX=permissive/'g /etc/selinux/config && \
+  ostree container commit
 
 # Finalize initramfs
 RUN KERNEL=$(echo /lib/modules/*/initramfs.img | cut -d'/' -f4) \
