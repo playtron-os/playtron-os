@@ -5,6 +5,7 @@ version: "3"
 
 env:
   IMAGE: playtronos
+  PUBLIC_IMAGE: playtron-os
 
 tasks:
   rpm-repo:
