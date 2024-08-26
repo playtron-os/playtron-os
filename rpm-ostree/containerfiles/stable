@@ -1,0 +1,15 @@
+FROM registry.playtron.one/internal/playtronos:0.18.0.61
+
+# Set OS version
+COPY rootfs/usr/lib/os-release-playtron /usr/lib/
+
+RUN rpm-ostree uninstall \
+  gamescope-session-playtron \
+  grid \
+  playserve
+
+RUN rpm-ostree install \
+  gamescope-session-playtron \
+  grid \
+  playserve \
+  && ostree container commit
