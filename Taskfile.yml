@@ -62,7 +62,18 @@ tasks:
     cmds:
       - mkdir -p rootfs/usr/lib
       - cat os-release.template | envsubst '${TAG}' > rootfs/usr/lib/os-release-playtron
-      - podman build . --no-cache --tag ${IMAGE}:${TAG}
+      - podman build --no-cache --tag ${IMAGE}:${TAG} --file containerfiles/unstable .
+
+  container-image:build-stable:
+    desc: Build the OCI container image using the stable containerfile.
+    dir: rpm-ostree
+    preconditions:
+      - sh: test -n "$TAG"
+        msg: "A value for TAG must be provided"
+    cmds:
+      - mkdir -p rootfs/usr/lib
+      - cat os-release.template | envsubst '${TAG}' > rootfs/usr/lib/os-release-playtron
+      - podman build --no-cache --tag ${IMAGE}:${TAG} --file containerfiles/stable .
 
   container-image:push:
     desc: Push the OCI container image to the container registry.
