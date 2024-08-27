@@ -43,14 +43,50 @@ Enable and start the `libvirtd` service.
 $ sudo systemctl enable --now libvirtd
 ```
 
-First build the OCI container.
+Define a tag and then build the base OCI container image archive.
 
 ```
-$ go-task container-image
+$ export TAG=replace-me
+$ sudo -E go-task container-image:build-base
 ```
 
-Then build the operating system image. Either use the remote rpm-ostree repository or a local one built from the previous task. Use Virtual Machine Manager (`virt-manager`) to check the installation progress of the `playtron-os` virtual machine.
+Import the container image archive.
 
 ```
-$ go-task disk-image
+$ go-task container-image:load-base
+```
+
+Build an unstable development container image. Alternatively, build a stable container image based on the previous release.
+
+```
+$ go-task container-image:build
+```
+
+```
+$ go-task container-image:build-stable
+```
+
+Optionally authenticate to a container registry.
+
+```
+$ export REGISTRY=quay.io
+$ export PROJECT=playtron-os
+$ export REGISTRY_TOKEN="replace-me"
+$ go-task container-image:auth
+```
+
+Push the image to a container registry and either create a `:testing` tag or a `:latest` tag automatically.
+
+```
+$ go-task container-image:push
+```
+
+```
+$ go-task container-image:release
+```
+
+Then build the raw operating system image. Use Virtual Machine Manager (`virt-manager`) to check the installation progress of the `playtron-os` virtual machine.
+
+```
+$ sudo -E go-task disk-image
 ```
