@@ -54,3 +54,51 @@ Then build the operating system image. Either use the remote rpm-ostree reposito
 ```
 $ go-task disk-image
 ```
+
+## Linux Developer Tips
+
+The default user account is `playtron` with the password `playtron`. It can be accessed by enabling SSH in the Developer page. The IP address will also be listed there. Alternatively, open up a TTY console by pressing `CTRL`, `ALT`, and `F3` at the same time.
+
+```
+Settings > Developer > Enable > Enable SSH Access: On
+```
+
+```
+$ ssh -l playtron $IP_ADDRESS
+```
+
+This user has elevated privileges via the use of `sudo`.
+
+```
+$ sudo whoami
+```
+
+There is no password for the `root` user account. Set one to help with troubleshooting boot issues.
+
+```
+$ sudo passwd root
+```
+
+Switch to a minimal Weston desktop environment.
+
+```
+$ sudo playtronos-session-select dev
+```
+
+Switch back to the Playtron experience.
+
+```
+$ sudo playtronos-session-select user
+```
+
+Enable Flathub.
+
+```
+$ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+```
+
+Enable LanCache support for Epic Games Store. Steam already supports LanCache. GOG.com does not support LanCache.
+
+```
+$ crudini --set ~/.config/legendary/config.ini Legendary disable_https true
+```
