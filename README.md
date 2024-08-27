@@ -1,6 +1,6 @@
-# Playtron OS
+# PlaytronOS
 
-- A secure environment designed to load only a single application such as a game launcher.
+Read more about PlaytronOS on our official [website](https://www.playtron.one/).
 
 ## Minimum Hardware Requirements
 
