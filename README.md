@@ -102,3 +102,10 @@ Enable LanCache support for Epic Games Store. Steam already supports LanCache. G
 ```
 $ crudini --set ~/.config/legendary/config.ini Legendary disable_https true
 ```
+
+Create and use a container for development purposes.
+
+```
+$ distrobox create --init --additional-packages systemd --image fedora:40 --pull --name fedora40
+$ distrobox enter fedora40
+```
