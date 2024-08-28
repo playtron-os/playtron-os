@@ -90,3 +90,58 @@ Then build the raw operating system image. Use Virtual Machine Manager (`virt-ma
 ```
 $ sudo -E go-task disk-image
 ```
+
+## Linux Developer Tips
+
+The default user account is `playtron` with the password `playtron`. It can be accessed by enabling SSH in the Developer page. The IP address will also be listed there. Alternatively, open up a TTY console by pressing `CTRL`, `ALT`, and `F3` at the same time.
+
+```
+Settings > Developer > Enable > Enable SSH Access: On
+```
+
+```
+$ ssh -l playtron $IP_ADDRESS
+```
+
+This user has elevated privileges via the use of `sudo`.
+
+```
+$ sudo whoami
+```
+
+There is no password for the `root` user account. Set one to help with troubleshooting boot issues.
+
+```
+$ sudo passwd root
+```
+
+Switch to a minimal Weston desktop environment.
+
+```
+$ sudo playtronos-session-select dev
+```
+
+Switch back to the Playtron experience.
+
+```
+$ sudo playtronos-session-select user
+```
+
+Enable Flathub.
+
+```
+$ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+```
+
+Enable LanCache support for Epic Games Store. Steam already supports LanCache. GOG.com does not support LanCache.
+
+```
+$ crudini --set ~/.config/legendary/config.ini Legendary disable_https true
+```
+
+Create and use a container for development purposes.
+
+```
+$ distrobox create --init --additional-packages systemd --image fedora:40 --pull --name fedora40
+$ distrobox enter fedora40
+```
