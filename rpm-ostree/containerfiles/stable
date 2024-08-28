@@ -6,10 +6,12 @@ COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 RUN rpm-ostree uninstall \
   gamescope-session-playtron \
   grid \
-  playserve
+  playserve \
+  playtron-os-files
 
 RUN rpm-ostree install \
   gamescope-session-playtron \
   grid \
   playserve \
+  playtron-os-files \
   && ostree container commit
