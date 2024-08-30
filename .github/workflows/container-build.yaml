@@ -44,7 +44,7 @@ jobs:
           rm --force task_linux_amd64.deb
       - uses: actions/checkout@v4
       - name: Build base container image
-        run: sudo --preserve-env task container-image:build-base
+        run: docker run -u root --privileged=true --rm --workdir=/srv --volume=$GITHUB_WORKSPACE:/srv quay.io/fedora-ostree-desktops/silverblue:40 sh -c "rpm-ostree install -y go-task && go-task container-image:build-base"
       - name: Load base container image
         run: task container-image:load-base
       - name: Build container image
