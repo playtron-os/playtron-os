@@ -37,8 +37,6 @@ tasks:
     preconditions:
       - sh: test "$EUID" == 0
         msg: "This task must be run as root"
-      - sh: test -n "$TAG"
-        msg: "A value for TAG must be provided"
     cmds:
       - rpm-ostree compose image --initialize-mode=always --format=ociarchive playtron-os.yaml playtron-os-base.ociarchive
 
