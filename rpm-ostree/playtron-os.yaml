@@ -101,6 +101,9 @@ repos:
   - fedora-cisco-openh264
   - inputplumber-x86_64
   - kernel-fsync-x86_64
+  - kernel-mainline-wo-mergew
+  - mesa-git-x86_64
+  - mesa-git-i686
   - playtron-gaming-x86_64
   - playtron-gaming-i386
   - playtron-app-x86_64
