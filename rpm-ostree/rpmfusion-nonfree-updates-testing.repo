@@ -7,7 +7,7 @@ enabled_metadata=0
 type=rpm-md
 gpgcheck=1
 repo_gpgcheck=0
-gpgkey=https://playtron-dev2-global-os-public.s3.us-west-2.amazonaws.com/gpg-public-keys/RPM-GPG-KEY-rpmfusion-nonfree-fedora-$releasever
+gpgkey=file:///usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-nonfree-fedora-$releasever
 
 [rpmfusion-nonfree-updates-testing-debuginfo]
 name=RPM Fusion for Fedora $releasever - Nonfree - Test Updates Debug
@@ -17,7 +17,7 @@ enabled=0
 type=rpm-md
 gpgcheck=1
 repo_gpgcheck=0
-gpgkey=https://playtron-dev2-global-os-public.s3.us-west-2.amazonaws.com/gpg-public-keys/RPM-GPG-KEY-rpmfusion-nonfree-fedora-$releasever
+gpgkey=file:///usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-nonfree-fedora-$releasever
 
 [rpmfusion-nonfree-updates-testing-source]
 name=RPM Fusion for Fedora $releasever - Nonfree - Test Updates Source
@@ -27,5 +27,5 @@ enabled=0
 type=rpm-md
 gpgcheck=1
 repo_gpgcheck=0
-gpgkey=https://playtron-dev2-global-os-public.s3.us-west-2.amazonaws.com/gpg-public-keys/RPM-GPG-KEY-rpmfusion-nonfree-fedora-$releasever
+gpgkey=file:///usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-nonfree-fedora-$releasever
 
