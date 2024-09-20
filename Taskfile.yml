@@ -144,9 +144,11 @@ tasks:
         msg: "A value for IMAGE must be provided"
     cmds:
       - cat playtron-os_kickstart.cfg.template | envsubst '${REGISTRY} ${REGISTRY_TOKEN} ${PROJECT} ${IMAGE} ${TAG}' > playtron-os_kickstart.cfg
-      - ./virt-install.sh
-      - mv /var/lib/libvirt/images/playtron-os.img "/var/lib/libvirt/images/playtron-os.img_$(date -Iseconds)"
-      - virsh undefine --nvram playtron-os
+      - rm -f ${IMAGE}.img
+      - fallocate -l 9G ${IMAGE}.img
+      - echo | anaconda --noninteractive --kickstart=$(pwd)/playtron-os_kickstart.cfg --image=${IMAGE}.img
+      - sleep 10 # being extra cautious
+      - umount --force /mnt/sysroot # anaconda fails to unmount the disk, do so manually
 
   repo:update:
     desc: "Update the package repository"
