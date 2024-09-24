@@ -6,7 +6,7 @@ rojig:
   summary: "PlaytronOS base image"
   license: MIT
 # The release version needs to be manually set to allow RPM repositories to use the $releasever variable.
-releasever: "40"
+releasever: "41"
 recommends: false
 packages:
   - fedora-release-silverblue
@@ -96,14 +96,14 @@ packages-x86_64:
 packages-aarch64:
   - xorg-x11-drv-armsoc
 repos:
-  - fedora-40
-  - fedora-40-updates
+  - fedora-41
+  - fedora-41-updates
   - fedora-cisco-openh264
   - inputplumber-x86_64
-  - kernel-fsync-x86_64
+  #- kernel-fsync-x86_64
   - kernel-mainline-wo-mergew
-  - mesa-git-x86_64
-  - mesa-git-i686
+  #- mesa-git-x86_64
+  #- mesa-git-i686
   - playtron-gaming-x86_64
   - playtron-gaming-i386
   - playtron-app-x86_64

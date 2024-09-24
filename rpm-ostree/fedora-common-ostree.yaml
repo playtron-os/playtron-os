@@ -1,4 +1,4 @@
-releasever: 40
+releasever: 41
 automatic-version-prefix: "${releasever}.<date:%Y%m%d>"
 mutate-os-release: "${releasever}"
 
