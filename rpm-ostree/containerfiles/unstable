@@ -14,12 +14,29 @@ COPY rpmfusion-free.repo rpmfusion-free-updates.repo rpmfusion-free-updates-test
 ## Playtron.
 COPY inputplumber-x86_64.repo kernel-mainline-wo-mergew.repo mesa-git-x86_64.repo mesa-git-i686.repo playtron-app-x86_64.repo playtron-gaming-i386.repo playtron-gaming-x86_64.repo /etc/yum.repos.d/
 
-# On x86, also install 32-bit Mesa.
-# Our Arm builds are only 64-bit.
+# Install akmod-nvidia dependencies
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   rpm-ostree install \
-  akmod-nvidia \
+  kmodtool \
+  akmods \
+  xorg-x11-drv-nvidia-kmodsrc \
+  xorg-x11-drv-nvidia-cuda-libs \
+  xorg-x11-drv-nvidia-libs \
+  nvidia-modprobe \
+  egl-gbm \
+  egl-wayland \
+  libglvnd-opengl \
   ; fi && ostree container commit
+
+# Download akmod-nvidia package to be installed on first boot
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+  mkdir /var/nvidia && wget --directory-prefix=/var/nvidia \
+    http://gsl-syd.mm.fcix.net/rpmfusion/nonfree/fedora/nvidia-driver/41/x86_64/a/akmod-nvidia-560.35.03-1.fc41.x86_64.rpm \
+    http://gsl-syd.mm.fcix.net/rpmfusion/nonfree/fedora/nvidia-driver/41/x86_64/x/xorg-x11-drv-nvidia-560.35.03-5.fc41.x86_64.rpm \
+    http://gsl-syd.mm.fcix.net/rpmfusion/nonfree/fedora/nvidia-driver/41/x86_64/x/xorg-x11-drv-nvidia-power-560.35.03-5.fc41.x86_64.rpm \
+    http://gsl-syd.mm.fcix.net/rpmfusion/nonfree/fedora/nvidia-driver/41/x86_64/n/nvidia-settings-560.35.03-1.fc41.x86_64.rpm \
+  ; fi && ostree container commit
+
 
 RUN rpm-ostree install \
   steam.i686 \
@@ -31,6 +48,10 @@ COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 COPY rootfs/usr/lib/modprobe.d/playtron.conf /usr/lib/modprobe.d/
 COPY rootfs/usr/share/plymouth/themes/spinner/watermark.png /usr/share/plymouth/themes/spinner/
+COPY rootfs/usr/bin/install-nvidia.sh /usr/bin/
+COPY rootfs/usr/lib/systemd/system-preset/50-playtron-nvidia.preset /usr/lib/systemd/system-preset/
+COPY rootfs/usr/lib/systemd/system/install-nvidia.service /usr/lib/systemd/system/
+COPY rootfs/usr/share/gamescope-session-plus/sessions.d/playtron /usr/share/gamescope-session-plus/sessions.d/
 
 # Set SELinux to permissive mode.
 RUN sed -i s'/SELINUX=.*/SELINUX=permissive/'g /etc/selinux/config && \

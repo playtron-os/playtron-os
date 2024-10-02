@@ -1,0 +1,14 @@
+[Unit]
+Description=Install Nvidia drivers on first boot.
+After=local-fs.target
+Wants=local-fs.target
+
+[Service]
+Type=oneshot
+TimeoutSec=infinity
+ExecStart=/bin/install-nvidia.sh
+ExecStart=/bin/systemctl --no-reload disable %n
+
+[Install]
+WantedBy=multi-user.target
+
