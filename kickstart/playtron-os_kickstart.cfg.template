@@ -20,7 +20,7 @@ zerombr
 clearpart --all --initlabel --drives=vda
 # The only way to specify default kernel arguments with rpm-ostree is to specify them here in the Kickstart file.
 # https://github.com/ostreedev/ostree/issues/479#issuecomment-245266886
-bootloader --location=mbr --boot-drive=vda
+bootloader --location=mbr --boot-drive=vda --append="preempt=full"
 autopart --type btrfs
 
 # Setup the file system.
