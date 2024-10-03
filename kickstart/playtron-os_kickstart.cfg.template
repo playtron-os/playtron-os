@@ -63,5 +63,5 @@ crudini --ini-options=nospace --set /etc/default/grub "" GRUB_TIMEOUT_STYLE hidd
 
 # Rebuild the GRUB configuration file.
 # This will load hidden boot menu settings and the new EFI boot entries.
-grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
+grub2-mkconfig -o /boot/grub2/grub.cfg
 %end
