@@ -3,5 +3,5 @@
 # Enable shell debugging.
 set -x
 
-rpm-ostree install /var/nvidia/*.rpm
+rpm-ostree install --cache-only /var/nvidia/*.rpm
 reboot

@@ -35,6 +35,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
     http://gsl-syd.mm.fcix.net/rpmfusion/nonfree/fedora/nvidia-driver/41/x86_64/x/xorg-x11-drv-nvidia-560.35.03-5.fc41.x86_64.rpm \
     http://gsl-syd.mm.fcix.net/rpmfusion/nonfree/fedora/nvidia-driver/41/x86_64/x/xorg-x11-drv-nvidia-power-560.35.03-5.fc41.x86_64.rpm \
     http://gsl-syd.mm.fcix.net/rpmfusion/nonfree/fedora/nvidia-driver/41/x86_64/n/nvidia-settings-560.35.03-1.fc41.x86_64.rpm \
+    http://gsl-syd.mm.fcix.net/rpmfusion/nonfree/fedora/nvidia-driver/41/x86_64/x/xorg-x11-drv-nvidia-xorg-libs-560.35.03-5.fc41.x86_64.rpm \
   ; fi && ostree container commit
 
 
