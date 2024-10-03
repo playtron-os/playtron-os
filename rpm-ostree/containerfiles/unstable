@@ -53,6 +53,7 @@ COPY rootfs/usr/bin/install-nvidia.sh /usr/bin/
 COPY rootfs/usr/lib/systemd/system-preset/50-playtron-nvidia.preset /usr/lib/systemd/system-preset/
 COPY rootfs/usr/lib/systemd/system/install-nvidia.service /usr/lib/systemd/system/
 COPY rootfs/usr/share/gamescope-session-plus/sessions.d/playtron /usr/share/gamescope-session-plus/sessions.d/
+COPY rootfs/var/nvidia/nvidia-kmod-common-560.35.03-1.fc40.x86_64.rpm /var/nvidia/
 
 # Set SELinux to permissive mode.
 RUN sed -i s'/SELINUX=.*/SELINUX=permissive/'g /etc/selinux/config && \
