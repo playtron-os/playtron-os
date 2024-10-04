@@ -4,4 +4,4 @@ baseurl=https://mirror.rackspace.com/fedora/updates/41/Everything/x86_64/
 enabled=1
 gpgcheck=1
 metadata_expire=1d
-exclude=ffmpeg-free libswscale-free mangohud wireplumber* legendary
+exclude=ffmpeg-free kernel* legendary libswscale-free mangohud wireplumber*
