@@ -2,12 +2,13 @@
 Description=Install Nvidia drivers on first boot.
 After=local-fs.target
 Wants=local-fs.target
+After=resize-root-file-system.service
+Wants=resize-root-file-system.service
 
 [Service]
 Type=oneshot
 TimeoutSec=infinity
 ExecStart=/bin/install-nvidia.sh
-ExecStart=/bin/systemctl --no-reload disable %n
 
 [Install]
 WantedBy=multi-user.target

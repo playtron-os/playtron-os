@@ -55,6 +55,8 @@ COPY rootfs/usr/lib/systemd/system/install-nvidia.service /usr/lib/systemd/syste
 COPY rootfs/usr/share/gamescope-session-plus/sessions.d/playtron /usr/share/gamescope-session-plus/sessions.d/
 COPY rootfs/var/nvidia/nvidia-kmod-common-560.35.03-1.fc40.x86_64.rpm /var/nvidia/
 
+RUN ln -s /usr/lib/systemd/system/install-nvidia.service /etc/systemd/system/multi-user.target.wants/
+
 # Set SELinux to permissive mode.
 RUN sed -i s'/SELINUX=.*/SELINUX=permissive/'g /etc/selinux/config && \
   ostree container commit
