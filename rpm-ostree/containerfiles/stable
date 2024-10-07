@@ -1,17 +1,21 @@
-FROM registry.playtron.one/internal/playtronos:0.18.0.61
+FROM registry.playtron.one/internal/playtronos:0.19.0.6
 
 # Set OS version
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 
+RUN wget \
+  https://playtron-dev2-global-os-public.s3.us-west-2.amazonaws.com/repos/playtron-app/x86_64/grid-0.30.4.fc40.x86_64.rpm \
+  https://playtron-dev2-global-os-public.s3.us-west-2.amazonaws.com/repos/playtron-app/x86_64/playserve-0.30.3.x86_64.rpm
+
 RUN rpm-ostree uninstall \
   gamescope-session-playtron \
   grid \
-  playserve \
-  playtron-os-files
+  playserve
 
 RUN rpm-ostree install \
   gamescope-session-playtron \
-  grid \
-  playserve \
-  playtron-os-files \
+  grid*.rpm \
+  playserve*.rpm
+
+RUN rm *.rpm \
   && ostree container commit
