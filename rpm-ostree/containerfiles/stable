@@ -20,5 +20,8 @@ RUN rpm-ostree install \
   grid*.rpm \
   playserve*.rpm
 
+# re-installing gamescope-session-playtron removes this override
+COPY rootfs/usr/share/gamescope-session-plus/sessions.d/playtron /usr/share/gamescope-session-plus/sessions.d/
+
 RUN rm *.rpm \
   && ostree container commit
