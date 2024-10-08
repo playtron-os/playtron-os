@@ -4,4 +4,5 @@ baseurl=https://mirror.rackspace.com/fedora/development/41/Everything/x86_64/os/
 enabled=1
 gpgcheck=1
 metadata_expire=1d
+gpgkey=file:///usr/share/distribution-gpg-keys/fedora/RPM-GPG-KEY-fedora-$releasever-primary
 exclude=ffmpeg-free kernel* legendary libswscale-free mangohud wireplumber*
