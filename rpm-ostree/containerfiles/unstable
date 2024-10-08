@@ -14,6 +14,11 @@ COPY rpmfusion-free.repo rpmfusion-free-updates.repo rpmfusion-free-updates-test
 ## Playtron.
 COPY inputplumber-x86_64.repo kernel-mainline-wo-mergew.repo mesa-git-x86_64.repo mesa-git-i686.repo playtron-app-x86_64.repo playtron-gaming-i386.repo playtron-gaming-x86_64.repo /etc/yum.repos.d/
 
+RUN rpm-ostree install \
+  dnf5
+  && ostree container commit
+ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
+
 # Install akmod-nvidia dependencies
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
   rpm-ostree install \
