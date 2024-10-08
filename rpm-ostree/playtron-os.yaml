@@ -78,7 +78,6 @@ packages:
   - xorg-x11-drv-amdgpu
   - xorg-x11-drv-ati
   - xorg-x11-drv-evdev
-  - xorg-x11-drv-fbdev
   - xorg-x11-drv-libinput
   - xorg-x11-drv-nouveau
   - xorg-x11-drv-qxl
