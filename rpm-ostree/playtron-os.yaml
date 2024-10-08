@@ -12,6 +12,8 @@ packages:
   - fedora-release-silverblue
   - NetworkManager-tui
   - vim
+  # Required to build akmod kernel modules.
+  - kernel-devel
   # Provides 'crudini' for post-installation configuration.
   - crudini
   # Provides a configuration file to allow building a generic initramfs that can boot on any system.
@@ -103,6 +105,7 @@ repos:
   - kernel-mainline-wo-mergew
   - mesa-git-x86_64
   - mesa-git-i686
+  - negativo17-fedora-nvidia
   - playtron-gaming-x86_64
   - playtron-gaming-i386
   - playtron-app-x86_64

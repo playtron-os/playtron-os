@@ -9,42 +9,43 @@ RUN rm -f /etc/yum.repos.d/*
 COPY fedora-41.repo fedora-41-updates.repo fedora-updates-archive.repo /etc/yum.repos.d/
 ## kernel-fsync.
 COPY kernel-fsync.repo /etc/yum.repos.d/
+## Negativo17 NVIDIA.
+COPY negativo17-fedora-nvidia.repo /etc/yum.repos.d/
 ## RPM Fusion.
 COPY rpmfusion-free.repo rpmfusion-free-updates.repo rpmfusion-free-updates-testing.repo rpmfusion-nonfree.repo rpmfusion-nonfree-tainted.repo rpmfusion-nonfree-updates.repo rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/
 ## Playtron.
 COPY inputplumber-x86_64.repo kernel-mainline-wo-mergew.repo mesa-git-x86_64.repo mesa-git-i686.repo playtron-app-x86_64.repo playtron-gaming-i386.repo playtron-gaming-x86_64.repo /etc/yum.repos.d/
 
+RUN cat /usr/lib/os-release
+
 RUN rpm-ostree install \
-  dnf5
+  dnf5 \
   && ostree container commit
 ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
 
-# Install akmod-nvidia dependencies
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-  rpm-ostree install \
-  kmodtool \
-  akmods \
-  xorg-x11-drv-nvidia-kmodsrc \
-  xorg-x11-drv-nvidia-cuda-libs \
-  xorg-x11-drv-nvidia-libs \
-  nvidia-modprobe \
-  egl-gbm \
-  egl-wayland \
-  libglvnd-opengl \
-  ; fi && ostree container commit
+# Install NVIDIA.
+RUN ${CMD_INSTALL} \
+  akmod-nvidia \
+  nvenc \
+  nvidia-driver \
+  nvidia-driver-libs.i686 \
+  nvidia-driver-NvFBCOpenGL \
+  nvidia-persistenced.x86_64 \
+  && ostree container commit
 
-# Download akmod-nvidia package to be installed on first boot
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-  mkdir /var/nvidia && wget --directory-prefix=/var/nvidia \
-    http://gsl-syd.mm.fcix.net/rpmfusion/nonfree/fedora/nvidia-driver/41/x86_64/a/akmod-nvidia-560.35.03-1.fc41.x86_64.rpm \
-    http://gsl-syd.mm.fcix.net/rpmfusion/nonfree/fedora/nvidia-driver/41/x86_64/x/xorg-x11-drv-nvidia-560.35.03-5.fc41.x86_64.rpm \
-    http://gsl-syd.mm.fcix.net/rpmfusion/nonfree/fedora/nvidia-driver/41/x86_64/x/xorg-x11-drv-nvidia-power-560.35.03-5.fc41.x86_64.rpm \
-    http://gsl-syd.mm.fcix.net/rpmfusion/nonfree/fedora/nvidia-driver/41/x86_64/n/nvidia-settings-560.35.03-1.fc41.x86_64.rpm \
-    http://gsl-syd.mm.fcix.net/rpmfusion/nonfree/fedora/nvidia-driver/41/x86_64/x/xorg-x11-drv-nvidia-xorg-libs-560.35.03-5.fc41.x86_64.rpm \
-  ; fi && ostree container commit
+RUN mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
+  akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; done; rm -r -f /run/akmods \
+  && ostree container commit
 
+RUN systemctl enable \
+  nvidia-hibernate \
+  nvidia-persistenced \
+  nvidia-powerd \
+  nvidia-resume \
+  nvidia-suspend \
+  && ostree container commit
 
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   steam.i686 \
   && ostree container commit
 
@@ -54,13 +55,7 @@ COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 COPY rootfs/usr/lib/modprobe.d/playtron.conf /usr/lib/modprobe.d/
 COPY rootfs/usr/share/plymouth/themes/spinner/watermark.png /usr/share/plymouth/themes/spinner/
-COPY rootfs/usr/bin/install-nvidia.sh /usr/bin/
-COPY rootfs/usr/lib/systemd/system-preset/50-playtron-nvidia.preset /usr/lib/systemd/system-preset/
-COPY rootfs/usr/lib/systemd/system/install-nvidia.service /usr/lib/systemd/system/
 COPY rootfs/usr/share/gamescope-session-plus/sessions.d/playtron /usr/share/gamescope-session-plus/sessions.d/
-COPY rootfs/var/nvidia/nvidia-kmod-common-560.35.03-1.fc40.x86_64.rpm /var/nvidia/
-
-RUN ln -s /usr/lib/systemd/system/install-nvidia.service /etc/systemd/system/multi-user.target.wants/
 
 # Set SELinux to permissive mode.
 RUN sed -i s'/SELINUX=.*/SELINUX=permissive/'g /etc/selinux/config && \

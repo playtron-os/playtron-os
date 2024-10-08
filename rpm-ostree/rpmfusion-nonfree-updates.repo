@@ -8,6 +8,7 @@ type=rpm-md
 gpgcheck=1
 repo_gpgcheck=0
 gpgkey=file:///usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-nonfree-fedora-$releasever
+exclude=*nvidia*
 
 [rpmfusion-nonfree-updates-debuginfo]
 name=RPM Fusion for Fedora $releasever - Nonfree - Updates Debug
