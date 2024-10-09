@@ -1,7 +1,5 @@
 packages:
-  # "ffmpeg" comes from RPMFusion. Use this instead of "ffmpeg-free" from Fedora.
-  # https://rpmfusion.org/Howto/Multimedia
-  - ffmpeg
+  - ffmpeg-free
   # Hardware acceleration support.
   ## AMD.
   ## These conflict with the Mesa packages from Fedora that do not have the "-freeworld" suffix.
@@ -11,14 +9,9 @@ packages:
   - intel-media-driver
   - intel-gmmlib
   - libva-intel-media-driver
-  ## NVIDIA proprietary driver.
-  ## Disabled for now since the driver is not used.
-  #- nvidia-vaapi-driver
   # rpm-ostree does not support installing all of the available group packages in Fedora yet.
   # Below is a replication of installing the @Multimedia group package.
-  # "libavcodec", "libavfilter", "libavformat", "libavutil", "libpostproc", "libswresample", and "libswscale" are provided by "ffmpeg-libs" from RPMFusion.
   # https://github.com/coreos/rpm-ostree/issues/744
-  # https://rpmfusion.org/Howto/Multimedia
   - abattis-cantarell-vf-fonts
   - alsa-utils
   - avahi-glib
@@ -55,8 +48,8 @@ packages:
   - dbus-libs
   - default-fonts-core-sans
   - duktape
-  #- fdk-aac-free
-  - fdk-aac
+  - fdk-aac-free
+  #- fdk-aac
   - fftw-libs-double
   - flac-libs
   - flite
@@ -114,10 +107,10 @@ packages:
   - libaom
   - libass
   - libasyncns
-  #- libavcodec-free
-  #- libavfilter-free
-  #- libavformat-free
-  #- libavutil-free
+  - libavcodec-free
+  - libavfilter-free
+  - libavformat-free
+  - libavutil-free
   - libbluray
   - libbs2b
   - libcdio
@@ -148,7 +141,7 @@ packages:
   - libopenmpt
   - libplacebo
   - libpng
-  #- libpostproc-free
+  - libpostproc-free
   - librabbitmq
   - librist
   - librsvg2
@@ -163,8 +156,8 @@ packages:
   - libsoup3
   - libsrtp
   - libstemmer
-  #- libswresample-free
-  #- libswscale-free
+  - libswresample-free
+  - libswscale-free
   - libtalloc
   - libtdb
   - libei
