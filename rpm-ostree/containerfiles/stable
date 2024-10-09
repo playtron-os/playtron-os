@@ -25,3 +25,6 @@ COPY rootfs/usr/share/gamescope-session-plus/sessions.d/playtron /usr/share/game
 
 RUN rm *.rpm \
   && ostree container commit
+
+# View final packages.
+RUN rpm -qa | sort

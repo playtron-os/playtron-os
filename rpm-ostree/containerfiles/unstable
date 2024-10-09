@@ -65,3 +65,6 @@ RUN sed -i s'/SELINUX=.*/SELINUX=permissive/'g /etc/selinux/config && \
 RUN KERNEL=$(echo /lib/modules/*/initramfs.img | cut -d'/' -f4) \
   && dracut --reproducible -v --omit-drivers nouveau --add 'ostree' -f --no-hostonly --kver ${KERNEL} /lib/modules/${KERNEL}/initramfs.img \
   && ostree container commit
+
+# View final packages.
+RUN rpm -qa | sort
