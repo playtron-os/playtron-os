@@ -47,6 +47,9 @@ tasks:
       - sed -i s'/enabled=0/enabled=1/'g kernel-mainline-wo-mergew.repo
       - sed -i s'/enabled=0/enabled=1/'g mesa-git-x86_64.repo
       - sed -i s'/enabled=0/enabled=1/'g mesa-git-i686.repo
+      - sed -i s'/#- kernel-mainline-wo-mergew/- kernel-mainline-wo-mergew/'g playtron-os.yaml
+      - sed -i s'/#- mesa-git-x86_64/- mesa-git-x86_64/'g playtron-os.yaml
+      - sed -i s'/#- mesa-git-i686/- mesa-git-i686/'g playtron-os.yaml
       - task: container-image:build-base
 
   container-image:load-base:
