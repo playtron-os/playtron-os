@@ -11,12 +11,14 @@ RUN wget \
 
 RUN rpm-ostree uninstall \
   gamescope \
+  gamescope-session \
   gamescope-session-playtron \
   inputplumber \
   grid \
   playserve
 
 RUN rpm-ostree install \
+  gamescope-session \
   gamescope-session-playtron \
   gamescope*.rpm \
   inputplumber*.rpm \
