@@ -1,4 +1,4 @@
-FROM registry.playtron.one/internal/playtronos:0.19.0.6
+FROM registry.playtron.one/internal/playtronos:fedora-41-luke
 
 # Set OS version
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
