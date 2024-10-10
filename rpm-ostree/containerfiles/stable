@@ -6,9 +6,11 @@ COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 RUN wget \
   https://playtron-dev2-global-os-public.s3.us-west-2.amazonaws.com/repos/playtron-app/x86_64/grid-0.30.4.fc40.x86_64.rpm \
   https://playtron-dev2-global-os-public.s3.us-west-2.amazonaws.com/repos/playtron-app/x86_64/playserve-0.30.3.x86_64.rpm \
+  https://kojipkgs.fedoraproject.org//packages/gamescope/3.14.2/2.fc41/x86_64/gamescope-3.14.2-2.fc41.x86_64.rpm \
   https://github.com/ShadowBlip/InputPlumber/releases/download/v0.34.5/inputplumber-0.34.5-1.x86_64.rpm
 
 RUN rpm-ostree uninstall \
+  gamescope \
   gamescope-session-playtron \
   inputplumber \
   grid \
@@ -16,6 +18,7 @@ RUN rpm-ostree uninstall \
 
 RUN rpm-ostree install \
   gamescope-session-playtron \
+  gamescope*.rpm \
   inputplumber*.rpm \
   grid*.rpm \
   playserve*.rpm
