@@ -23,39 +23,24 @@ RUN rpm-ostree install \
   && ostree container commit
 ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
 
-# Install NVIDIA.
 RUN ${CMD_INSTALL} \
   akmod-nvidia \
   nvenc \
   nvidia-driver \
-  nvidia-driver-libs.i686 \
   nvidia-driver-NvFBCOpenGL \
-  nvidia-persistenced.x86_64 \
+  nvidia-driver-libs.i686 \
+  steam.i686 \
   && ostree container commit
 
 RUN mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
   akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; done; rm -r -f /run/akmods \
   && ostree container commit
 
-RUN systemctl enable \
-  nvidia-hibernate \
-  nvidia-persistenced \
-  nvidia-powerd \
-  nvidia-resume \
-  nvidia-suspend \
-  && ostree container commit
-
-RUN ${CMD_INSTALL} \
-  steam.i686 \
-  && ostree container commit
-
 # Copy/override files
 COPY rootfs/etc/hostname /etc/
 COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
-COPY rootfs/usr/lib/modprobe.d/playtron.conf /usr/lib/modprobe.d/
 COPY rootfs/usr/share/plymouth/themes/spinner/watermark.png /usr/share/plymouth/themes/spinner/
-COPY rootfs/usr/share/gamescope-session-plus/sessions.d/playtron /usr/share/gamescope-session-plus/sessions.d/
 
 # Set SELinux to permissive mode.
 RUN sed -i s'/SELINUX=.*/SELINUX=permissive/'g /etc/selinux/config && \

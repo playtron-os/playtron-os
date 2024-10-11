@@ -66,6 +66,7 @@ packages:
   - lightdm
   - lightdm-autologin-greeter
   - xwininfo
+  - tzupdate
   # Input Management
   - inputplumber
   - evtest
@@ -89,11 +90,16 @@ packages:
   - xorg-x11-xinit
   ## Required for Playserve.
   - xorg-x11-server-Xvfb
+  ## Nvidia support
+  #- akmod-nvidia
+  #- nvenc
+  #- nvidia-driver
+  #- nvidia-driver-NvFBCOpenGL
 packages-x86_64:
   - xorg-x11-drv-intel
-  - xorg-x11-drv-openchrome
-  - xorg-x11-drv-vesa
-  - xorg-x11-drv-vmware
+  #- xorg-x11-drv-openchrome
+  #- xorg-x11-drv-vesa
+  #- xorg-x11-drv-vmware
 packages-aarch64:
   - xorg-x11-drv-armsoc
 repos:
