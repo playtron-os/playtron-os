@@ -43,10 +43,9 @@ Enable and start the `libvirtd` service.
 $ sudo systemctl enable --now libvirtd
 ```
 
-Define a tag and then build the base OCI container image archive.
+Build the base OCI container image archive.
 
 ```
-$ export TAG=replace-me
 $ sudo -E go-task container-image:build-base
 ```
 
@@ -54,6 +53,12 @@ Import the container image archive.
 
 ```
 $ go-task container-image:load-base
+```
+
+Define a container image tag.
+
+```
+$ export TAG=replace-me
 ```
 
 Build an unstable development container image. Alternatively, build a stable container image based on the previous release.
