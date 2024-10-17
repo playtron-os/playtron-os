@@ -23,6 +23,24 @@ RUN rpm-ostree install \
   && ostree container commit
 ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
 
+# downgrade gamescope
+RUN wget \
+  https://kojipkgs.fedoraproject.org/packages/gamescope/3.14.2/2.fc41/x86_64/gamescope-3.14.2-2.fc41.x86_64.rpm
+
+RUN rpm-ostree uninstall \
+  gamescope \
+  gamescope-session \
+  gamescope-session-playtron
+
+RUN rpm-ostree install \
+  gamescope*.rpm \
+  gamescope-session \
+  gamescope-session-playtron
+
+RUN rm *.rpm \
+  && ostree container commit
+
+# install additional packages
 RUN ${CMD_INSTALL} \
   akmod-nvidia \
   nvenc \
