@@ -67,6 +67,7 @@ packages:
   - lightdm-autologin-greeter
   - xwininfo
   - tzupdate
+  - powerstation
   # Input Management
   - inputplumber
   - evtest
@@ -76,6 +77,8 @@ packages:
   - lsb_release
   # for dev/debug mode session
   - weston-session
+  # utilities
+  - switcheroo-control
   # Xorg packages for Fedora.
   ## These are no longer included in fedora-common-ostree-pkgs.yaml as of Fedora 39.
   - xorg-x11-drv-amdgpu
