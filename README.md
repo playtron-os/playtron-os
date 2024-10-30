@@ -147,6 +147,6 @@ $ crudini --set ~/.config/legendary/config.ini Legendary disable_https true
 Create and use a container for development purposes.
 
 ```
-$ distrobox create --init --additional-packages systemd --image fedora:40 --pull --name fedora40
-$ distrobox enter fedora40
+$ distrobox create --init --additional-packages systemd --image fedora:41 --pull --name fedora41
+$ distrobox enter fedora41
 ```
