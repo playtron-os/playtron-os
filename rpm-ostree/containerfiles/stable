@@ -3,20 +3,11 @@ FROM registry.playtron.one/internal/playtronos:0.19.0.12
 # Set OS version
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 
-RUN rpm-ostree uninstall \
-  inputplumber \
-  grid \
-  playserve \
-  playtron-os-files
-
-RUN rpm-ostree install \
+RUN dnf5 -y upgrade \
   inputplumber \
   grid \
   playserve \
   playtron-os-files \
-  && ostree container commit
-
-RUN rm *.rpm \
   && ostree container commit
 
 # View final packages.
