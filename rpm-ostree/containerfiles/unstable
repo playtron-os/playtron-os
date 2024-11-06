@@ -24,12 +24,14 @@ ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_p
 RUN wget \
   https://kojipkgs.fedoraproject.org/packages/gamescope/3.14.2/3.fc41/x86_64/gamescope-3.14.2-3.fc41.x86_64.rpm
 
-RUN dnf5 remove -y gamescope
+RUN dnf5 remove -y gamescope \
+  && ostree container commit
 
 RUN ${CMD_INSTALL} \
   gamescope*.rpm \
   gamescope-session \
-  gamescope-session-playtron
+  gamescope-session-playtron \
+  && ostree container commit
 
 RUN rm *.rpm \
   && ostree container commit
