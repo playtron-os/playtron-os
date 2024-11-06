@@ -37,6 +37,12 @@ RUN rm *.rpm \
   && ostree container commit
 
 # install additional packages
+
+# Required for NVIDIA.
+RUN ${CMD_INSTALL} \
+  --setopt=disable_excludes=* \
+  kernel-srpm-macros
+
 RUN ${CMD_INSTALL} \
   akmod-nvidia \
   nvenc \
