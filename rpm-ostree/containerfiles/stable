@@ -3,6 +3,7 @@ FROM registry.playtron.one/internal/playtronos:0.19.0.15
 # Set OS version
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 
+# https://github.com/playtron-os/rpm-specs-gaming
 RUN dnf5 -y upgrade \
   gamescope-session-playtron \
   gamescope-session \
@@ -16,6 +17,13 @@ RUN dnf5 -y upgrade \
   tzupdate \
   udev-media-automount \
   valve-firmware \
+  && ostree container commit
+
+# Temporarily upgrade NVIDIA while the 560 driver is broken.
+RUN dnf5 -y upgrade \
+  *nvidia* \
+  && mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
+  akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; done; rm -r -f /run/akmods \
   && ostree container commit
 
 # View final packages.
