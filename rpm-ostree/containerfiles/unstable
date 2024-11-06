@@ -27,12 +27,9 @@ ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_p
 RUN wget \
   https://kojipkgs.fedoraproject.org/packages/gamescope/3.14.2/2.fc41/x86_64/gamescope-3.14.2-2.fc41.x86_64.rpm
 
-RUN rpm-ostree uninstall \
-  gamescope \
-  gamescope-session \
-  gamescope-session-playtron
+RUN dnf5 remove -y gamescope
 
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
   gamescope*.rpm \
   gamescope-session \
   gamescope-session-playtron
