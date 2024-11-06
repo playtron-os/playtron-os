@@ -7,8 +7,8 @@ ARG TARGETPLATFORM
 RUN rm -f /etc/yum.repos.d/*
 ## Fedora.
 COPY fedora-41.repo fedora-41-updates.repo fedora-updates-archive.repo /etc/yum.repos.d/
-## kernel-fsync.
-COPY kernel-fsync.repo /etc/yum.repos.d/
+## kernel-blu.
+COPY kernel-blu.repo /etc/yum.repos.d/
 ## Negativo17 NVIDIA.
 COPY negativo17-fedora-nvidia.repo /etc/yum.repos.d/
 ## RPM Fusion.
