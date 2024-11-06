@@ -9,6 +9,8 @@ rojig:
 releasever: "41"
 recommends: false
 packages:
+  - dnf5
+  - dnf5-plugins
   - fedora-release-silverblue
   - NetworkManager-tui
   - vim

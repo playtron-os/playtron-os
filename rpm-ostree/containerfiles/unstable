@@ -18,9 +18,6 @@ COPY inputplumber-x86_64.repo kernel-mainline-wo-mergew.repo mesa-git-x86_64.rep
 
 RUN cat /usr/lib/os-release
 
-RUN rpm-ostree install \
-  dnf5 \
-  && ostree container commit
 ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
 
 # downgrade gamescope
