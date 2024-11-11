@@ -7,10 +7,10 @@ Read more about PlaytronOS on our official [website](https://www.playtron.one/).
 - CPU
     - x86
         - AMD Ryzen or Intel 6th Gen Kaby Lake
-- GPU (single GPU only)
+- GPU
     - AMD Navi
     - Intel Xe (support coming soon)
-    - NVIDIA Turing (support coming soon)
+    - NVIDIA Turing
 
 ## Build
 
