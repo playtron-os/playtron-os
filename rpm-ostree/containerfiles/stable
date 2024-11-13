@@ -26,5 +26,10 @@ RUN dnf5 -y upgrade \
   akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; done; rm -r -f /run/akmods \
   && ostree container commit
 
+# Temporarily remove zram packages until we update our stable base image.
+RUN dnf5 -y remove \
+  zram-generator \
+  zram-generator-defaults
+
 # View final packages.
 RUN rpm -qa | sort
