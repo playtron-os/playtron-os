@@ -95,11 +95,6 @@ packages:
   - xorg-x11-xinit
   ## Required for Playserve.
   - xorg-x11-server-Xvfb
-  ## Nvidia support
-  #- akmod-nvidia
-  #- nvenc
-  #- nvidia-driver
-  #- nvidia-driver-NvFBCOpenGL
 packages-x86_64:
   - xorg-x11-drv-intel
   #- xorg-x11-drv-openchrome
