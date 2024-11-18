@@ -45,9 +45,9 @@ jobs:
           sudo dpkg --install task_linux_amd64.deb
           rm --force task_linux_amd64.deb
       - uses: actions/checkout@v4
-      - name: Build container image
-        run: task container-image:build-stable
       - name: Authenticate to container registry
         run: task container-image:auth
+      - name: Build container image
+        run: task container-image:build-stable
       - name: Upload container image
         run: task container-image:push
