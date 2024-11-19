@@ -31,5 +31,10 @@ RUN dnf5 -y remove \
   zram-generator \
   zram-generator-defaults
 
+# Temporarily add the "resume" Dracut module until we update our stable base image.
+RUN KERNEL=$(echo /lib/modules/*/initramfs.img | cut -d'/' -f4) \
+  && dracut --reproducible -v --omit-drivers nouveau --add 'ostree resume' -f --no-hostonly --kver ${KERNEL} /lib/modules/${KERNEL}/initramfs.img \
+  && ostree container commit
+
 # View final packages.
 RUN rpm -qa | sort
