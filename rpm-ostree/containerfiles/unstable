@@ -53,7 +53,8 @@ RUN ${CMD_INSTALL} \
   && ostree container commit
 
 RUN mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
-  akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; done; rm -r -f /run/akmods \
+  akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; \
+  ls /usr/lib/modules/"${k}"/extra/nvidia/nvidia.ko.xz || exit 1; done; rm -r -f /run/akmods \
   && ostree container commit
 
 # Copy/override files
