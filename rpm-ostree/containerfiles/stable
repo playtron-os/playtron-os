@@ -5,6 +5,7 @@ COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 
 # https://github.com/playtron-os/rpm-specs-gaming
 RUN dnf5 -y upgrade \
+  gamescope-dbus \
   gamescope-session-playtron \
   gamescope-session \
   legendary \
