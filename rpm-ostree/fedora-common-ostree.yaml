@@ -1,4 +1,4 @@
-releasever: 40
+releasever: 41
 automatic-version-prefix: "${releasever}.<date:%Y%m%d>"
 mutate-os-release: "${releasever}"
 
@@ -92,11 +92,9 @@ exclude-packages:
   # Always exclude dnf when pulled in as a dependency
   - dnf
   - dnf-plugins-core
-  - dnf5
-  - dnf5-plugins
   # https://github.com/fedora-silverblue/issue-tracker/issues/517
-  - grubby
-  - sdubby
+  #- grubby
+  #- sdubby
 
 postprocess:
   - |

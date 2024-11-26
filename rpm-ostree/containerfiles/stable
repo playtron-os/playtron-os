@@ -1,17 +1,31 @@
-FROM registry.playtron.one/internal/playtronos:0.18.0.61
+FROM registry.playtron.one/internal/playtronos:0.19.0.19
 
 # Set OS version
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 
-RUN rpm-ostree uninstall \
+# https://github.com/playtron-os/rpm-specs-gaming
+RUN dnf5 -y upgrade \
+  gamescope-dbus \
   gamescope-session-playtron \
-  grid \
-  playserve \
-  playtron-os-files
-
-RUN rpm-ostree install \
-  gamescope-session-playtron \
+  gamescope-session \
+  legendary \
+  mangohud \
+  inputplumber \
   grid \
   playserve \
   playtron-os-files \
+  reaper \
+  tzupdate \
+  udev-media-automount \
+  valve-firmware \
   && ostree container commit
+
+# Temporarily upgrade NVIDIA while the 560 driver is broken.
+RUN dnf5 -y upgrade \
+  *nvidia* \
+  && mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
+  akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; done; rm -r -f /run/akmods \
+  && ostree container commit
+
+# View final packages.
+RUN rpm -qa | sort

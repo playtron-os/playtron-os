@@ -7,10 +7,10 @@ Read more about PlaytronOS on our official [website](https://www.playtron.one/).
 - CPU
     - x86
         - AMD Ryzen or Intel 6th Gen Kaby Lake
-- GPU (single GPU only)
+- GPU
     - AMD Navi
     - Intel Xe (support coming soon)
-    - NVIDIA Turing (support coming soon)
+    - NVIDIA Turing
 
 ## Build
 
@@ -43,10 +43,9 @@ Enable and start the `libvirtd` service.
 $ sudo systemctl enable --now libvirtd
 ```
 
-Define a tag and then build the base OCI container image archive.
+Build the base OCI container image archive.
 
 ```
-$ export TAG=replace-me
 $ sudo -E go-task container-image:build-base
 ```
 
@@ -54,6 +53,12 @@ Import the container image archive.
 
 ```
 $ go-task container-image:load-base
+```
+
+Define a container image tag.
+
+```
+$ export TAG=replace-me
 ```
 
 Build an unstable development container image. Alternatively, build a stable container image based on the previous release.
@@ -142,6 +147,6 @@ $ crudini --set ~/.config/legendary/config.ini Legendary disable_https true
 Create and use a container for development purposes.
 
 ```
-$ distrobox create --init --additional-packages systemd --image fedora:40 --pull --name fedora40
-$ distrobox enter fedora40
+$ distrobox create --init --additional-packages systemd --image fedora:41 --pull --name fedora41
+$ distrobox enter fedora41
 ```

@@ -6,35 +6,55 @@ ARG TARGETPLATFORM
 # Copy over repository files.
 RUN rm -f /etc/yum.repos.d/*
 ## Fedora.
-COPY fedora-40.repo fedora-40-updates.repo fedora-updates-archive.repo /etc/yum.repos.d/
-## kernel-fsync.
-COPY kernel-fsync.repo /etc/yum.repos.d/
+COPY fedora-41.repo fedora-41-updates.repo fedora-updates-archive.repo /etc/yum.repos.d/
+## kernel-blu.
+COPY kernel-blu.repo /etc/yum.repos.d/
+## Negativo17 NVIDIA.
+COPY negativo17-fedora-nvidia.repo /etc/yum.repos.d/
 ## RPM Fusion.
 COPY rpmfusion-free.repo rpmfusion-free-updates.repo rpmfusion-free-updates-testing.repo rpmfusion-nonfree.repo rpmfusion-nonfree-tainted.repo rpmfusion-nonfree-updates.repo rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/
 ## Playtron.
 COPY inputplumber-x86_64.repo kernel-mainline-wo-mergew.repo mesa-git-x86_64.repo mesa-git-i686.repo playtron-app-x86_64.repo playtron-gaming-i386.repo playtron-gaming-x86_64.repo /etc/yum.repos.d/
 
-# On x86, also install 32-bit Mesa.
-# Our Arm builds are only 64-bit.
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-  rpm-ostree install \
-  mesa-dri-drivers.i686 \
-  mesa-filesystem.i686 \
-  mesa-libd3d.i686 \
-  mesa-libEGL.i686 \
-  mesa-libgbm.i686 \
-  mesa-libGL.i686 \
-  mesa-libglapi.i686 \
-  mesa-libOpenCL.i686 \
-  mesa-libOSMesa.i686 \
-  mesa-libxatracker.i686 \
-  mesa-va-drivers.i686 \
-  mesa-vdpau-drivers.i686 \
-  mesa-vulkan-drivers.i686; fi \
+RUN cat /usr/lib/os-release
+
+ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
+
+# downgrade gamescope
+RUN wget \
+  https://kojipkgs.fedoraproject.org/packages/gamescope/3.14.2/3.fc41/x86_64/gamescope-3.14.2-3.fc41.x86_64.rpm
+
+RUN dnf5 remove -y gamescope \
   && ostree container commit
 
-RUN rpm-ostree install \
+RUN ${CMD_INSTALL} \
+  gamescope*.rpm \
+  gamescope-session \
+  gamescope-session-playtron \
+  && ostree container commit
+
+RUN rm *.rpm \
+  && ostree container commit
+
+# install additional packages
+
+# Required for NVIDIA.
+RUN ${CMD_INSTALL} \
+  --setopt=disable_excludes=* \
+  kernel-srpm-macros
+
+RUN ${CMD_INSTALL} \
+  akmod-nvidia \
+  nvenc \
+  nvidia-driver \
+  nvidia-driver-NvFBCOpenGL \
+  nvidia-driver-libs.i686 \
   steam.i686 \
+  && ostree container commit
+
+RUN mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
+  akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; \
+  ls /usr/lib/modules/"${k}"/extra/nvidia/nvidia.ko.xz || exit 1; done; rm -r -f /run/akmods \
   && ostree container commit
 
 # Copy/override files
@@ -49,5 +69,8 @@ RUN sed -i s'/SELINUX=.*/SELINUX=permissive/'g /etc/selinux/config && \
 
 # Finalize initramfs
 RUN KERNEL=$(echo /lib/modules/*/initramfs.img | cut -d'/' -f4) \
-  && dracut --reproducible -v --add 'ostree' -f --no-hostonly --kver ${KERNEL} /lib/modules/${KERNEL}/initramfs.img \
+  && dracut --reproducible -v --omit-drivers nouveau --add 'ostree' -f --no-hostonly --kver ${KERNEL} /lib/modules/${KERNEL}/initramfs.img \
   && ostree container commit
+
+# View final packages.
+RUN rpm -qa | sort

@@ -6,12 +6,16 @@ rojig:
   summary: "PlaytronOS base image"
   license: MIT
 # The release version needs to be manually set to allow RPM repositories to use the $releasever variable.
-releasever: "40"
+releasever: "41"
 recommends: false
 packages:
+  - dnf5
+  - dnf5-plugins
   - fedora-release-silverblue
   - NetworkManager-tui
   - vim
+  # Required to build akmod kernel modules.
+  - kernel-devel
   # Provides 'crudini' for post-installation configuration.
   - crudini
   # Provides a configuration file to allow building a generic initramfs that can boot on any system.
@@ -64,6 +68,8 @@ packages:
   - lightdm
   - lightdm-autologin-greeter
   - xwininfo
+  - tzupdate
+  - powerstation
   # Input Management
   - inputplumber
   - evtest
@@ -73,12 +79,13 @@ packages:
   - lsb_release
   # for dev/debug mode session
   - weston-session
+  # utilities
+  - switcheroo-control
   # Xorg packages for Fedora.
   ## These are no longer included in fedora-common-ostree-pkgs.yaml as of Fedora 39.
   - xorg-x11-drv-amdgpu
   - xorg-x11-drv-ati
   - xorg-x11-drv-evdev
-  - xorg-x11-drv-fbdev
   - xorg-x11-drv-libinput
   - xorg-x11-drv-nouveau
   - xorg-x11-drv-qxl
@@ -90,20 +97,21 @@ packages:
   - xorg-x11-server-Xvfb
 packages-x86_64:
   - xorg-x11-drv-intel
-  - xorg-x11-drv-openchrome
-  - xorg-x11-drv-vesa
-  - xorg-x11-drv-vmware
+  #- xorg-x11-drv-openchrome
+  #- xorg-x11-drv-vesa
+  #- xorg-x11-drv-vmware
 packages-aarch64:
   - xorg-x11-drv-armsoc
 repos:
-  - fedora-40
-  - fedora-40-updates
+  - fedora-41
+  - fedora-41-updates
   - fedora-cisco-openh264
   - inputplumber-x86_64
-  - kernel-fsync-x86_64
-  - kernel-mainline-wo-mergew
-  - mesa-git-x86_64
-  - mesa-git-i686
+  - kernel-blu-x86_64
+  #- kernel-mainline-wo-mergew
+  #- mesa-git-x86_64
+  #- mesa-git-i686
+  - negativo17-fedora-nvidia
   - playtron-gaming-x86_64
   - playtron-gaming-i386
   - playtron-app-x86_64
