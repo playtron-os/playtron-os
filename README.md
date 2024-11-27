@@ -74,7 +74,7 @@ $ go-task container-image:build-stable
 Optionally authenticate to a container registry.
 
 ```
-$ export REGISTRY=quay.io
+$ export REGISTRY=ghcr.io
 $ export PROJECT=playtron-os
 $ export REGISTRY_TOKEN="replace-me"
 $ go-task container-image:auth
@@ -97,6 +97,14 @@ $ sudo -E go-task disk-image
 ```
 
 ## Linux Developer Tips
+
+PlaytronOS container images are published to the GitHub Container Registry (GHCR). These can be found [here](https://github.com/orgs/playtron-os/packages/container/package/playtron-os) at the GitHub organization level (not the GitHub repository level).
+
+On an existing Fedora Atomic Desktop, it is possible to switch to PlaytronOS.
+
+```
+$ sudo rpm-ostree rebase ghcr.io/playtron-os/playtron-os:latest
+```
 
 The default user account is `playtron` with the password `playtron`. It can be accessed by enabling SSH in the Developer page. The IP address will also be listed there. Alternatively, open up a TTY console by pressing `CTRL`, `ALT`, and `F3` at the same time.
 
