@@ -103,7 +103,7 @@ PlaytronOS container images are published to the GitHub Container Registry (GHCR
 On an existing Fedora Atomic Desktop, it is possible to switch to PlaytronOS.
 
 ```
-$ sudo rpm-ostree rebase ghcr.io/playtron-os/playtron-os:latest
+$ sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/playtron-os/playtron-os:latest
 ```
 
 The default user account is `playtron` with the password `playtron`. It can be accessed by enabling SSH in the Developer page. The IP address will also be listed there. Alternatively, open up a TTY console by pressing `CTRL`, `ALT`, and `F3` at the same time.
