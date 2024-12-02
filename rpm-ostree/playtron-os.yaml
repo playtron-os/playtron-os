@@ -65,8 +65,7 @@ packages:
   - playview
   - udisks2
   - zstd
-  - lightdm
-  - lightdm-autologin-greeter
+  - sddm
   - xwininfo
   - tzupdate
   - powerstation
