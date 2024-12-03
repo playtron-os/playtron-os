@@ -20,6 +20,9 @@ RUN cat /usr/lib/os-release
 
 ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
 
+# Prevent kernel upgrades.
+RUN dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel-headers kernel-modules kernel-modules-core kernel-modules-extra
+
 # downgrade gamescope
 RUN wget \
   https://kojipkgs.fedoraproject.org/packages/gamescope/3.14.2/3.fc41/x86_64/gamescope-3.14.2-3.fc41.x86_64.rpm
