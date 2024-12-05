@@ -1,6 +1,6 @@
 [kernel-blu-x86_64]
 name=Copr repo for kernel-blu owned by sentry
-baseurl=https://download.copr.fedorainfracloud.org/results/sentry/kernel-blu/fedora-40-$basearch/
+baseurl=https://download.copr.fedorainfracloud.org/results/sentry/kernel-blu/fedora-$releasever-$basearch/
 type=rpm-md
 skip_if_unavailable=False
 gpgcheck=1
