@@ -5,4 +5,4 @@ enabled=1
 gpgcheck=1
 metadata_expire=1d
 gpgkey=file:///usr/share/distribution-gpg-keys/fedora/RPM-GPG-KEY-fedora-$releasever-primary
-exclude=kernel* legendary mangohud wireplumber*
+exclude=kernel* legendary mangohud
