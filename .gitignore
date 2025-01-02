@@ -1,8 +1,2 @@
-# This file is created when running the command "go-task container-image:build-base".
-rpm-ostree/playtron-os-base.ociarchive
-# This file is created when running the command "go-task container-image:load-base".
-rpm-ostree/imported-base-sha256
 # This file is created when running the command "go-task container-image:build".
-rpm-ostree/rootfs/usr/lib/os-release-playtron
-# This file is created from "kickstart/playtron-os_kickstart.cfg.template".
-playtron-os_kickstart.cfg
+rootfs/usr/lib/os-release-playtron

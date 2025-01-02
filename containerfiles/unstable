@@ -1,0 +1,102 @@
+FROM ghcr.io/ublue-os/ucore-minimal:stable-nvidia-20241231
+
+# Copy over repository files
+RUN rm -f /etc/yum.repos.d/*
+COPY repos/*.repo /etc/yum.repos.d/
+
+RUN cat /usr/lib/os-release
+ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
+
+RUN ${CMD_INSTALL} distribution-gpg-keys
+
+RUN ${CMD_INSTALL} \
+  binutils \
+  cabextract \
+  crudini \
+  distrobox \
+  evtest \
+  gamescope-session-playtron \
+  inputplumber \
+  legendary \
+  lsb_release \
+  mangohud \
+  mesa-vulkan-drivers \
+  p7zip-plugins \
+  playserve \
+  playtron-os-files \
+  playview \
+  plymouth \
+  plymouth-theme-spinner \
+  powerstation \
+  sddm \
+  steam.i686 \
+  tzupdate \
+  udev-media-automount \
+  udisks2 \
+  unrar \
+  unzip \
+  valve-firmware \
+  vim \
+  webkit2gtk4.1 \
+  weston-session \
+  wget \
+  xdg-utils \
+  xorg-x11-server-Xvfb \
+  xwininfo \
+  zenity \
+  alsa-sof-firmware \
+  alsa-ucm \
+  alsa-utils \
+  bc \
+  bluez \
+  dbus-daemon \
+  pipewire \
+  pipewire-alsa \
+  pipewire-gstreamer \
+  pipewire-pulseaudio \
+  pipewire-utils \
+  switcheroo-control \
+  thermald \
+  time \
+  tor \
+  torsocks \
+  tree \
+  usbutils \
+  wireplumber \
+  ostree-grub2 \
+  usb_modeswitch \
+  atheros-firmware \
+  brcmfmac-firmware \
+  cirrus-audio-firmware \
+  intel-audio-firmware \
+  iwlegacy-firmware \
+  iwlwifi-dvm-firmware \
+  iwlwifi-mvm-firmware \
+  libertas-firmware \
+  mt7xxx-firmware \
+  nxpwireless-firmware \
+  realtek-firmware \
+  tiwilink-firmware \
+  NetworkManager-bluetooth \
+  NetworkManager-wifi
+
+# Copy/override files
+COPY rootfs/etc/hostname /etc/
+COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
+COPY rootfs/usr/lib/os-release-playtron /usr/lib/
+COPY rootfs/usr/share/plymouth/themes/spinner/watermark.png /usr/share/plymouth/themes/spinner/
+
+# Set SELinux to permissive mode
+RUN sed -i s'/SELINUX=.*/SELINUX=permissive/'g /etc/selinux/config
+
+# Set graphical boot target
+RUN cd /usr/lib/systemd/system && rm default.target && ln -s graphical.target default.target
+
+# Clear /var/run
+RUN rm -rf /var/run
+
+# Use dnf5
+RUN rm -f /usr/bin/dnf && ln -s /usr/bin/dnf5 /usr/bin/dnf
+
+# View final packages
+RUN rpm -qa | sort

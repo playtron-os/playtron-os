@@ -31,41 +31,8 @@ tasks:
       - mkdir -p ${XDG_RUNTIME_DIR}/containers
       - echo "{ \"auths\":{ \"${REGISTRY}\":{ \"auth\":\"${REGISTRY_TOKEN}\" } } }" > "${XDG_RUNTIME_DIR}/containers/auth.json"
 
-  container-image:build-base:
-    desc: Build the base OCI container image.
-    dir: rpm-ostree
-    preconditions:
-      - sh: test "$EUID" == 0
-        msg: "This task must be run as root"
-    cmds:
-      - rpm-ostree compose image --initialize-mode=always --format=ociarchive playtron-os.yaml playtron-os-base.ociarchive
-
-  container-image:build-base-bleeding-edge:
-    desc: Build the base OCI container image using kernel-mainline and mesa-git packages.
-    dir: rpm-ostree
-    cmds:
-      - sed -i s'/enabled=0/enabled=1/'g kernel-mainline-wo-mergew.repo
-      - sed -i s'/enabled=0/enabled=1/'g mesa-git-x86_64.repo
-      - sed -i s'/enabled=0/enabled=1/'g mesa-git-i686.repo
-      - sed -i s'/#- kernel-mainline-wo-mergew/- kernel-mainline-wo-mergew/'g playtron-os.yaml
-      - sed -i s'/#- mesa-git-x86_64/- mesa-git-x86_64/'g playtron-os.yaml
-      - sed -i s'/#- mesa-git-i686/- mesa-git-i686/'g playtron-os.yaml
-      - task: container-image:build-base
-
-  container-image:load-base:
-    desc: Load the base OCI container image.
-    dir: rpm-ostree
-    preconditions:
-      - sh: test -f playtron-os-base.ociarchive
-        msg: "No base image archive found. Please use `container-image:build-base` to build a base image first."
-    cmds:
-      - cat playtron-os-base.ociarchive | podman load 2>&1 | grep "Loaded image" | cut -d':' -f3 > imported-base-sha256
-      - rm -f playtron-os-base.ociarchive
-      - podman tag $(cat imported-base-sha256) playtron-os-base:local
-
-  container-image:build:
-    desc: Build the OCI container image.
-    dir: rpm-ostree
+  container-image:build:unstable:
+    desc: Build the OCI container image using the latest upstream.
     preconditions:
       - sh: test -n "$TAG"
         msg: "A value for TAG must be provided"
@@ -74,9 +41,8 @@ tasks:
       - cat os-release.template | envsubst '${TAG}' > rootfs/usr/lib/os-release-playtron
       - podman build --no-cache --tag ${IMAGE}:${TAG} --file containerfiles/unstable .
 
-  container-image:build-stable:
-    desc: Build the OCI container image using the stable containerfile.
-    dir: rpm-ostree
+  container-image:build:stable:
+    desc: Build the OCI container image using a previously built image.
     preconditions:
       - sh: test -n "$TAG"
         msg: "A value for TAG must be provided"
@@ -98,7 +64,6 @@ tasks:
         msg: "A value for PROJECT must be provided"
     cmds:
       - podman push ${IMAGE}:${TAG} ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
-      - podman push ${IMAGE}:${TAG} ${REGISTRY}/${PROJECT}/${IMAGE}:testing
 
   container-image:release:
     desc: Release the OCI container image by tagging it as `latest` in the container registry.
@@ -125,17 +90,10 @@ tasks:
       - sh: test -n "$PROJECT"
         msg: "A value for PROJECT must be provided"
     cmds:
-      - podman run -it ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} bash
+      - podman run --rm -it ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} bash
 
   disk-image:
     desc: Build the OS image from a container hosted in a registry.
-    dir: kickstart
-    env:
-      TAG: latest
-      PROJECT: playtron-os
-      REGISTRY: ghcr.io
-      IMAGE: playtron-os
-      REGISTRY_TOKEN:
     preconditions:
       - sh: test "$EUID" == 0
         msg: "This task must be run as root"
@@ -146,11 +104,9 @@ tasks:
       - sh: test -n "$IMAGE"
         msg: "A value for IMAGE must be provided"
     cmds:
-      - cat playtron-os_kickstart.cfg.template | envsubst '${REGISTRY} ${REGISTRY_TOKEN} ${PROJECT} ${IMAGE} ${TAG}' > playtron-os_kickstart.cfg
-      - sudo setenforce 0
-      - ./virt-install.sh
-      - mv /var/lib/libvirt/images/playtron-os.img "/var/lib/libvirt/images/playtron-os.img_$(date -Iseconds)"
-      - virsh undefine --nvram playtron-os
+      - mkdir output
+      - podman pull ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
+      - podman run --rm -it --privileged --pull=newer --security-opt label=type:unconfined_t -v ./config.toml:/config.toml:ro -v ./output:/output -v /var/lib/containers/storage:/var/lib/containers/storage quay.io/centos-bootc/bootc-image-builder:latest --type raw --rootfs btrfs --local ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
 
   repo:update:
     desc: "Update the package repository"
@@ -173,7 +129,7 @@ tasks:
       - echo $GITHUB_TOKEN | podman login ghcr.io -u $GITHUB_USER --password-stdin
 
   public:push:
-    desc: Publish the container to the public registry with the tag 'testing'.
+    desc: Publish the container to the public registry.
     preconditions:
       - sh: test -n "$REGISTRY"
         msg: "A value for REGISTRY must be provided"
@@ -188,7 +144,6 @@ tasks:
     cmds:
       - podman pull ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
       - podman push ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} ghcr.io/playtron-os/${PUBLIC_IMAGE}:${TAG}
-      - podman push ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} ghcr.io/playtron-os/${PUBLIC_IMAGE}:testing
 
   public:release:
     desc: Publish the container to the public registry with the tag 'latest'.
@@ -223,4 +178,21 @@ tasks:
         msg: "A value for TAG must be provided"
     cmds:
       - podman pull ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
-      - podman run -it ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} rpm -qa | sort -u > playtron-os-${TAG}.pkg-list.txt
+      - podman run -it ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} rpm -qa --qf "%{NAME}\n" | sort -u > playtron-os-${TAG}.pkg-list.txt
+
+  package-list:versioned:
+    desc: Publish the container to the public registry with the tag 'latest'.
+    preconditions:
+      - sh: test -n "$REGISTRY"
+        msg: "A value for REGISTRY must be provided"
+      - sh: grep "${REGISTRY}" "${XDG_RUNTIME_DIR}/containers/auth.json"
+        msg: "Please use `container-image:auth` to authenticate with the registry"
+      - sh: grep "${REGISTRY}" "${XDG_RUNTIME_DIR}/containers/auth.json"
+        msg: "Please use `container-image:auth` to authenticate with the registry"
+      - sh: test -n "$PROJECT"
+        msg: "A value for PROJECT must be provided"
+      - sh: test -n "$TAG"
+        msg: "A value for TAG must be provided"
+    cmds:
+      - podman pull ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
+      - podman run -it ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} rpm -qa | sort -u > playtron-os-${TAG}.pkg-list.versioned.txt

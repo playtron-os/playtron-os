@@ -48,6 +48,6 @@ jobs:
       - name: Authenticate to container registry
         run: task container-image:auth
       - name: Build container image
-        run: task container-image:build-stable
+        run: task container-image:build:stable
       - name: Upload container image
         run: task container-image:push
