@@ -1,4 +1,4 @@
-FROM ghcr.io/ublue-os/ucore-minimal:stable-nvidia-20241231
+FROM ghcr.io/ublue-os/ucore-minimal:stable-nvidia-20250107
 
 # Copy over repository files
 RUN rm -f /etc/yum.repos.d/*
