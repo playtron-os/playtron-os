@@ -16,6 +16,7 @@ RUN ${CMD_INSTALL} \
   distrobox \
   evtest \
   gamescope-session-playtron \
+  gstreamer1-plugins-good \
   inputplumber \
   legendary \
   lsb_release \
