@@ -69,6 +69,7 @@ packages:
   - xwininfo
   - tzupdate
   - powerstation
+  - libverified
   # Input Management
   - inputplumber
   - evtest
