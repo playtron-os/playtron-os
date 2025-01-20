@@ -70,6 +70,7 @@ packages:
   - tzupdate
   - powerstation
   - libverified
+  - SteamBus
   # Input Management
   - inputplumber
   - evtest
