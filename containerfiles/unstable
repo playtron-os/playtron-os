@@ -29,6 +29,7 @@ RUN ${CMD_INSTALL} \
   plymouth \
   plymouth-theme-spinner \
   powerstation \
+  SteamBus \
   sddm \
   steam.i686 \
   tzupdate \
@@ -100,4 +101,4 @@ RUN rm -rf /var/run
 RUN rm -f /usr/bin/dnf && ln -s /usr/bin/dnf5 /usr/bin/dnf
 
 # View final packages
-RUN rpm -qa | sort
+RUN rpm -qa | sort --ignore-case
