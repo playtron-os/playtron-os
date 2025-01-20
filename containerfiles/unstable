@@ -30,6 +30,7 @@ RUN ${CMD_INSTALL} \
   plymouth-theme-spinner \
   powerstation \
   SteamBus \
+  libverified \
   sddm \
   steam.i686 \
   tzupdate \
