@@ -1,7 +1,9 @@
-FROM ghcr.io/ublue-os/ucore-minimal:stable-nvidia-20250107
+FROM ghcr.io/ublue-os/base-nvidia:41-20250116
 
-# Copy over repository files
-RUN rm -f /etc/yum.repos.d/*
+# Force dnf5
+RUN rm -f /usr/bin/dnf && ln -s /usr/bin/dnf5 /usr/bin/dnf
+
+# Copy over custom repository files
 COPY repos/*.repo /etc/yum.repos.d/
 
 RUN cat /usr/lib/os-release
@@ -14,6 +16,7 @@ RUN ${CMD_INSTALL} \
   cabextract \
   crudini \
   distrobox \
+  dracut-config-generic \
   evtest \
   gamescope-session-playtron \
   gstreamer1-plugins-good \
@@ -95,11 +98,13 @@ RUN sed -i s'/SELINUX=.*/SELINUX=permissive/'g /etc/selinux/config
 # Set graphical boot target
 RUN cd /usr/lib/systemd/system && rm default.target && ln -s graphical.target default.target
 
+# Build initramfs
+RUN KERNEL=$(echo /lib/modules/*/vmlinuz | cut -d'/' -f4) \
+  && /usr/libexec/rpm-ostree/wrapped/dracut --reproducible -v --omit-drivers nouveau --add 'ostree' -f --no-hostonly --kver ${KERNEL} /lib/modules/${KERNEL}/initramfs.img
+
 # Clear /var/run
 RUN rm -rf /var/run
-
-# Use dnf5
-RUN rm -f /usr/bin/dnf && ln -s /usr/bin/dnf5 /usr/bin/dnf
+RUN ln -s /run /var/run
 
 # View final packages
 RUN rpm -qa | sort --ignore-case
