@@ -39,6 +39,12 @@ RUN ${CMD_INSTALL} \
 RUN rm *.rpm \
   && ostree container commit
 
+# manually install libverified to work around a scripts issue
+RUN wget https://playtron-dev2-global-os-public.s3.us-west-2.amazonaws.com/repos/playtron-app/x86_64/libverified-0.1.0-1.x86_64.rpm \
+  && rpm --install --noscripts libverified*.rpm \
+  && rm *.rpm \
+  && ostree container commit
+
 # install additional packages
 
 # Required for NVIDIA.
