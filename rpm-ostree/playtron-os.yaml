@@ -69,7 +69,6 @@ packages:
   - xwininfo
   - tzupdate
   - powerstation
-  - libverified
   - SteamBus
   # Input Management
   - inputplumber
