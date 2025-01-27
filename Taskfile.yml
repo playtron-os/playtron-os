@@ -224,3 +224,17 @@ tasks:
     cmds:
       - podman pull ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
       - podman run -it ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} rpm -qa | sort -u > playtron-os-${TAG}.pkg-list.txt
+
+  hash:
+    desc: Generate sha256sum file of hashes for kernel and initramfs
+    preconditions:
+      - sh: test -n "$REGISTRY"
+        msg: "A value for REGISTRY must be provided"
+      - sh: grep "${REGISTRY}" "${XDG_RUNTIME_DIR}/containers/auth.json"
+        msg: "Please use `container-image:auth` to authenticate with the registry"
+      - sh: test -n "$PROJECT"
+        msg: "A value for PROJECT must be provided"
+      - sh: test -n "$TAG"
+        msg: "A value for TAG must be provided"
+    cmds:
+      - podman run -it ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} bash -c "cd /usr/lib/modules/* && sha256sum vmlinuz initramfs.img" > sha256sum.txt
