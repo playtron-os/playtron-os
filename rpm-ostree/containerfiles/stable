@@ -4,8 +4,9 @@ FROM registry.playtron.one/internal/playtronos:0.19.0.29
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 
 RUN wget https://playtron-dev2-global-os-public.s3.us-west-2.amazonaws.com/repos/playtron-app/x86_64/playserve-0.39.4.x86_64.rpm \
- && dnf5 install -y playserve*.rpm \
- && rm playser*.rpm \
+ && wget https://playtron-dev2-global-os-public.s3.us-west-2.amazonaws.com/repos/playtron-app/x86_64/grid-0.39.4.fc40.x86_64.rpm \
+ && dnf5 install -y *.rpm \
+ && rm *.rpm \
  && ostree container commit
 
 # View final packages.
