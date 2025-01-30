@@ -14,77 +14,77 @@ ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_p
 RUN ${CMD_INSTALL} distribution-gpg-keys
 
 RUN ${CMD_INSTALL} \
+  alsa-sof-firmware \
+  alsa-ucm \
+  alsa-utils \
+  atheros-firmware \
+  bc \
   binutils \
+  bluez \
+  brcmfmac-firmware \
   cabextract \
+  cirrus-audio-firmware \
   crudini \
+  dbus-daemon \
   distrobox \
   dracut-config-generic \
   evtest \
   gamescope-session-playtron \
   gstreamer1-plugins-good \
   inputplumber \
+  intel-audio-firmware \
+  iwlegacy-firmware \
+  iwlwifi-dvm-firmware \
+  iwlwifi-mvm-firmware \
   legendary \
+  libertas-firmware \
+  libverified \
   lsb_release \
   mangohud \
   mesa-vulkan-drivers \
+  mt7xxx-firmware \
+  NetworkManager-bluetooth \
+  NetworkManager-wifi \
+  nxpwireless-firmware \
+  ostree-grub2 \
   p7zip-plugins \
+  pipewire \
+  pipewire-alsa \
+  pipewire-gstreamer \
+  pipewire-pulseaudio \
+  pipewire-utils \
   playserve \
   playtron-os-files \
   playview \
   plymouth \
   plymouth-theme-spinner \
   powerstation \
-  SteamBus \
-  libverified \
+  realtek-firmware \
   sddm \
   steam.i686 \
+  SteamBus \
+  switcheroo-control \
+  thermald \
+  time \
+  tiwilink-firmware \
+  tree \
   tzupdate \
   udev-media-automount \
   udisks2 \
   unrar \
   unzip \
+  usbutils \
+  usb_modeswitch \
   valve-firmware \
   vim \
   webkit2gtk4.1 \
   weston-session \
   wget \
+  wireplumber \
   xdg-utils \
   xorg-x11-server-Xvfb \
   xwininfo \
-  zenity \
-  alsa-sof-firmware \
-  alsa-ucm \
-  alsa-utils \
-  bc \
-  bluez \
-  dbus-daemon \
-  pipewire \
-  pipewire-alsa \
-  pipewire-gstreamer \
-  pipewire-pulseaudio \
-  pipewire-utils \
-  switcheroo-control \
-  thermald \
-  time \
-  tree \
-  usbutils \
-  wireplumber \
-  ostree-grub2 \
-  usb_modeswitch \
-  atheros-firmware \
-  brcmfmac-firmware \
-  cirrus-audio-firmware \
-  intel-audio-firmware \
-  iwlegacy-firmware \
-  iwlwifi-dvm-firmware \
-  iwlwifi-mvm-firmware \
-  libertas-firmware \
-  mt7xxx-firmware \
-  nxpwireless-firmware \
-  realtek-firmware \
-  tiwilink-firmware \
-  NetworkManager-bluetooth \
-  NetworkManager-wifi
+  zenity
 
 # downgrade gamescope (temporary fix for Nvidia issues)
 RUN wget https://kojipkgs.fedoraproject.org/packages/gamescope/3.14.2/3.fc41/x86_64/gamescope-3.14.2-3.fc41.x86_64.rpm \
