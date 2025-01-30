@@ -1,0 +1,68 @@
+# Anaconda Kickstart file for Playtron OS.
+
+%pre
+if [ -n "${REGISTRY_TOKEN}" ]; then
+	# Add registry token to the system doing the build to enable downloads of private containers
+	mkdir -p /run/ostree
+	echo '{
+	    "auths": {
+	        "${REGISTRY}": {
+	            "auth": "${REGISTRY_TOKEN}"
+	        }
+	    }
+	}' > /run/ostree/auth.json
+fi
+%end
+
+# Create the required partitions.
+ignoredisk --only-use=vda
+zerombr
+clearpart --all --initlabel --drives=vda
+# The only way to specify default kernel arguments with rpm-ostree is to specify them here in the Kickstart file.
+# https://github.com/ostreedev/ostree/issues/479#issuecomment-245266886
+bootloader --location=mbr --boot-drive=vda --append="preempt=full"
+autopart --type btrfs
+
+# Setup the file system.
+ostreecontainer --url ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} --no-signature-verification
+
+# Reboot and start the installer.
+reboot
+text
+url --url="https://mirror.rackspace.com/fedora/releases/41/Everything/x86_64/os/"
+
+# U.S.A. keyboard and langauge settings.
+keyboard --vckeymap=us --xlayouts='us'
+lang en_US.UTF-8
+
+# Default to UTC timezone.
+timezone UTC --utc
+
+# Disable the "root" user.
+rootpw --lock
+
+# Enable the desktop environment.
+xconfig --startxonboot
+
+# Run post-installation shell commands.
+%post --logfile=/root/kickstart-post.log --erroronfail
+
+# Enable (1) -e for immediate exit on fail and (2) -x for shell debug logging to show the commands that are run.
+set -e -x
+
+# Create the "playtron" user manually.
+# https://bugzilla.redhat.com/show_bug.cgi?id=1838859
+# Put the user in the "wheel" group for elevated privileges, "input" for Autotest, and "tss" for Playtron Verified.
+grep -E '^input:' /usr/lib/group | tee -a /etc/group
+grep -E '^tss:' /usr/lib/group | tee -a /etc/group
+useradd -G wheel,input,tss playtron
+echo "playtron:playtron" | chpasswd
+
+# Hide the GRUB boot menu.
+crudini --ini-options=nospace --set /etc/default/grub "" GRUB_TIMEOUT 0
+crudini --ini-options=nospace --set /etc/default/grub "" GRUB_TIMEOUT_STYLE hidden
+
+# Rebuild the GRUB configuration file.
+# This will load hidden boot menu settings and the new EFI boot entries.
+grub2-mkconfig -o /boot/grub2/grub.cfg
+%end
