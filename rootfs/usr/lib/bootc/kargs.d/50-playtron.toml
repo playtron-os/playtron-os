@@ -1,0 +1,2 @@
+match-architectures = ["x86_64"]
+kargs = ["preempt=full"]
