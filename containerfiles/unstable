@@ -1,7 +1,5 @@
 FROM quay.io/fedora/fedora-bootc@sha256:b11b87e0f1d843c14e7458b5d12eb70682c9a2a63eb46b6592bceeddd1a40162
 
-ARG kver=6.12.10-203
-
 # Force dnf5
 RUN rm -f /usr/bin/dnf && ln -s /usr/bin/dnf5 /usr/bin/dnf
 
@@ -9,9 +7,16 @@ RUN rm -f /usr/bin/dnf && ln -s /usr/bin/dnf5 /usr/bin/dnf
 COPY repos/*.repo /etc/yum.repos.d/
 
 RUN cat /usr/lib/os-release
-ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
+ENV CMD_INSTALL="dnf install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
 
 RUN ${CMD_INSTALL} distribution-gpg-keys
+
+# Install Nobara kernel
+RUN  dnf remove  -y kernel kernel-core kernel-devel kernel-devel-matched kernel-headers kernel-modules kernel-modules-core \
+  && dnf install -y kernel kernel-core kernel-devel kernel-devel-matched kernel-headers kernel-modules
+
+# Prevent kernel upgrades
+RUN dnf versionlock add kernel kernel-core kernel-devel kernel-devel-matched kernel-headers kernel-modules
 
 RUN ${CMD_INSTALL} \
   alsa-sof-firmware \
@@ -85,25 +90,6 @@ RUN ${CMD_INSTALL} \
   xorg-x11-server-Xvfb \
   xwininfo \
   zenity
-
-# downgrade gamescope (temporary fix for Nvidia issues)
-RUN wget https://kojipkgs.fedoraproject.org/packages/gamescope/3.14.2/3.fc41/x86_64/gamescope-3.14.2-3.fc41.x86_64.rpm \
- && ${CMD_INSTALL} gamescope*.rpm \
- && rm gamescope*.rpm
-
-# uninstall default kernel
-RUN dnf remove -y kernel kernel-core kernel-devel kernel-devel-matched kernel-modules kernel-modules-core
-
-# install custom kernel
-RUN wget https://github.com/hhd-dev/kernel-bazzite/releases/download/${kver}/kernel-${kver}.bazzite.fc41.x86_64.rpm \
- && wget https://github.com/hhd-dev/kernel-bazzite/releases/download/${kver}/kernel-core-${kver}.bazzite.fc41.x86_64.rpm \
- && wget https://github.com/hhd-dev/kernel-bazzite/releases/download/${kver}/kernel-devel-${kver}.bazzite.fc41.x86_64.rpm \
- && wget https://github.com/hhd-dev/kernel-bazzite/releases/download/${kver}/kernel-devel-matched-${kver}.bazzite.fc41.x86_64.rpm \
- && wget https://github.com/hhd-dev/kernel-bazzite/releases/download/${kver}/kernel-modules-${kver}.bazzite.fc41.x86_64.rpm \
- && wget https://github.com/hhd-dev/kernel-bazzite/releases/download/${kver}/kernel-modules-core-${kver}.bazzite.fc41.x86_64.rpm \
- && wget https://github.com/hhd-dev/kernel-bazzite/releases/download/${kver}/kernel-modules-extra-${kver}.bazzite.fc41.x86_64.rpm \
- && ${CMD_INSTALL} kernel*.rpm \
- && rm kernel*.rpm
 
 # Install Nvidia driver
 RUN ${CMD_INSTALL} \
