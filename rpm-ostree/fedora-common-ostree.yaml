@@ -16,7 +16,6 @@ packages:
   # Ensure that we have a kernel. Kernel packages are not in any comps group
   - kernel
   - kernel-modules
-  - kernel-modules-extra
   # Do not include "full" Git as it brings in Perl
   - git-core
   # Explicitely add Git docs
