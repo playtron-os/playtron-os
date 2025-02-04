@@ -4,7 +4,7 @@ FROM registry.playtron.one/internal/playtronos:0.20.0.6
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 
 # Prevent kernel upgrades.
-RUN dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel-headers kernel-modules kernel-modules-core kernel-modules-extra
+RUN dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel-headers kernel-modules
 
 # https://github.com/playtron-os/rpm-specs-gaming
 RUN dnf5 -y upgrade \

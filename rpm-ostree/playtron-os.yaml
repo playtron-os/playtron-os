@@ -107,8 +107,7 @@ repos:
   - fedora-41-updates
   - fedora-cisco-openh264
   - inputplumber-x86_64
-  - kernel-blu-x86_64
-  #- kernel-mainline-wo-mergew
+  - nobara-41-x86_64
   #- mesa-git-x86_64
   #- mesa-git-i686
   - negativo17-fedora-nvidia

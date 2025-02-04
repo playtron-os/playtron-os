@@ -7,21 +7,21 @@ ARG TARGETPLATFORM
 RUN rm -f /etc/yum.repos.d/*
 ## Fedora.
 COPY fedora-41.repo fedora-41-updates.repo fedora-updates-archive.repo /etc/yum.repos.d/
-## kernel-blu.
-COPY kernel-blu.repo /etc/yum.repos.d/
+## kernel-nobara.
+COPY nobara-41-x86_64.repo /etc/yum.repos.d/
 ## Negativo17 NVIDIA.
 COPY negativo17-fedora-nvidia.repo /etc/yum.repos.d/
 ## RPM Fusion.
 COPY rpmfusion-free.repo rpmfusion-free-updates.repo rpmfusion-free-updates-testing.repo rpmfusion-nonfree.repo rpmfusion-nonfree-tainted.repo rpmfusion-nonfree-updates.repo rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/
 ## Playtron.
-COPY inputplumber-x86_64.repo kernel-mainline-wo-mergew.repo mesa-git-x86_64.repo mesa-git-i686.repo playtron-app-x86_64.repo playtron-gaming-i386.repo playtron-gaming-x86_64.repo /etc/yum.repos.d/
+COPY inputplumber-x86_64.repo mesa-git-x86_64.repo mesa-git-i686.repo playtron-app-x86_64.repo playtron-gaming-i386.repo playtron-gaming-x86_64.repo /etc/yum.repos.d/
 
 RUN cat /usr/lib/os-release
 
 ENV CMD_INSTALL="dnf5 install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
 
 # Prevent kernel upgrades.
-RUN dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel-headers kernel-modules kernel-modules-core kernel-modules-extra
+RUN dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel-headers kernel-modules
 
 # downgrade gamescope
 RUN wget \
