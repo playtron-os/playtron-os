@@ -1,4 +1,4 @@
-FROM registry.playtron.one/internal/playtronos:0.20.0.6
+FROM registry.playtron.one/internal/playtronos:0.20.0.10
 
 # Set OS version
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
