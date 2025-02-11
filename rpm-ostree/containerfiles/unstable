@@ -71,6 +71,8 @@ COPY rootfs/etc/hostname /etc/
 COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 COPY rootfs/usr/share/plymouth/themes/spinner/watermark.png /usr/share/plymouth/themes/spinner/
+## Fix audio crackling on the Steam Deck OLED by using a slower polling rate
+COPY rootfs/usr/share/pipewire/pipewire-pulse.conf /usr/share/pipewire/
 
 # Set SELinux to permissive mode.
 RUN sed -i s'/SELINUX=.*/SELINUX=permissive/'g /etc/selinux/config && \
