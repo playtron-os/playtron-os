@@ -24,5 +24,9 @@ RUN dnf5 -y upgrade \
   SteamBus \
   && ostree container commit
 
+# Temporarily add this fix to the stable builds. Keep it in the unstable builds only long-term.
+# Fix audio crackling on the Steam Deck OLED by using a slower polling rate
+COPY rootfs/usr/share/pipewire/pipewire-pulse.conf /usr/share/pipewire/
+
 # View final packages.
 RUN rpm -qa | sort
