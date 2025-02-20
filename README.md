@@ -1,6 +1,6 @@
-# PlaytronOS
+# Playtron GameOS
 
-Read more about PlaytronOS on our official [website](https://www.playtron.one/).
+Read more about Playtron GameOS on our official [website](https://www.playtron.one/).
 
 ## Minimum Hardware Requirements
 
@@ -98,9 +98,9 @@ $ sudo -E go-task disk-image
 
 ## Linux Developer Tips
 
-PlaytronOS container images are published to the GitHub Container Registry (GHCR). These can be found [here](https://github.com/orgs/playtron-os/packages/container/package/playtron-os) at the GitHub organization level (not the GitHub repository level).
+Playtron GameOS container images are published to the GitHub Container Registry (GHCR). These can be found [here](https://github.com/orgs/playtron-os/packages/container/package/playtron-os) at the GitHub organization level (not the GitHub repository level).
 
-On an existing Fedora Atomic Desktop, it is possible to switch to PlaytronOS.
+On an existing Fedora Atomic Desktop, it is possible to switch to Playtron GameOS.
 
 ```
 $ sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/playtron-os/playtron-os:latest
