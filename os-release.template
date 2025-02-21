@@ -1,4 +1,4 @@
-NAME="PlaytronOS"
+NAME="GameOS"
 ID="playtronos"
 ID_LIKE="fedora"
 VERSION_ID=$TAG
