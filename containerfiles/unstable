@@ -42,8 +42,9 @@ RUN ${CMD_INSTALL} \
   iwlwifi-dvm-firmware \
   iwlwifi-mvm-firmware \
   legendary \
+  libpact \
+  libplaytron \
   libertas-firmware \
-  libverified \
   lsb_release \
   mangohud \
   mesa-vulkan-drivers \
