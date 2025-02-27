@@ -52,10 +52,11 @@ set -e -x
 
 # Create the "playtron" user manually.
 # https://bugzilla.redhat.com/show_bug.cgi?id=1838859
-# Put the user in the "wheel" group for elevated privileges, "input" for Autotest, and "tss" for Playtron Verified.
-grep -E '^input:' /usr/lib/group | tee -a /etc/group
+# Put the user in the following groups:
+#  - wheel: for elevated privileges
+#  - tss:   for PACT
 grep -E '^tss:' /usr/lib/group | tee -a /etc/group
-useradd -G wheel,input,tss playtron
+useradd -G wheel,tss playtron
 echo "playtron:playtron" | chpasswd
 
 # Hide the GRUB boot menu.
