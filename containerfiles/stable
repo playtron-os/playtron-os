@@ -23,6 +23,10 @@ RUN dnf5 -y upgrade \
   valve-firmware \
   && ostree container commit
 
+# Temporarily add this fix to the stable builds. Keep it in the unstable builds only long-term.
+# Fix audio crackling on the Steam Deck OLED by using a slower polling rate
+COPY rootfs/usr/share/pipewire/pipewire-pulse.conf /usr/share/pipewire/
+
 # Temporarily upgrade NVIDIA while the 560 driver is broken.
 RUN dnf5 -y upgrade \
   *nvidia* \
