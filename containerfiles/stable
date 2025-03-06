@@ -28,5 +28,12 @@ RUN dnf5 -y upgrade \
 # Fix audio crackling on the Steam Deck OLED by using a slower polling rate
 COPY rootfs/usr/share/pipewire/pipewire-pulse.conf /usr/share/pipewire/
 
+# Temporarily upgrade NVIDIA while the 560 driver is broken.
+RUN dnf5 -y upgrade \
+  *nvidia* \
+  && mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
+  akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; done; rm -r -f /run/akmods \
+  && ostree container commit
+
 # View final packages.
 RUN rpm -qa | sort

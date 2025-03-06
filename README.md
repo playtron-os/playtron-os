@@ -43,18 +43,6 @@ Enable and start the `libvirtd` service.
 $ sudo systemctl enable --now libvirtd
 ```
 
-Build the base OCI container image archive.
-
-```
-$ sudo -E go-task container-image:build-base
-```
-
-Import the container image archive.
-
-```
-$ go-task container-image:load-base
-```
-
 Define a container image tag.
 
 ```
@@ -64,11 +52,11 @@ $ export TAG=replace-me
 Build an unstable development container image. Alternatively, build a stable container image based on the previous release.
 
 ```
-$ go-task container-image:build
+$ go-task container-image:build:unstable
 ```
 
 ```
-$ go-task container-image:build-stable
+$ go-task container-image:build:stable
 ```
 
 Optionally authenticate to a container registry.
@@ -76,6 +64,7 @@ Optionally authenticate to a container registry.
 ```
 $ export REGISTRY=ghcr.io
 $ export PROJECT=playtron-os
+$ export IMAGE=playtron-os
 $ export REGISTRY_TOKEN="replace-me"
 $ go-task container-image:auth
 ```
@@ -93,7 +82,7 @@ $ go-task container-image:release
 Then build the raw operating system image. Use Virtual Machine Manager (`virt-manager`) to check the installation progress of the `playtron-os` virtual machine.
 
 ```
-$ sudo -E go-task disk-image
+$ sudo -E go-task disk-image:kickstart
 ```
 
 ## Linux Developer Tips
@@ -103,7 +92,7 @@ Playtron GameOS container images are published to the GitHub Container Registry 
 On an existing Fedora Atomic Desktop, it is possible to switch to Playtron GameOS.
 
 ```
-$ sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/playtron-os/playtron-os:latest
+$ sudo bootc switch ghcr.io/playtron-os/playtron-os:latest
 ```
 
 The default user account is `playtron` with the password `playtron`. It can be accessed by enabling SSH in the Developer page. The IP address will also be listed there. Alternatively, open up a TTY console by pressing `CTRL`, `ALT`, and `F3` at the same time.

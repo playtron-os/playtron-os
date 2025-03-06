@@ -1,0 +1,139 @@
+FROM quay.io/fedora/fedora-bootc:latest
+
+# Force dnf5
+RUN rm -f /usr/bin/dnf && ln -s /usr/bin/dnf5 /usr/bin/dnf
+
+# Copy over custom repository files
+COPY repos/*.repo /etc/yum.repos.d/
+
+RUN cat /usr/lib/os-release
+ENV CMD_INSTALL="dnf install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
+
+RUN ${CMD_INSTALL} distribution-gpg-keys
+
+# Install Nobara kernel
+RUN  dnf remove  -y kernel kernel-core kernel-devel kernel-devel-matched kernel-headers kernel-modules kernel-modules-core \
+  && dnf install -y kernel kernel-core kernel-devel kernel-devel-matched kernel-headers kernel-modules
+
+# Prevent kernel upgrades
+RUN dnf versionlock add kernel kernel-core kernel-devel kernel-devel-matched kernel-headers kernel-modules
+
+RUN ${CMD_INSTALL} \
+  alsa-sof-firmware \
+  alsa-ucm \
+  alsa-utils \
+  atheros-firmware \
+  bc \
+  binutils \
+  bluez \
+  brcmfmac-firmware \
+  cabextract \
+  cirrus-audio-firmware \
+  crudini \
+  dbus-daemon \
+  distrobox \
+  dracut-config-generic \
+  evtest \
+  gamescope-session-playtron \
+  gstreamer1-plugins-good \
+  inputplumber \
+  intel-audio-firmware \
+  iwlegacy-firmware \
+  iwlwifi-dvm-firmware \
+  iwlwifi-mvm-firmware \
+  legendary \
+  libpact \
+  libplaytron \
+  libertas-firmware \
+  lsb_release \
+  mangohud \
+  mesa-vulkan-drivers \
+  mt7xxx-firmware \
+  NetworkManager-bluetooth \
+  NetworkManager-wifi \
+  nxpwireless-firmware \
+  ostree-grub2 \
+  p7zip-plugins \
+  pipewire \
+  pipewire-alsa \
+  pipewire-gstreamer \
+  pipewire-pulseaudio \
+  pipewire-utils \
+  playserve \
+  playtron-os-files \
+  playview \
+  plymouth \
+  plymouth-theme-spinner \
+  powerstation \
+  realtek-firmware \
+  sddm \
+  steam.i686 \
+  SteamBus \
+  switcheroo-control \
+  thermald \
+  time \
+  tiwilink-firmware \
+  tree \
+  tzupdate \
+  udev-media-automount \
+  udisks2 \
+  unrar \
+  unzip \
+  usbutils \
+  usb_modeswitch \
+  valve-firmware \
+  vim \
+  webkit2gtk4.1 \
+  weston-session \
+  wget \
+  wireplumber \
+  xdg-utils \
+  xorg-x11-server-Xvfb \
+  xwininfo \
+  zenity
+
+# Install Nvidia driver
+RUN ${CMD_INSTALL} \
+  --setopt=disable_excludes=* \
+  kernel-srpm-macros
+
+RUN ${CMD_INSTALL} \
+  akmod-nvidia \
+  nvenc \
+  nvidia-driver \
+  nvidia-driver-NvFBCOpenGL \
+  nvidia-driver-libs.i686
+
+RUN mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
+  akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; \
+  ls /usr/lib/modules/"${k}"/extra/nvidia/nvidia.ko.xz || exit 1; done; rm -r -f /run/akmods
+
+# Copy/override files
+COPY rootfs/etc/hostname /etc/
+COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
+COPY rootfs/usr/lib/os-release-playtron /usr/lib/
+COPY rootfs/usr/share/plymouth/themes/spinner/watermark.png /usr/share/plymouth/themes/spinner/
+COPY rootfs/usr/lib/bootc/kargs.d/50-playtron.toml /usr/lib/bootc/kargs.d/
+## Fix audio crackling on the Steam Deck OLED by using a slower polling rate
+COPY rootfs/usr/share/pipewire/pipewire-pulse.conf /usr/share/pipewire/
+
+# Set SELinux to permissive mode
+RUN sed -i s'/SELINUX=.*/SELINUX=permissive/'g /etc/selinux/config
+
+# Ensure services are enabled according to presets
+RUN systemctl preset-all
+RUN systemctl --user --global preset-all
+
+# Set graphical boot target
+RUN cd /usr/lib/systemd/system && rm default.target && ln -s graphical.target default.target
+
+# Build initramfs
+RUN KERNEL=$(echo /lib/modules/*/vmlinuz | cut -d'/' -f4) \
+  && dracut --reproducible -v --omit-drivers nouveau --add 'ostree' -f --no-hostonly --kver ${KERNEL} /lib/modules/${KERNEL}/initramfs.img
+
+# Clear /var/run
+RUN rm -rf /var/run
+RUN ln -s /run /var/run
+
+# View final packages
+RUN rpm -qa | sort --ignore-case
