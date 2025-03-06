@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora-bootc@sha256:bf89aa0889e49321522d8eaa6bbc83c8b3b252c235a3b3b380ca0d262b50bd41
+FROM quay.io/fedora/fedora-bootc:latest
 
 # Force dnf5
 RUN rm -f /usr/bin/dnf && ln -s /usr/bin/dnf5 /usr/bin/dnf
