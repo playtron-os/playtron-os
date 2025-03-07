@@ -8,20 +8,20 @@ RUN dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core ke
 
 # https://github.com/playtron-os/rpm-specs-gaming
 RUN dnf5 -y upgrade \
-  gamescope-dbus \
-  gamescope-session-playtron \
-  gamescope-session \
-  legendary \
-  mangohud \
-  inputplumber \
-  grid \
-  playserve \
-  playtron-os-files \
-  reaper \
-  tzupdate \
-  udev-media-automount \
-  valve-firmware \
-  SteamBus \
+  gamescope-dbus-1.7.0-1 \
+  gamescope-session-playtron-0.3.1-1.fc41 \
+  gamescope-session-0.1.0+306-1.fc41 \
+  legendary-0.20.36-1.fc41 \
+  mangohud-0.8.0-2.fc41 \
+  inputplumber-0.49.2-0.fc41 \
+  grid-0.47.4-1.fc40 \
+  playserve-0.51.1-1 \
+  playtron-os-files-0.19.1-1.fc41 \
+  reaper-0.1.0-2.fc41 \
+  tzupdate-3.1.0-1.fc41 \
+  udev-media-automount-0.1.0+59-3.fc41 \
+  valve-firmware-20231113.1-5.fc41 \
+  SteamBus-1.12.10-1.fc41 \
   && ostree container commit
 
 # Temporarily add this fix to the stable builds. Keep it in the unstable builds only long-term.
