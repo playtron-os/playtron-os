@@ -1,5 +1,6 @@
-name: Build container image
+name: Build unstable container image
 env:
+  IMAGE: playtronos
   REGISTRY: ${{ secrets.REGISTRY }}
   REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
   PROJECT: ${{ secrets.PROJECT }}
@@ -51,3 +52,34 @@ jobs:
         run: task container-image:build:unstable
       - name: Upload container image
         run: task container-image:push
+      - name: Create pre-release
+        id: create-pre-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.TAG }}
+          release_name: ${{ env.TAG }}
+          draft: false
+          prerelease: true
+      - name: Find the initramfs checksum
+        run: podman run --rm ${IMAGE}:${TAG} sh -c "sha256sum /usr/lib/modules/\"\$(ls -lah /usr/lib/modules/ | tail -n 1 | awk '{print \$9}')\"/initramfs.img" >> /tmp/playtron-gameos-sha256sum.txt
+      - name: Find the vmlinuz (kernel) checksum
+        run: podman run --rm ${IMAGE}:${TAG} sh -c "sha256sum /usr/lib/modules/\"\$(ls -lah /usr/lib/modules/ | tail -n 1 | awk '{print \$9}')\"/vmlinuz" >> /tmp/playtron-gameos-sha256sum.txt
+      - name: Upload kernel checksums to pre-release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-pre-release.outputs.upload_url }}
+          asset_path: /tmp/playtron-gameos-sha256sum.txt
+          asset_name: playtron-gameos-sha256sum.txt
+          asset_content_type: text/plain
+      - name: Notify the backend about the new release
+        run: |
+          if curl -X POST "${{ secrets.URL_ENDPOINT_HASHES }}" \
+               -H "Content-Type: application/json" \
+               --data '{
+                   "release": "${{ env.TAG }}",
+                   "assetName": "playtron-gameos-sha256sum.txt"
+               }' | grep -i error; then exit 1; fi
