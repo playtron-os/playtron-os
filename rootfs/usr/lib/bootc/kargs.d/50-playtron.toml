@@ -1,2 +1,2 @@
 match-architectures = ["x86_64"]
-kargs = ["splash", "quiet"]
+kargs = ["splash", "quiet", "iomem=relaxed"]
