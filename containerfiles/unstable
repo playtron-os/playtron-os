@@ -111,6 +111,8 @@ RUN mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
 
 # Copy/override files
 COPY rootfs/etc/hostname /etc/
+## Fix OS updates failing to extract due to bad locale setting
+COPY rootfs/etc/locale.conf /etc/
 COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 COPY rootfs/usr/share/plymouth/themes/spinner/watermark.png /usr/share/plymouth/themes/spinner/
