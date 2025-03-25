@@ -123,6 +123,9 @@ COPY rootfs/usr/share/pipewire/pipewire-pulse.conf /usr/share/pipewire/
 # Set SELinux to permissive mode
 RUN sed -i s'/SELINUX=.*/SELINUX=permissive/'g /etc/selinux/config
 
+# Disable SPDIF/IEC958 audio output
+RUN sed -e '/\[Mapping iec958/,+5 s/^/#/' -i '/usr/share/alsa-card-profile/mixer/profile-sets/default.conf'
+
 # Ensure services are enabled according to presets
 RUN systemctl preset-all
 RUN systemctl --user --global preset-all
