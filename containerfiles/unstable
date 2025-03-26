@@ -142,5 +142,8 @@ RUN KERNEL=$(echo /lib/modules/*/vmlinuz | cut -d'/' -f4) \
 RUN rm -rf /var/run
 RUN ln -s /run /var/run
 
+# Clear /var/cache
+RUN rm -rf /var/cache/*
+
 # View final packages
 RUN rpm -qa | sort --ignore-case
