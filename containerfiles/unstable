@@ -45,6 +45,7 @@ RUN ${CMD_INSTALL} \
   libpact \
   libplaytron \
   libertas-firmware \
+  linuxconsoletools \
   lsb_release \
   mangohud \
   mesa-vulkan-drivers \
@@ -87,6 +88,7 @@ RUN ${CMD_INSTALL} \
   weston-session \
   wget \
   wireplumber \
+  xdg-desktop-portal-openuri \
   xdg-utils \
   xorg-x11-server-Xvfb \
   xwininfo \
@@ -140,6 +142,9 @@ RUN KERNEL=$(echo /lib/modules/*/vmlinuz | cut -d'/' -f4) \
 # Clear /var/run
 RUN rm -rf /var/run
 RUN ln -s /run /var/run
+
+# Clear /var/cache
+RUN rm -rf /var/cache/*
 
 # View final packages
 RUN rpm -qa | sort --ignore-case
