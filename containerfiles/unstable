@@ -45,6 +45,7 @@ RUN ${CMD_INSTALL} \
   libpact \
   libplaytron \
   libertas-firmware \
+  linuxconsoletools \
   lsb_release \
   mangohud \
   mesa-vulkan-drivers \
