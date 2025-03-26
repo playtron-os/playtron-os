@@ -87,6 +87,7 @@ RUN ${CMD_INSTALL} \
   weston-session \
   wget \
   wireplumber \
+  xdg-desktop-portal-openuri \
   xdg-utils \
   xorg-x11-server-Xvfb \
   xwininfo \
