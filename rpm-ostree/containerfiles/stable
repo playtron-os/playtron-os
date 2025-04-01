@@ -9,6 +9,8 @@ RUN dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core ke
 # Temporary add repository file required for the "playtron-os-files"
 # dependency on "ladspa-noise-suppression-for-voice".
 COPY audinux.repo /etc/yum.repos.d/audinux.repo
+# This returns exit code "100" if there are updates. We can ignore since we just needed the metadata updated.
+RUN dnf5 check-upgrade || true
 
 # This conflicts with newer versions of "playtron-os-files".
 RUN dnf5 -y remove zram-generator-defaults
