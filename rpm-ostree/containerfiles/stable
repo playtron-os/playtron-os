@@ -16,7 +16,7 @@ RUN dnf5 -y remove zram-generator-defaults
 # https://github.com/playtron-os/rpm-specs-gaming
 RUN dnf5 -y upgrade \
   gamescope-dbus-1.7.0-1 \
-  gamescope-session-playtron-0.3.2-1.fc41 \
+  gamescope-session-playtron-0.3.3-1.fc41 \
   gamescope-session-0.1.0+306-1.fc41 \
   legendary-0.20.36-1.fc41 \
   mangohud-0.8.0-2.fc41 \
