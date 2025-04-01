@@ -6,6 +6,10 @@ COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 # Prevent kernel upgrades.
 RUN dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel-headers kernel-modules
 
+# Temporary add repository file required for the "playtron-os-files"
+# dependency on "ladspa-noise-suppression-for-voice".
+COPY audinux.repo /etc/yum.repos.d/audinux.repo
+
 # https://github.com/playtron-os/rpm-specs-gaming
 RUN dnf5 -y upgrade \
   gamescope-dbus-1.7.0-1 \
