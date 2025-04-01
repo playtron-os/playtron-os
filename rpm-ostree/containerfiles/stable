@@ -10,6 +10,9 @@ RUN dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core ke
 # dependency on "ladspa-noise-suppression-for-voice".
 COPY audinux.repo /etc/yum.repos.d/audinux.repo
 
+# This conflicts with newer versions of "playtron-os-files".
+RUN dnf5 -y remove zram-generator-defaults
+
 # https://github.com/playtron-os/rpm-specs-gaming
 RUN dnf5 -y upgrade \
   gamescope-dbus-1.7.0-1 \
