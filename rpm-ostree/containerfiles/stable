@@ -6,10 +6,19 @@ COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 # Prevent kernel upgrades.
 RUN dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel-headers kernel-modules
 
+# Temporary add repository file required for the "playtron-os-files"
+# dependency on "ladspa-noise-suppression-for-voice".
+COPY audinux.repo /etc/yum.repos.d/audinux.repo
+# This returns exit code "100" if there are updates. We can ignore since we just needed the metadata updated.
+RUN dnf5 check-upgrade || true
+
+# This conflicts with newer versions of "playtron-os-files".
+RUN dnf5 -y remove zram-generator-defaults
+
 # https://github.com/playtron-os/rpm-specs-gaming
 RUN dnf5 -y upgrade \
   gamescope-dbus-1.7.0-1 \
-  gamescope-session-playtron-0.3.2-1.fc41 \
+  gamescope-session-playtron-0.3.3-1.fc41 \
   gamescope-session-0.1.0+306-1.fc41 \
   legendary-0.20.36-1.fc41 \
   mangohud-0.8.0-2.fc41 \
@@ -17,7 +26,7 @@ RUN dnf5 -y upgrade \
   powerstation-0.4.2-1 \
   grid-0.47.4-1.fc40 \
   playserve-0.52.0-1 \
-  playtron-os-files-0.19.4-1.fc41 \
+  playtron-os-files-0.21.1-1.fc41 \
   reaper-0.1.0-2.fc41 \
   tzupdate-3.1.0-1.fc41 \
   udev-media-automount-0.1.0+59-3.fc41 \
