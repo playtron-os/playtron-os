@@ -185,7 +185,7 @@ tasks:
       - podman push ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} ghcr.io/playtron-os/${PUBLIC_IMAGE}:latest
 
   package-list:
-    desc: Publish the container to the public registry with the tag 'latest'.
+    desc: Generate a list of packages that are installed in a remote container without version numbers
     preconditions:
       - sh: test -n "$REGISTRY"
         msg: "A value for REGISTRY must be provided"
@@ -202,7 +202,7 @@ tasks:
       - podman run -it ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} rpm -qa --qf "%{NAME}\n" | sort -u > playtron-os-${TAG}.pkg-list.txt
 
   package-list:versioned:
-    desc: Publish the container to the public registry with the tag 'latest'.
+    desc: Generate a list of packages that are installed in a remote container with version numbers
     preconditions:
       - sh: test -n "$REGISTRY"
         msg: "A value for REGISTRY must be provided"
@@ -217,3 +217,13 @@ tasks:
     cmds:
       - podman pull ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG}
       - podman run -it ${REGISTRY}/${PROJECT}/${IMAGE}:${TAG} rpm -qa | sort -u > playtron-os-${TAG}.pkg-list.versioned.txt
+
+  package-list:local:versioned:
+    desc: Generate a list of packages that are installed in a local container with version numbers
+    preconditions:
+      - sh: test -n "$PROJECT"
+        msg: "A value for PROJECT must be provided"
+      - sh: test -n "$TAG"
+        msg: "A value for TAG must be provided"
+    cmds:
+      - podman run -it ${IMAGE}:${TAG} rpm -qa | sort -u > playtron-os-${TAG}.pkg-list.versioned.txt
