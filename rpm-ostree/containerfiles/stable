@@ -22,6 +22,7 @@ RUN dnf5 -y upgrade \
   gamescope-session-0.1.0+306-1.fc41 \
   legendary-0.20.36-1.fc41 \
   mangohud-0.8.0-2.fc41 \
+  inputplumber-0.49.6-0.fc41 \
   powerstation-0.4.2-1 \
   grid-0.47.4-1.fc40 \
   playserve-0.52.0-1 \
