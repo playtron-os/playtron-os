@@ -9,7 +9,8 @@ Read more about Playtron GameOS on our official [website](https://www.playtron.o
         - AMD Ryzen or Intel 6th Gen Kaby Lake
 - GPU
     - AMD Navi
-    - Intel Xe (support coming soon)
+        - For the best results, we recommend using an AMD GPU.
+    - Intel Xe
     - NVIDIA Turing
 
 ## Build
