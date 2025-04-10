@@ -1,6 +1,6 @@
-[nobara-41-x86_64]
-name=Copr repo for Nobara 41
-baseurl=https://download.copr.fedorainfracloud.org/results/gloriouseggroll/nobara-41/fedora-$releasever-x86_64/
+[nobara-41-i386]
+name=Copr repo for Nobara 41 (i386)
+baseurl=https://download.copr.fedorainfracloud.org/results/gloriouseggroll/nobara-41/fedora-$releasever-i386/
 type=rpm-md
 skip_if_unavailable=True
 gpgcheck=1
@@ -9,3 +9,4 @@ repo_gpgcheck=0
 enabled=1
 enabled_metadata=1
 exclude=mangohud
+includepkgs=gamescope*,kernel*

@@ -9,7 +9,8 @@ Read more about Playtron GameOS on our official [website](https://www.playtron.o
         - AMD Ryzen or Intel 6th Gen Kaby Lake
 - GPU
     - AMD Navi
-    - Intel Xe (support coming soon)
+        - For the best results, we recommend using an AMD GPU.
+    - Intel Xe
     - NVIDIA Turing
 
 ## Build
@@ -146,4 +147,17 @@ Create and use a container for development purposes.
 ```
 $ distrobox create --init --additional-packages systemd --image fedora:41 --pull --name fedora41
 $ distrobox enter fedora41
+```
+
+Install a full desktop environment and other additional packages.
+
+```
+$ sudo bootc image copy-to-storage
+$ nano Containerfile
+FROM localhost/bootc
+RUN dnf5 group install -y kde-desktop && echo -e '[Autologin]\nSession=plasma' > /etc/sddm.conf.d/60-playtron-session-override.conf
+RUN dnf5 install -y firefox
+RUN dnf5 clean all && bootc container lint
+$ sudo podman build --tag desktop .
+$ sudo bootc switch --transport containers-storage localhost/desktop
 ```

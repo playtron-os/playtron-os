@@ -4,7 +4,7 @@ FROM quay.io/fedora/fedora-bootc:latest
 RUN rm -f /usr/bin/dnf && ln -s /usr/bin/dnf5 /usr/bin/dnf
 
 # Copy over custom repository files
-COPY repos/*.repo /etc/yum.repos.d/
+COPY rootfs/etc/yum.repos.d/*.repo /etc/yum.repos.d/
 
 RUN cat /usr/lib/os-release
 ENV CMD_INSTALL="dnf install -y --setopt=install_weak_deps=false --setopt=max_parallel_downloads=10"
