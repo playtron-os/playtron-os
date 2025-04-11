@@ -35,12 +35,14 @@ RUN ${CMD_INSTALL} \
   dracut-config-generic \
   evtest \
   gamescope-session-playtron \
+  glibc-langpack-en \
   gstreamer1-plugins-good \
   inputplumber \
   intel-audio-firmware \
   iwlegacy-firmware \
   iwlwifi-dvm-firmware \
   iwlwifi-mvm-firmware \
+  langpacks-en \
   legendary \
   libpact \
   libplaytron \
