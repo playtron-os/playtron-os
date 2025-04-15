@@ -13,7 +13,7 @@ RUN dnf5 -y remove *nvidia*
 COPY nobara-41-x86_64.repo /etc/yum.repos.d/
 RUN rpm-ostree override replace \
   --experimental \
-  --from repo=nobara-41-x86_64 \
+  --from repo=playtron-app-x86_64 \
       kernel \
       kernel-core \
       kernel-devel \
@@ -62,6 +62,7 @@ RUN dnf5 install -y \
   akmod-nvidia \
   nvenc \
   nvidia-driver \
+  nvidia-gpu-firmware \
   nvidia-driver-NvFBCOpenGL \
   nvidia-driver-libs.i686 \
   steam.i686 \
