@@ -3,8 +3,27 @@ FROM registry.playtron.one/internal/playtronos:0.20.0.10
 # Set OS version
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 
+# Update rpm-ostree and friends before managing a kernel install via a Containerfile.
+# Dependencies can be found here:
+# - https://github.com/coreos/rpm-ostree/blob/main/packaging/rpm-ostree.spec
+# - https://github.com/bootc-dev/bootc/blob/main/contrib/packaging/bootc.spec
+RUN dnf5 -y update composefs bootc bubblewrap fuse3 ostree podman rpm-ostree skopeo
+RUN dnf5 versionlock clear
+RUN dnf5 -y remove *nvidia*
+COPY nobara-41-x86_64.repo /etc/yum.repos.d/
+RUN rpm-ostree override replace \
+  --experimental \
+  --from repo=playtron-app-x86_64 \
+      kernel \
+      kernel-core \
+      kernel-devel \
+      kernel-devel-matched \
+      kernel-headers \
+      kernel-modules && \
+  ostree container commit
+
 # Prevent kernel upgrades.
-RUN dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel-headers kernel-modules
+RUN dnf5 versionlock add kernel kernel-core kernel-devel kernel-devel-matched kernel-headers kernel-modules
 
 # Temporary add repository file required for the "playtron-os-files"
 # dependency on "ladspa-noise-suppression-for-voice".
@@ -37,6 +56,26 @@ RUN dnf5 -y upgrade \
 # Temporarily add this fix to the stable builds. Keep it in the unstable builds only long-term.
 # Fix audio crackling on the Steam Deck OLED by using a slower polling rate
 COPY rootfs/usr/share/pipewire/pipewire-pulse.conf /usr/share/pipewire/
+
+# Reinstall NVIDIA since we added a new kernel.
+RUN dnf5 install -y \
+  akmod-nvidia \
+  nvenc \
+  nvidia-driver \
+  nvidia-gpu-firmware \
+  nvidia-driver-NvFBCOpenGL \
+  nvidia-driver-libs.i686 \
+  steam.i686 \
+  && ostree container commit
+
+RUN mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
+  akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; \
+  ls /usr/lib/modules/"${k}"/extra/nvidia/nvidia.ko.xz || exit 1; done; rm -r -f /run/akmods \
+  && ostree container commit
+# Finalize initramfs
+RUN KERNEL=$(echo /lib/modules/*/initramfs.img | cut -d'/' -f4) \
+  && dracut --reproducible -v --omit-drivers nouveau --add 'ostree' -f --no-hostonly --kver ${KERNEL} /lib/modules/${KERNEL}/initramfs.img \
+  && ostree container commit
 
 # View final packages.
 RUN rpm -qa | sort
