@@ -1,0 +1,18 @@
+--- /usr/sbin/grub2-mkconfig.orig	2024-08-29 20:29:13.483212450 +0000
++++ /usr/sbin/grub2-mkconfig	2024-08-29 20:28:36.605582110 +0000
+@@ -138,8 +138,15 @@
+     exit 1
+ fi
+ 
++# Path to the real rootfs; we may be in a container or using bootc/ostree e.g.
++GRUB_PHYSICAL_FILESYSTEM=/
++GRUB_FS="$(stat -f -c %T / || echo unknown)"
++if test "x${GRUB_FS} = xoverlay" && test -d /sysroot; then
++  GRUB_PHYSICAL_FILESYSTEM=/sysroot
++fi
++
+ # Device containing our userland.  Typically used for root= parameter.
+-GRUB_DEVICE="`${grub_probe} --target=device /`"
++GRUB_DEVICE="`${grub_probe} --target=device ${GRUB_PHYSICAL_FILESYSTEM}`"
+ GRUB_DEVICE_UUID="`${grub_probe} --device ${GRUB_DEVICE} --target=fs_uuid 2> /dev/null`" || true
+ GRUB_DEVICE_PARTUUID="`${grub_probe} --device ${GRUB_DEVICE} --target=partuuid 2> /dev/null`" || true

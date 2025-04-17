@@ -124,6 +124,12 @@ COPY rootfs/usr/lib/bootc/kargs.d/50-playtron.toml /usr/lib/bootc/kargs.d/
 ## Fix audio crackling on the Steam Deck OLED by using a slower polling rate
 COPY rootfs/usr/share/pipewire/pipewire-pulse.conf /usr/share/pipewire/
 
+# Patch grub to fix update failures
+COPY rootfs/grub-bootc.patch /
+RUN patch /usr/sbin/grub2-mkconfig /grub-bootc.patch
+RUN rm /usr/sbin/grub2-mkconfig.orig
+RUN rm /grub-bootc.patch
+
 # Set SELinux to permissive mode
 RUN sed -i s'/SELINUX=.*/SELINUX=permissive/'g /etc/selinux/config
 
