@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora-bootc:latest
+FROM quay.io/fedora/fedora-bootc:41
 
 # Force dnf5
 RUN rm -f /usr/bin/dnf && ln -s /usr/bin/dnf5 /usr/bin/dnf
