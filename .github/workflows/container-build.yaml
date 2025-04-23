@@ -32,7 +32,6 @@ jobs:
             remove-android: 'true'
             remove-haskell: 'true'
             remove-codeql: 'true'
-            remove-docker-images: 'true'
             build-mount-path: '/home/runner/.local'
       - name: Create tmp directory
         run: mkdir -p $TMPDIR
@@ -42,6 +41,7 @@ jobs:
         run: | 
           sudo rm /usr/bin/podman
           sudo ln -s /usr/bin/docker /usr/bin/podman
+          rm -f "${HOME}/.docker/config.json"
       - name: Install go-task
         run: |
           curl -L -O https://github.com/go-task/task/releases/download/v3.37.2/task_linux_amd64.deb
