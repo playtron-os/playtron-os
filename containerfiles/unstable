@@ -108,9 +108,6 @@ RUN ${CMD_INSTALL} \
   nvidia-driver-NvFBCOpenGL \
   nvidia-driver-libs.i686
 
-# fix permissions for akmods
-RUN chmod 1777 /tmp /var/tmp
-
 RUN mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
   akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; \
   ls /var/cache/akmods/nvidia/*.failed.log > /dev/null 2>&1 && cat /var/cache/akmods/nvidia/*.failed.log || true; \
