@@ -40,8 +40,8 @@ jobs:
         run: sudo apt update
       - name: Install podman
         run: | 
-          rm /usr/bin/podman
-          ln -s /usr/bin/docker /usr/bin/podman
+          sudo rm /usr/bin/podman
+          sudo ln -s /usr/bin/docker /usr/bin/podman
       - name: Install go-task
         run: |
           curl -L -O https://github.com/go-task/task/releases/download/v3.37.2/task_linux_amd64.deb
