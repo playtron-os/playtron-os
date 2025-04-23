@@ -111,7 +111,7 @@ RUN ${CMD_INSTALL} \
 # fix permissions for akmods
 RUN chmod 1777 /tmp /var/tmp
 
-RUN mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
+RUN mkdir -p /run/akmods; chmod 1777 /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
   akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; \
   ls /var/cache/akmods/nvidia/*.failed.log > /dev/null 2>&1 && cat /var/cache/akmods/nvidia/*.failed.log || true; \
   ls /usr/lib/modules/"${k}"/extra/nvidia/nvidia.ko.xz || exit 1; done; rm -r -f /run/akmods
