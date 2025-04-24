@@ -30,8 +30,6 @@ tasks:
     cmds:
       - mkdir -p ${XDG_RUNTIME_DIR}/containers
       - echo "{ \"auths\":{ \"${REGISTRY}\":{ \"auth\":\"${REGISTRY_TOKEN}\" } } }" > "${XDG_RUNTIME_DIR}/containers/auth.json"
-      - mkdir -p "${HOME}/.docker"
-      - ln -s "${XDG_RUNTIME_DIR}/containers/auth.json" "${HOME}/.docker/config.json"
 
   container-image:build:unstable:
     desc: Build the OCI container image using the latest upstream.
