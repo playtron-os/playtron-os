@@ -108,10 +108,15 @@ RUN ${CMD_INSTALL} \
   nvidia-driver-NvFBCOpenGL \
   nvidia-driver-libs.i686
 
-RUN mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
-  akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; \
-  ls /var/cache/akmods/nvidia/*.failed.log > /dev/null 2>&1 && cat /var/cache/akmods/nvidia/*.failed.log || true; \
-  ls /usr/lib/modules/"${k}"/extra/nvidia/nvidia.ko.xz || exit 1; done; rm -r -f /run/akmods
+RUN cp -r /etc/pam.d /etc/pam.d.bak; sed -i -r 's/^(session\s+required\s+pam_limits.so)/#\1/' /etc/pam.d/*; \
+  mkdir -p /run/akmods; \
+  for k in $(ls -1 /usr/src/kernels); do \
+    akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; \
+    ls /var/cache/akmods/nvidia/*.failed.log > /dev/null 2>&1 && cat /var/cache/akmods/nvidia/*.failed.log || true; \
+    ls /usr/lib/modules/"${k}"/extra/nvidia/nvidia.ko.xz || exit 1; \
+  done; \
+  rm -rf /run/akmods; \
+  rm -rf /etc/pam.d; mv /etc/pam.d.bak /etc/pam.d;
 
 # Copy/override files
 COPY rootfs/etc/hostname /etc/
