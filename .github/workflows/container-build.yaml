@@ -17,6 +17,9 @@ on:
         description: 'Version tag'
         required: true
 
+permissions:
+  contents: write
+
 jobs:
   container-image:
     runs-on: ubuntu-latest
