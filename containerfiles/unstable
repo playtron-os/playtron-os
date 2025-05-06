@@ -99,8 +99,7 @@ RUN ${CMD_INSTALL} \
   zenity
 
 # Configure the FlatHub remote.
-RUN flatpak remote-delete fedora && \
-  flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+RUN flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 # Install Nvidia driver
 RUN ${CMD_INSTALL} \
