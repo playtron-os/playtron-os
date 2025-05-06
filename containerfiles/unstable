@@ -34,6 +34,7 @@ RUN ${CMD_INSTALL} \
   distrobox \
   dracut-config-generic \
   evtest \
+  flatpak \
   gamescope-session-playtron \
   glibc-langpack-en \
   gstreamer1-plugins-good \
@@ -96,6 +97,10 @@ RUN ${CMD_INSTALL} \
   xorg-x11-server-Xvfb \
   xwininfo \
   zenity
+
+# Configure the FlatHub remote.
+RUN flatpak remote-delete fedora && \
+  flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 # Install Nvidia driver
 RUN ${CMD_INSTALL} \
