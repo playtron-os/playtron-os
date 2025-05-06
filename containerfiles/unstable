@@ -64,6 +64,7 @@ RUN ${CMD_INSTALL} \
   pipewire-utils \
   playserve \
   playtron-os-files \
+  playtron-plugin-local \
   playview \
   plymouth \
   plymouth-theme-spinner \
