@@ -36,20 +36,36 @@ tasks:
     preconditions:
       - sh: test -n "$TAG"
         msg: "A value for TAG must be provided"
+    vars:
+      CPU_ARCH: '{{default "amd64" .CPU_ARCH}}'
     cmds:
       - mkdir -p rootfs/usr/lib
       - cat os-release.template | envsubst '${TAG}' > rootfs/usr/lib/os-release-playtron
-      - podman build --no-cache --tag ${IMAGE}:${TAG} --file containerfiles/unstable .
+      - podman build --no-cache --platform linux/{{.CPU_ARCH}} --tag ${IMAGE}:${TAG} --file containerfiles/unstable .
+
+  container-image:build-arm:unstable:
+    cmds:
+      - task: container-image:build:unstable
+        vars:
+          CPU_ARCH: arm64
 
   container-image:build:stable:
     desc: Build the OCI container image using a previously built image.
     preconditions:
       - sh: test -n "$TAG"
         msg: "A value for TAG must be provided"
+    vars:
+      CPU_ARCH: '{{default "amd64" .CPU_ARCH}}'
     cmds:
       - mkdir -p rootfs/usr/lib
       - cat os-release.template | envsubst '${TAG}' > rootfs/usr/lib/os-release-playtron
-      - podman build --no-cache --tag ${IMAGE}:${TAG} --file containerfiles/stable .
+      - podman build --no-cache --platform linux/{{.CPU_ARCH}} --tag ${IMAGE}:${TAG} --file containerfiles/stable .
+
+  container-image:build-arm:stable:
+    cmds:
+      - task: container-image:build:stable
+        vars:
+          CPU_ARCH: arm64
 
   container-image:push:
     desc: Push the OCI container image to the container registry.
