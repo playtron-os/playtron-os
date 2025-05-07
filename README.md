@@ -1,5 +1,13 @@
 # Playtron GameOS
 
+Table of Contents:
+- [Introduction](#introduction)
+- [Minimum Hardware Requirements](#minimum-hardware-requirements)
+- [Build](#build)
+- [Linux Developer Tips](#linux-developer-tips)
+
+## Introduction
+
 Read more about Playtron GameOS on our official [website](https://www.playtron.one/).
 
 ## Minimum Hardware Requirements
