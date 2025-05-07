@@ -8,6 +8,8 @@ Table of Contents:
 
 ## Introduction
 
+Turn your PC into a game console. GameOS has native integration with Epic Games Store, GOG.com, and Steam. Your library of games is accessible via a simple gamer-focused interface.
+
 Read more about Playtron GameOS on our official [website](https://www.playtron.one/).
 
 ## Minimum Hardware Requirements
