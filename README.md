@@ -3,6 +3,7 @@
 Table of Contents:
 - [Introduction](#introduction)
 - [Minimum Hardware Requirements](#minimum-hardware-requirements)
+- [Sideloading Games](#sideloading-games)
 - [Build](#build)
 - [Linux Developer Tips](#linux-developer-tips)
 
@@ -22,6 +23,10 @@ Read more about Playtron GameOS on our official [website](https://www.playtron.o
         - For the best results, we recommend using an AMD GPU.
     - Intel Xe
     - NVIDIA Turing
+
+## Sideloading Games
+
+Local games can be copied over to GameOS and integrated using the [local](https://github.com/playtron-os/plugin-local) plugin. It is installed by default as of GameOS Beta 1.
 
 ## Build
 
