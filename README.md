@@ -178,6 +178,6 @@ FROM localhost/bootc
 RUN dnf5 group install -y kde-desktop && echo -e '[Autologin]\nSession=plasma' > /etc/sddm.conf.d/60-playtron-session-override.conf
 RUN dnf5 install -y firefox
 RUN dnf5 clean all && bootc container lint
-$ sudo podman build --tag desktop .
-$ sudo bootc switch --transport containers-storage localhost/desktop
+$ sudo podman build --tag desktop:latest .
+$ sudo bootc switch --transport containers-storage localhost/desktop:latest
 ```
