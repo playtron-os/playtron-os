@@ -1,5 +1,17 @@
 # Playtron GameOS
 
+Table of Contents:
+- [Introduction](#introduction)
+- [Minimum Hardware Requirements](#minimum-hardware-requirements)
+- [Game Compatibility](#game-compatibility)
+- [Sideloading Games](#sideloading-games)
+- [Build](#build)
+- [Linux Developer Tips](#linux-developer-tips)
+
+## Introduction
+
+Turn your PC into a game console. GameOS has native integration with Epic Games Store, GOG.com, and Steam. Your library of games is accessible via a simple gamer-focused interface.
+
 Read more about Playtron GameOS on our official [website](https://www.playtron.one/).
 
 ## Minimum Hardware Requirements
@@ -12,6 +24,14 @@ Read more about Playtron GameOS on our official [website](https://www.playtron.o
         - For the best results, we recommend using an AMD GPU.
     - Intel Xe
     - NVIDIA Turing
+
+## Game Compatibility
+
+Most games are expected to work. For problematic games, you can help our community by using [GameLAB](https://github.com/playtron-os/gamelab) to create custom launch configurations and/or controller configurations. Our team will work to get these fixes upstream into [umu-protonfixes](https://github.com/Open-Wine-Components/umu-protonfixes) for everyone to benefit. Full guides on how to use GameLAB can be found [here](https://www.playtron.one/contribute).
+
+## Sideloading Games
+
+Local games can be copied over to GameOS and integrated using the [local](https://github.com/playtron-os/plugin-local) plugin. It is installed by default as of GameOS Beta 1.
 
 ## Build
 
@@ -158,6 +178,6 @@ FROM localhost/bootc
 RUN dnf5 group install -y kde-desktop && echo -e '[Autologin]\nSession=plasma' > /etc/sddm.conf.d/60-playtron-session-override.conf
 RUN dnf5 install -y firefox
 RUN dnf5 clean all && bootc container lint
-$ sudo podman build --tag desktop .
-$ sudo bootc switch --transport containers-storage localhost/desktop
+$ sudo podman build --tag desktop:latest .
+$ sudo bootc switch --transport containers-storage localhost/desktop:latest
 ```
