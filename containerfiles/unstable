@@ -27,6 +27,7 @@ RUN ${CMD_INSTALL} \
   binutils \
   bluez \
   brcmfmac-firmware \
+  btop \
   cabextract \
   cirrus-audio-firmware \
   crudini \
@@ -38,8 +39,10 @@ RUN ${CMD_INSTALL} \
   gamescope-session-playtron \
   glibc-langpack-en \
   gstreamer1-plugins-good \
+  htop \
   inputplumber \
   intel-audio-firmware \
+  iotop \
   iwlegacy-firmware \
   iwlwifi-dvm-firmware \
   iwlwifi-mvm-firmware \
@@ -70,6 +73,7 @@ RUN ${CMD_INSTALL} \
   plymouth \
   plymouth-theme-spinner \
   powerstation \
+  powertop \
   realtek-firmware \
   sddm \
   steam.i686 \
