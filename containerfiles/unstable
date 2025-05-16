@@ -129,6 +129,7 @@ RUN cp -r /etc/pam.d /etc/pam.d.bak; sed -i -r 's/^(session\s+required\s+pam_lim
 
 # Copy/override files
 COPY rootfs/etc/hostname /etc/
+COPY rootfs/usr/lib/bootupd/grub2-static/grub-static-post.cfg /usr/lib/bootupd/grub2-static/
 ## Fix OS updates failing to extract due to bad locale setting
 COPY rootfs/etc/locale.conf /etc/
 COPY rootfs/etc/bluetooth/main.conf /etc/bluetooth/
