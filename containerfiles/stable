@@ -1,38 +1,28 @@
-FROM registry.playtron.one/internal/playtronos:0.20.0.10
+FROM registry.playtron.one/internal/playtronos:0.21.0.27
 
 # Set OS version
 COPY rootfs/usr/lib/os-release-playtron /usr/lib/
 
-# Prevent kernel upgrades.
-RUN dnf5 versionlock add kernel kernel-devel kernel-devel-matched kernel-core kernel-headers kernel-modules
-
 # https://github.com/playtron-os/rpm-specs-gaming
 RUN dnf5 -y upgrade \
-  gamescope-dbus \
-  gamescope-session-playtron \
-  gamescope-session \
-  legendary \
-  mangohud \
-  inputplumber \
-  grid \
-  playserve \
-  playtron-os-files \
-  reaper \
-  tzupdate \
-  udev-media-automount \
-  valve-firmware \
-  SteamBus \
-  && ostree container commit
-
-# Temporarily add this fix to the stable builds. Keep it in the unstable builds only long-term.
-# Fix audio crackling on the Steam Deck OLED by using a slower polling rate
-COPY rootfs/usr/share/pipewire/pipewire-pulse.conf /usr/share/pipewire/
-
-# Temporarily upgrade NVIDIA while the 560 driver is broken.
-RUN dnf5 -y upgrade \
-  *nvidia* \
-  && mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
-  akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; done; rm -r -f /run/akmods \
+  gamescope-dbus-1.8.1-1 \
+  gamescope-session-0.1.0+306-1.fc41 \
+  gamescope-session-playtron-0.3.3-1.fc41 \
+  legendary-0.20.36-2.fc41 \
+  libpact-0.1.0-1 \
+  libplaytron-0.1.0-1 \
+  mangohud-0.8.1-2.fc41 \
+  inputplumber-0.57.1-0 \
+  powerstation-0.4.2-1 \
+  grid-0.58.7-1.fc40 \
+  playserve-0.61.3-1 \
+  playtron-os-files-0.22.3-2.fc41 \
+  playtron-plugin-local-0.1.0-1 \
+  reaper-0.1.0-2.fc41 \
+  tzupdate-3.1.0-1.fc41 \
+  udev-media-automount-0.1.0+71-1.fc41 \
+  valve-firmware-20231113.1-5.fc41 \
+  SteamBus-1.19.1-1.fc41 \
   && ostree container commit
 
 # View final packages.
