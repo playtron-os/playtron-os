@@ -12,7 +12,6 @@ RUN dnf5 -y upgrade \
   libpact-0.1.0-1 \
   libplaytron-0.1.0-1 \
   mangohud-0.8.1-2.fc41 \
-  inputplumber-0.57.1-0 \
   powerstation-0.4.2-1 \
   grid-0.59.0-1.fc40 \
   playserve-0.62.0-1 \
