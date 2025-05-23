@@ -28,7 +28,7 @@ RUN dnf5 -y install \
   powertop \
   xdg-user-dirs
 
-RUN cd /tmp && wget http://testprovider.lutris.org/rpms/grid-0.59.42-1.fc42.x86_64.rpm && dnf5 -y install ./grid*.rpm
+RUN cd /tmp && wget http://testprovider.lutris.org/rpms/grid-0.59.43-1.fc42.x86_64.rpm && dnf5 -y install ./grid*.rpm
 
 # View final packages.
 RUN rpm -qa | sort
