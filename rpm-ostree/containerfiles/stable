@@ -21,14 +21,18 @@ RUN dnf5 -y upgrade \
   tzupdate \
   udev-media-automount \
   valve-firmware \
-  && ostree container commit
+  htop \
+  btop \
+  powertop \
+  xdg-user-dirs
+
+RUN cd /tmp && wget http://testprovider.lutris.org/rpms/grid-0.59.42-1.fc42.x86_64.rpm && dnf5 -y install ./grid*.rpm
 
 # Temporarily upgrade NVIDIA while the 560 driver is broken.
 RUN dnf5 -y upgrade \
   *nvidia* \
   && mkdir -p /run/akmods; for k in $(ls -1 /usr/src/kernels); do \
-  akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; done; rm -r -f /run/akmods \
-  && ostree container commit
+  akmods --force --kernels "${k}" --kmod "nvidia" || exit 1; done; rm -r -f /run/akmods
 
 # View final packages.
 RUN rpm -qa | sort
