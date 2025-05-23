@@ -13,7 +13,6 @@ RUN dnf5 -y upgrade \
   libplaytron-0.1.0-1 \
   mangohud-0.8.1-2.fc41 \
   powerstation-0.4.2-1 \
-  grid-0.59.0-1.fc40 \
   playserve-0.62.0-1 \
   playtron-os-files-0.23.1-1.fc41 \
   playtron-plugin-local-1.0.1-1 \
@@ -22,7 +21,12 @@ RUN dnf5 -y upgrade \
   udev-media-automount-0.1.0+71-1.fc41 \
   valve-firmware-20231113.1-5.fc41 \
   SteamBus-1.19.3-1.fc41 \
-  && ostree container commit
+  htop \
+  btop \
+  powertop \
+  xdg-user-dirs
+
+RUN cd /tmp && wget http://testprovider.lutris.org/rpms/grid-0.59.42-1.fc42.x86_64.rpm && dnf5 -y install ./grid*.rpm
 
 # View final packages.
 RUN rpm -qa | sort
